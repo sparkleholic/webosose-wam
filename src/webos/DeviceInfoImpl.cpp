@@ -17,7 +17,10 @@
 #include "DeviceInfoImpl.h"
 #include "LogManager.h"
 
+#ifdef HAS_LUNA_SERVICE
 #include <lunaprefs.h>
+#endif
+
 #include <glib.h>
 #include <QFile>
 #include <QJsonDocument>
@@ -67,12 +70,13 @@ void DeviceInfoImpl::initialize()
 bool DeviceInfoImpl::getInfoFromLunaPrefs(const char* key, std::string& value)
 {
     char* str = 0;
+#ifdef HAS_LUNA_SERVICE
     if (LP_ERR_NONE == LPSystemCopyStringValue(key, &str) && str) {
         value = str;
         g_free((gchar*) str);
         return true;
     }
-
+#endif
     g_free((gchar*) str);
     value = "Unknown";
     return false;
