@@ -64,7 +64,6 @@ HEADERS += \
         WindowTypes.h
 
 pmlog {
-    DEFINES += HAS_PMLOG
     SOURCES += LogManagerPmLog.cpp
     HEADERS += LogManagerPmLog.h
 }
