@@ -53,6 +53,7 @@ class WebAppWayland : public WebAppBase, WebPageBlinkObserver {
 
 public:
     WebAppWayland(QString type,
+		  int surface_id,
                   int width = 0, int height = 0,
                   int displayId = kUndefinedDisplayId,
                   const std::string& location_hint = "");
@@ -64,6 +65,8 @@ public:
     ~WebAppWayland() override;
 
     // WebAppBase
+
+    void init(int width, int height, int surface_id) override;
     void attach(WebPageBase*) override;
     WebPageBase* detach() override;
     void suspendAppRendering() override;
@@ -140,8 +143,6 @@ protected Q_SLOTS:
     virtual void webViewRecreatedSlot();
 
 private:
-
-    void init(int width, int height);
 
     WebAppWaylandWindow* m_appWindow;
     QString m_windowType;

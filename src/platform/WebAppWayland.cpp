@@ -32,7 +32,17 @@
 
 static int kLaunchFinishAssureTimeoutMs = 5000;
 
+#define URL_SIZE_LIMIT 512
+static QString truncateURL(const QString& url)
+{
+    if(url.size() < URL_SIZE_LIMIT)
+        return url;
+    QString res = QString(url);
+    return res.replace(URL_SIZE_LIMIT / 2, url.size() - URL_SIZE_LIMIT, QStringLiteral(" ... "));
+}
+
 WebAppWayland::WebAppWayland(QString type,
+			     int surface_id,
                              int width, int height,
                              int displayId,
                              const std::string& location_hint)
@@ -47,7 +57,7 @@ WebAppWayland::WebAppWayland(QString type,
     , m_displayId(displayId)
     , m_locationHint(location_hint)
 {
-    init(width, height);
+    init(width, height, surface_id);
 }
 
 WebAppWayland::WebAppWayland(QString type, WebAppWaylandWindow* window,
@@ -65,7 +75,7 @@ WebAppWayland::WebAppWayland(QString type, WebAppWaylandWindow* window,
     , m_displayId(displayId)
     , m_locationHint(location_hint)
 {
-    init(width, height);
+    init(width, height, 0);
 }
 
 WebAppWayland::~WebAppWayland()
@@ -94,10 +104,10 @@ static webos::WebAppWindowBase::LocationHint getLocationHintFromString(const std
     return hint;
 }
 
-void WebAppWayland::init(int width, int height)
+void WebAppWayland::init(int width, int height, int surface_id)
 {
     if (!m_appWindow)
-        m_appWindow = WebAppWaylandWindow::take();
+        m_appWindow = WebAppWaylandWindow::take(surface_id);
     if (!(width && height)) {
         setUiSize(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
         m_appWindow->InitWindow(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
