@@ -116,6 +116,8 @@ void WebAppWayland::init(int width, int height, int surface_id)
         setUiSize(width, height);
         m_appWindow->InitWindow(width, height);
     }
+    fprintf(stderr, "SETTIGN SURFACE ID\r\n");
+    m_appWindow->SetWindowSurfaceId(surface_id);
 
     webos::WebAppWindowBase::LocationHint locationHint = getLocationHintFromString(m_locationHint);
     if (locationHint != webos::WebAppWindowBase::LocationHint::kUnknown) {
