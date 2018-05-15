@@ -32,7 +32,6 @@ WebAppBase* WebAppFactoryLuna::createWebApp(QString winType, std::shared_ptr<App
     WebAppBase* app = nullptr;
 
     if (winType == WT_CARD || winType == WT_POPUP || winType == WT_MINIMAL || winType == WT_FLOATING || winType == WT_SYSTEM_UI) {
-        fprintf(stderr, "createWebApp\r\n");
         app = new WebAppWaylandWebOS(winType, desc);
     } else if (winType == WT_OVERLAY || winType == WT_NONE) {
         app = new WebAppWayland(winType, desc->surfaceId(), 0, 0, desc->getDisplayAffinity());
