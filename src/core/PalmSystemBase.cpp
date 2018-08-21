@@ -20,9 +20,9 @@
 #include <QByteArray>
 #include <QFile>
 
-QString PalmSystemBase::getDeviceInfo(QString name)
+std::string PalmSystemBase::getDeviceInfo(std::string name)
 {
-    QString value;
+    std::string value;
     WebAppManager::instance()->getDeviceInfo(name, value);
 
     return value;
@@ -39,8 +39,9 @@ QVariant PalmSystemBase::getResource(QVariant a, QVariant b)
     return QVariant(data.constData());
 }
 
-QString PalmSystemBase::country() const
+std::string PalmSystemBase::country() const
 {
+#if 0
     QString localcountry;
     QString smartServiceCountry;
     QString country;
@@ -50,28 +51,48 @@ QString PalmSystemBase::country() const
 
     country = QString("{ \"country\": \"%1\", \"smartServiceCountry\": \"%2\" }");
     country = country.arg(localcountry).arg(smartServiceCountry);
+#else
+    std::string localcountry;
+    std::string smartServiceCountry;
+    std::string country;
 
+    WebAppManager::instance()->getDeviceInfo("LocalCountry", localcountry);
+    WebAppManager::instance()->getDeviceInfo("SmartServiceCountry", smartServiceCountry);
+
+    // country = std::string("{ \"country\": \"%1\", \"smartServiceCountry\": \"%2\" }");
+    // country = country.arg(localcountry).arg(smartServiceCountry);
+    country.append("{");
+    country.append("\"country\":");
+    country.append("\"");
+    country.append(localcountry);
+    country.append("\",");
+    country.append("\"smartServiceCountry\":");
+    country.append("\"");
+    country.append(smartServiceCountry);
+    country.append("\"");
+    country.append("}");
     return country;
+#endif
 }
 
-QString PalmSystemBase::locale() const
+std::string PalmSystemBase::locale() const
 {
-    QString systemlocale;
+    std::string systemlocale;
     WebAppManager::instance()->getSystemLanguage(systemlocale);
     return systemlocale;
 }
 
-QString PalmSystemBase::localeRegion() const
+std::string PalmSystemBase::localeRegion() const
 {
-    return QString("US");
+    return std::string("US");
 }
 
-QString PalmSystemBase::phoneRegion() const
+std::string PalmSystemBase::phoneRegion() const
 {
-    return QString("");
+    return std::string("");
 }
 
-void PalmSystemBase::setContainerAppReady(const QString& appId)
+void PalmSystemBase::setContainerAppReady(const std::string& appId)
 {
     if (appId == WebAppManager::instance()->getContainerAppId())
         WebAppManager::instance()->setContainerAppReady(true);

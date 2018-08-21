@@ -33,7 +33,7 @@ std::string WebAppManagerService::onLaunch(const std::string& appDescString, con
 
 bool WebAppManagerService::onKillApp(const std::string& appId)
 {
-    LOG_INFO(MSGID_LUNA_API, 2, PMLOGKS("APP_ID", qPrintable(QString::fromStdString(appId))), PMLOGKS("API", "killApp"), "");
+    LOG_INFO(MSGID_LUNA_API, 2, PMLOGKS("APP_ID", qPrintable(std::string::fromStdString(appId))), PMLOGKS("API", "killApp"), "");
     return WebAppManager::instance()->onKillApp(appId);
 }
 
@@ -109,7 +109,7 @@ void WebAppManagerService::restartContainerApp()
 }
 #endif
 
-void WebAppManagerService::setDeviceInfo(const QString &name, const QString &value)
+void WebAppManagerService::setDeviceInfo(const std::string &name, const std::string &value)
 {
     WebAppManager::instance()->setDeviceInfo(name, value);
 }
@@ -119,29 +119,29 @@ void WebAppManagerService::setUiSize(int width, int height)
     WebAppManager::instance()->setUiSize(width, height);
 }
 
-void WebAppManagerService::setSystemLanguage(const QString &language)
+void WebAppManagerService::setSystemLanguage(const std::string &language)
 {
     WebAppManager::instance()->setSystemLanguage(language);
 }
 
-QString WebAppManagerService::getSystemLanguage()
+std::string WebAppManagerService::getSystemLanguage()
 {
-    QString language;
+    std::string language;
     WebAppManager::instance()->getSystemLanguage(language);
     return language;
 }
 
-void WebAppManagerService::setForceCloseApp(const QString &appId)
+void WebAppManagerService::setForceCloseApp(const std::string &appId)
 {
     WebAppManager::instance()->setForceCloseApp(appId);
 }
 
-void WebAppManagerService::deleteStorageData(const QString &identifier)
+void WebAppManagerService::deleteStorageData(const std::string &identifier)
 {
     WebAppManager::instance()->deleteStorageData(identifier);
 }
 
-void WebAppManagerService::killCustomPluginProcess(const QString &appBasePath)
+void WebAppManagerService::killCustomPluginProcess(const std::string &appBasePath)
 {
     WebAppManager::instance()->killCustomPluginProcess(appBasePath);
 }
@@ -171,10 +171,11 @@ std::vector<ApplicationInfo> WebAppManagerService::list(bool includeSystemApps)
     return WebAppManager::instance()->list(includeSystemApps);
 }
 
-QJsonObject WebAppManagerService::closeByInstanceId(QString instanceId)
+QJsonObject WebAppManagerService::closeByInstanceId(std::string instanceId)
 {
     LOG_INFO(MSGID_LUNA_API, 2, PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), PMLOGKS("API", "closeByInstanceId"), "");
     WebAppBase* app = WebAppManager::instance()->findAppByInstanceId(instanceId);
+#if 0
     QString appId;
     if (app) {
         appId = app->appId();
@@ -193,6 +194,27 @@ QJsonObject WebAppManagerService::closeByInstanceId(QString instanceId)
         reply["returnValue"] = false;
         reply["errorText"] = errMsg;
     }
+
+#else
+    std::string appId;
+    if (app) {
+        appId = app->appId();
+        WebAppManager::instance()->forceCloseAppInternal(app);
+    }
+
+    QJsonObject reply;
+    if(!appId.empty()) {
+        reply["appId"].toString().toStdString() = appId;
+        reply["processId"].toString().toStdString() = instanceId;
+        reply["returnValue"] = true;
+    }
+    else {
+        LOG_INFO(MSGID_LUNA_API, 2, PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), PMLOGKS("API", "closeByInstanceId"), "No matched App; return false");
+        std::string errMsg("Unknown Process");
+        reply["returnValue"] = false;
+        reply["errorText"].toString().toStdString() = errMsg;
+    }
+#endif
     return reply;
 }
 
@@ -201,7 +223,7 @@ void WebAppManagerService::setAccessibilityEnabled(bool enable)
     WebAppManager::instance()->setAccessibilityEnabled(enable);
 }
 
-uint32_t WebAppManagerService::getWebProcessId(const QString& appId)
+uint32_t WebAppManagerService::getWebProcessId(const std::string& appId)
 {
     return WebAppManager::instance()->getWebProcessId(appId);
 }
@@ -216,7 +238,7 @@ void WebAppManagerService::notifyMemoryPressure(webos::WebViewBase::MemoryPressu
     WebAppManager::instance()->notifyMemoryPressure(level);
 }
 
-bool WebAppManagerService::isEnyoApp(const QString& appId)
+bool WebAppManagerService::isEnyoApp(const std::string& appId)
 {
     return WebAppManager::instance()->isEnyoApp(appId);
 }

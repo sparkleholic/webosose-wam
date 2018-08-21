@@ -18,7 +18,7 @@
 #define WEBAPPBASE_H
 
 #include <QObject>
-#include <QString>
+#include <string>
 
 #include "WebAppManager.h"
 #include "WebPageObserver.h"
@@ -43,7 +43,7 @@ public:
     WebAppBase();
     ~WebAppBase() override;
 
-    virtual void init(int width, int height, int surface_id) = 0;
+    virtual void init(int width, int height) = 0;
     virtual void attach(WebPageBase*);
     virtual WebPageBase* detach();
     virtual void suspendAppRendering() = 0;
@@ -57,13 +57,13 @@ public:
     virtual void onStageDeactivated() = 0;
     virtual void startLaunchTimer() {}
     virtual void setHiddenWindow(bool hidden);
-    virtual void configureWindow(QString& type) = 0;
+    virtual void configureWindow(std::string& type) = 0;
     virtual void setKeepAlive(bool keepAlive);
     virtual bool isWindowed() const;
-    virtual void relaunch(const QString& args, const QString& launchingAppId);
-    virtual void setWindowProperty(const QString& name, const QVariant& value) = 0;
+    virtual void relaunch(const std::string& args, const std::string& launchingAppId);
+    virtual void setWindowProperty(const std::string& name, const QVariant& value) = 0;
     virtual void platformBack() = 0;
-    virtual void setCursor(const QString& cursorArg, int hotspot_x, int hotspot_y) = 0;
+    virtual void setCursor(const std::string& cursorArg, int hotspot_x, int hotspot_y) = 0;
     virtual void setInputRegion(const QJsonDocument& jsonDoc) = 0;
     virtual void setKeyMask(const QJsonDocument& jsonDoc) = 0;
     virtual void hide(bool forcedHide = false) = 0;
@@ -71,7 +71,7 @@ public:
     virtual void unfocus() = 0;
     virtual void setOpacity(float opacity) = 0;
     virtual void setAppDescription(ApplicationDescription*);
-    virtual void setPreferredLanguages(QString language);
+    virtual void setPreferredLanguages(std::string language);
     virtual void stagePreparing();
     virtual void stageReady();
     virtual void raise() = 0;
@@ -81,7 +81,7 @@ public:
     virtual void keyboardVisibilityChanged(bool visible, int height);
     virtual void doClose() = 0;
 
-    static void onCursorVisibilityChanged(const QString& jsscript);
+    static void onCursorVisibilityChanged(const std::string& jsscript);
 
     bool getCrashState();
     void setCrashState(bool state);
@@ -92,18 +92,18 @@ public:
     void setForceClose();
     bool forceClose();
     WebPageBase* page() const;
-    void handleWebAppMessage(WebAppManager::WebAppMessageType type, const QString& message);
-    void setAppId(const QString& appId);
-    void setLaunchingAppId(const QString& appId);
-    QString appId() const;
-    QString launchingAppId() const;
-    void setInstanceId(const QString& instanceId);
-    QString instanceId() const;
-    QString url() const;
+    void handleWebAppMessage(WebAppManager::WebAppMessageType type, const std::string& message);
+    void setAppId(const std::string& appId);
+    void setLaunchingAppId(const std::string& appId);
+    std::string appId() const;
+    std::string launchingAppId() const;
+    void setInstanceId(const std::string& instanceId);
+    std::string instanceId() const;
+    std::string url() const;
 
     ApplicationDescription* getAppDescription() const;
 
-    void setAppProperties(QString properties);
+    void setAppProperties(std::string properties);
 
     void setNeedReload(bool status) { m_needReload = status; }
     bool needReload() { return m_needReload; }
@@ -116,9 +116,9 @@ public:
     void dispatchUnload();
 
     void setUseAccessibility(bool enabled);
-    void serviceCall(const QString& url, const QString& payload, const QString& appId);
+    void serviceCall(const std::string& url, const std::string& payload, const std::string& appId);
 
-    void setPreloadState(QString properties);
+    void setPreloadState(std::string properties);
     void clearPreloadState();
     PreloadState preloadState() { return m_preloadState; }
 
@@ -130,7 +130,7 @@ protected:
     virtual void showWindow();
 
     void setUiSize(int width, int height);
-    void setActiveAppId(QString id);
+    void setActiveAppId(std::string id);
     void forceCloseAppInternal();
     void closeAppInternal();
 
@@ -145,8 +145,8 @@ protected Q_SLOTS:
 protected:
     PreloadState m_preloadState;
     bool m_addedToWindowMgr;
-    QString m_inProgressRelaunchParams;
-    QString m_inProgressRelaunchLaunchingAppId;
+    std::string m_inProgressRelaunchParams;
+    std::string m_inProgressRelaunchLaunchingAppId;
     float m_scaleFactor;
 
 private:

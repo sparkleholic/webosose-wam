@@ -17,7 +17,7 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
 #include <QtCore/QList>
-#include <QString>
+#include <string>
 
 #include "BlinkWebProcessManager.h"
 #include "WebPageBlink.h"
@@ -41,7 +41,7 @@ QJsonObject BlinkWebProcessManager::getWebProcessProfiling()
     uint32_t pid;
     QList<uint32_t> processIdList;
 
-    QMap<uint32_t, QString> runningAppList;
+    QMap<uint32_t, std::string> runningAppList;
     std::list<const WebAppBase*> running = runningApps();
     for (std::list<const WebAppBase*>::iterator it = running.begin(); it != running.end(); ++it) {
         WebAppBase* app = findAppById((*it)->appId());
@@ -65,7 +65,7 @@ QJsonObject BlinkWebProcessManager::getWebProcessProfiling()
         QJsonObject appObject;
         QJsonArray appArray;
         pid = processIdList.at(id);
-
+#if 0
         processObject["pid"] = QString::number(pid);
         processObject["webProcessSize"] = getWebProcessMemSize(pid);
         //starfish-surface is note used on Blink
@@ -77,6 +77,19 @@ QJsonObject BlinkWebProcessManager::getWebProcessProfiling()
         }
         processObject["runningApps"] = appArray;
         processArray.append(processObject);
+#else
+        processObject["pid"] = QString::number(pid);
+        //processObject["webProcessSize"] = getWebProcessMemSize(pid); // TODO : Uncommnet during replacement of QJson
+        //starfish-surface is note used on Blink
+        processObject["tileSize"] = 0;
+        QList<std::string> processApp = runningAppList.values(pid);
+        for (int app = 0; app < processApp.size(); app++) {
+            // appObject["id"] = processApp.at(app); // TODO
+            appArray.append(appObject);
+        }
+        processObject["runningApps"] = appArray;
+        processArray.append(processObject);
+#endif
     }
 
     reply["WebProcesses"] = processArray;
@@ -84,8 +97,9 @@ QJsonObject BlinkWebProcessManager::getWebProcessProfiling()
     return reply;
 }
 
-void BlinkWebProcessManager::deleteStorageData(const QString& identifier)
+void BlinkWebProcessManager::deleteStorageData(const std::string& identifier)
 {
+#if 0
     std::list<const WebAppBase*> runningAppList = runningApps();
     if (!runningAppList.empty()) {
         runningAppList.front()->page()->deleteWebStorages(identifier);
@@ -103,6 +117,7 @@ void BlinkWebProcessManager::deleteStorageData(const QString& identifier)
         webview->DeleteWebStorages(identifier.toStdString());
         delete webview;
     }
+#endif
 }
 
 uint32_t BlinkWebProcessManager::getInitialWebViewProxyID() const

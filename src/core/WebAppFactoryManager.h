@@ -18,25 +18,25 @@
 #define WEBAPPFACTORYMANAGER_H
 
 #include <QMap>
-#include <QStringList>
+#include <list>
 
 #include "WebAppFactoryInterface.h"
 
 class WebAppFactoryManager {
 public:
     static WebAppFactoryManager* instance();
-    WebAppBase* createWebApp(QString winType, ApplicationDescription* desc = 0, QString appType = "");
-    WebAppBase* createWebApp(QString winType, WebPageBase* page, ApplicationDescription* desc = 0, QString appType = "");
-    WebPageBase* createWebPage(QString winType, QUrl url, ApplicationDescription* desc, QString appType = "", QString launchParams = "");
-    WebAppFactoryInterface* getPluggable(QString appType);
-    WebAppFactoryInterface* loadPluggable(QString appType = "");
+    WebAppBase* createWebApp(std::string winType, ApplicationDescription* desc = 0, std::string appType = "");
+    WebAppBase* createWebApp(std::string winType, WebPageBase* page, ApplicationDescription* desc = 0, std::string appType = "");
+    WebPageBase* createWebPage(std::string winType, QUrl url, ApplicationDescription* desc, std::string appType = "", std::string launchParams = "");
+    WebAppFactoryInterface* getPluggable(std::string appType);
+    WebAppFactoryInterface* loadPluggable(std::string appType = "");
 
 private:
     static WebAppFactoryManager* m_instance;
     WebAppFactoryManager();
-    QMap<QString, WebAppFactoryInterface*> m_interfaces;
-    QString m_webAppFactoryPluginPath;
-    QStringList m_factoryEnv;
+    QMap<std::string, WebAppFactoryInterface*> m_interfaces;
+    std::string m_webAppFactoryPluginPath;
+    std::list<std::string> m_factoryEnv;
     bool m_loadPluggableOnDemand;
 };
 

@@ -28,6 +28,7 @@
 
 class ApplicationDescription;
 class WebAppWaylandWindow;
+class string;
 
 class InputManager : public webos::InputPointer {
 public:
@@ -49,13 +50,14 @@ class WebAppWayland : public WebAppBase {
     Q_OBJECT
 
 public:
-    WebAppWayland(QString type, int surface_id, int width = 0, int height = 0);
-    WebAppWayland(QString type, WebAppWaylandWindow* window, int width = 0, int height = 0);
+    WebAppWayland(std::string type, int surface_id, int width = 0, int height = 0);
+    WebAppWayland(std::string type, WebAppWaylandWindow* window, int width = 0, int height = 0);
 
     ~WebAppWayland() override;
 
     // WebAppBase
-    void init(int width, int height, int surface_id) override;
+    void init(int width, int height) override;
+    void init(int width, int height, int surface_id);
     void attach(WebPageBase*) override;
     void suspendAppRendering() override;
     void resumeAppRendering() override;
@@ -66,12 +68,12 @@ public:
     bool isNormal() override;
     void onStageActivated() override;
     void onStageDeactivated() override;
-    void configureWindow(QString& type) override;
+    void configureWindow(std::string& type) override;
     void setKeepAlive(bool keepAlive) override;
     bool isWindowed() const override { return true; }
-    void setWindowProperty(const QString& name, const QVariant& value) override;
+    void setWindowProperty(const std::string& name, const QVariant& value) override;
     void platformBack() override;
-    void setCursor(const QString& cursorArg, int hotspot_x = -1, int hotspot_y = -1) override;
+    void setCursor(const std::string& cursorArg, int hotspot_x = -1, int hotspot_y = -1) override;
     void setInputRegion(const QJsonDocument& jsonDoc) override;
     void setKeyMask(const QJsonDocument& jsonDoc) override;
     void setOpacity(float opacity) override;
@@ -93,10 +95,10 @@ public:
     virtual void firstFrameVisuallyCommitted();
     virtual void navigationHistoryChanged();
 
-    QString getWindowType() const { return m_windowType; }
+    std::string getWindowType() const { return m_windowType; }
     bool cursorVisibility() { return InputManager::instance()->globalCursorVisibility(); }
     void startLaunchTimer();
-    void sendWebOSMouseEvent(const QString& eventName);
+    void sendWebOSMouseEvent(const std::string& eventName);
 
     void postEvent(WebOSEvent* ev);
     void onDelegateWindowFrameSwapped();
@@ -125,7 +127,7 @@ protected Q_SLOTS:
 
 private:
     WebAppWaylandWindow* m_appWindow;
-    QString m_windowType;
+    std::string m_windowType;
     int m_lastSwappedTime;
 
     unsigned m_windowHandle;

@@ -18,7 +18,7 @@
 #define DEVICEINFO_H
 
 #include <QMap>
-#include <QString>
+#include <string>
 
 class DeviceInfo {
 public:
@@ -30,14 +30,14 @@ public:
     virtual bool getDisplayHeight(int& value);
     virtual void setDisplayHeight(int value);
 
-    virtual bool getSystemLanguage(QString& value);
-    virtual void setSystemLanguage(QString value);
+    virtual bool getSystemLanguage(std::string& value);
+    virtual void setSystemLanguage(std::string value);
 
-    virtual bool getDeviceInfo(QString name, QString& value);
-    virtual void setDeviceInfo(QString name, QString value);
+    virtual bool getDeviceInfo(std::string name, std::string& value);
+    virtual void setDeviceInfo(std::string name, std::string value);
 
 private:
-    QMap<QString, QString> m_deviceInfo;
+    QMap<std::string, std::string> m_deviceInfo;
 };
 
 #endif /* DEVICEINFO_H */

@@ -27,7 +27,7 @@
 
 #include <QString>
 
-WebAppBase* WebAppFactoryLuna::createWebApp(QString winType, ApplicationDescription* desc)
+WebAppBase* WebAppFactoryLuna::createWebApp(std::string winType, ApplicationDescription* desc)
 {
     WebAppBase* app = 0;
 
@@ -46,12 +46,12 @@ WebAppBase* WebAppFactoryLuna::createWebApp(QString winType, ApplicationDescript
     return app;
 }
 
-WebAppBase* WebAppFactoryLuna::createWebApp(QString winType, WebPageBase* page, ApplicationDescription* desc)
+WebAppBase* WebAppFactoryLuna::createWebApp(std::string winType, WebPageBase* page, ApplicationDescription* desc)
 {
     return createWebApp(winType, desc);
 }
 
-WebPageBase* WebAppFactoryLuna::createWebPage(QUrl url, ApplicationDescription* desc, QString launchParams)
+WebPageBase* WebAppFactoryLuna::createWebPage(QUrl url, ApplicationDescription* desc, std::string launchParams)
 {
     return new WebPageBlink(url, desc, launchParams);
 }

@@ -28,7 +28,7 @@
 #include "WebPageBase.h"
 #include "WindowTypes.h"
 
-static QString s_containerAppId = "com.webos.app.container";
+static std::string s_containerAppId = "com.webos.app.container";
 static int kContainerAppLaunchDuration = 300;
 static int kContainerAppLaunchCpuThresh = 500; // 100 = 10%
 static int kContainerAppLaunchTryMax = 20;
@@ -65,15 +65,15 @@ void ContainerAppManager::loadContainerInfo()
     QFile file;
     file.setFileName("/var/luna/preferences/container.json");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QString str;
-        str = file.readAll();
+        std::string str;
+        str = file.readAll().toStdString();
         file.close();
 
-        QJsonDocument containerDoc = QJsonDocument::fromJson(str.toUtf8());
+        QJsonDocument containerDoc = QJsonDocument::fromJson(QByteArray(str.data()));
         if(!containerDoc.isNull()) {
             QJsonObject containerSettings = containerDoc.object();
             if(!containerSettings["appId"].isUndefined())
-                s_containerAppId = containerSettings["appId"].toString();
+                s_containerAppId = containerSettings["appId"].toString().toStdString();
             if(!containerSettings["relaunchDelay"].isUndefined())
                 kContainerAppLaunchDuration = containerSettings["relaunchDelay"].toDouble();
             if(!containerSettings["relaunchCpuThresh"].isUndefined())
@@ -97,7 +97,7 @@ void ContainerAppManager::stopContainerTimer()
     m_containerAppLaunchTimer.stop();
 }
 
-QString& ContainerAppManager::getContainerAppId()
+std::string& ContainerAppManager::getContainerAppId()
 {
     return s_containerAppId;
 }
@@ -151,7 +151,7 @@ WebAppBase* ContainerAppManager::launchContainerAppInternal(const std::string& i
     app->setAppDescription(desc);
     app->setHiddenWindow(true);
 
-    app->setInstanceId(QString::fromStdString(instanceId));
+    app->setInstanceId(instanceId);
     app->attach(page);
     page->load();
     WebAppManager::instance()->webPageAdded(page);
@@ -162,7 +162,7 @@ WebAppBase* ContainerAppManager::launchContainerAppInternal(const std::string& i
     WebAppManager::instance()->insertAppIntoList(m_containerApp);
 #endif
 
-    LOG_INFO(MSGID_CONTAINER_APP_RELAUNCHED, 2, PMLOGKS("APP_ID", qPrintable(QString::fromStdString(desc->id()))), PMLOGKFV("PID", "%d", page->getWebProcessPID()), "");
+    LOG_INFO(MSGID_CONTAINER_APP_RELAUNCHED, 2, PMLOGKS("APP_ID", qPrintable(std::string::fromStdString(desc->id()))), PMLOGKFV("PID", "%d", page->getWebProcessPID()), "");
 
     return m_containerApp;
 }

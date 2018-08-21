@@ -58,10 +58,10 @@ public:
     WebPageBase* m_page;
     bool m_keepAlive;
     bool m_forceClose;
-    QString m_launchingAppId;
-    QString m_appId;
-    QString m_instanceId;
-    QString m_url;
+    std::string m_launchingAppId;
+    std::string m_appId;
+    std::string m_instanceId;
+    std::string m_url;
     ApplicationDescription* m_appDesc;
 };
 
@@ -144,37 +144,37 @@ bool WebAppBase::isWindowed() const
     return false;
 }
 
-void WebAppBase::setAppId(const QString& appId)
+void WebAppBase::setAppId(const std::string& appId)
 {
     d->m_appId = appId;
 }
 
-void WebAppBase::setLaunchingAppId(const QString& appId)
+void WebAppBase::setLaunchingAppId(const std::string& appId)
 {
     d->m_launchingAppId = appId;
 }
 
-QString WebAppBase::appId() const
+std::string WebAppBase::appId() const
 {
     return d->m_appId;
 }
 
-void WebAppBase::setInstanceId(const QString& instanceId)
+void WebAppBase::setInstanceId(const std::string& instanceId)
 {
     d->m_instanceId = instanceId;
 }
 
-QString WebAppBase::instanceId() const
+std::string WebAppBase::instanceId() const
 {
     return d->m_instanceId;
 }
 
-QString WebAppBase::url() const
+std::string WebAppBase::url() const
 {
     return d->m_url;
 }
 
-QString WebAppBase::launchingAppId() const
+std::string WebAppBase::launchingAppId() const
 {
     return d->m_launchingAppId;
 }
@@ -205,7 +205,7 @@ int WebAppBase::currentUiHeight()
     return WebAppManager::instance()->currentUiHeight();
 }
 
-void WebAppBase::setActiveAppId(QString id)
+void WebAppBase::setActiveAppId(std::string id)
 {
     WebAppManager::instance()->setActiveAppId(id);
 }
@@ -248,7 +248,7 @@ WebPageBase* WebAppBase::detach(void)
     return p;
 }
 
-void WebAppBase::relaunch(const QString& args, const QString& launchingAppId)
+void WebAppBase::relaunch(const std::string& args, const std::string& launchingAppId)
 {
     LOG_INFO(MSGID_APP_RELAUNCH, 3,
              PMLOGKS("APP_ID", qPrintable(appId())),
@@ -328,7 +328,7 @@ void WebAppBase::doPendingRelaunch()
 void WebAppBase::webPageClosePageRequestedSlot()
 {
     LOG_INFO(MSGID_WINDOW_CLOSED_JS, 2, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
-    WebAppManager::instance()->closeApp(appId().toStdString());
+    WebAppManager::instance()->closeApp(appId());
 }
 
 void WebAppBase::stagePreparing()
@@ -367,7 +367,7 @@ void WebAppBase::setAppDescription(ApplicationDescription* appDesc)
     d->m_appDesc = appDesc;
 
     // set appId here from appDesc
-   d->m_appId = QString::fromStdString(appDesc->id());
+   d->m_appId = appDesc->id();
 
    if (appDesc->widthOverride() && appDesc->heightOverride()) {
         float scaleX = static_cast<float>(currentUiWidth()) / appDesc->widthOverride();
@@ -376,9 +376,9 @@ void WebAppBase::setAppDescription(ApplicationDescription* appDesc)
    }
 }
 
-void WebAppBase::setAppProperties(QString properties)
+void WebAppBase::setAppProperties(std::string properties)
 {
-    QJsonDocument doc = QJsonDocument::fromJson(properties.toStdString().c_str());
+    QJsonDocument doc = QJsonDocument::fromJson(properties.c_str());
     QJsonObject obj = doc.object();
 
     if (obj["keepAlive"].toBool())
@@ -390,9 +390,9 @@ void WebAppBase::setAppProperties(QString properties)
         setHiddenWindow(true);
 }
 
-void WebAppBase::setPreloadState(QString properties)
+void WebAppBase::setPreloadState(std::string properties)
 {
-    QJsonDocument doc = QJsonDocument::fromJson(properties.toStdString().c_str());
+    QJsonDocument doc = QJsonDocument::fromJson(properties.c_str());
     QJsonObject obj = doc.object();
 
     std::string preload = obj["preload"].toString().toStdString().c_str();
@@ -466,10 +466,10 @@ void WebAppBase::setUiSize(int width, int height) {
 
 void WebAppBase::webPageUrlChangedSlot()
 {
-    d->m_url = d->m_page->url().toString();
+    d->m_url = d->m_page->url().toString().toStdString();
 }
 
-void WebAppBase::setPreferredLanguages(QString language)
+void WebAppBase::setPreferredLanguages(std::string language)
 {
     if (!d->m_page)
         return;
@@ -477,7 +477,7 @@ void WebAppBase::setPreferredLanguages(QString language)
     d->m_page->sendLocaleChangeEvent(language);
 }
 
-void WebAppBase::handleWebAppMessage(WebAppManager::WebAppMessageType type, const QString& message)
+void WebAppBase::handleWebAppMessage(WebAppManager::WebAppMessageType type, const std::string& message)
 {
     if (!d->m_page)
         return;
@@ -531,12 +531,12 @@ void WebAppBase::dispatchUnload()
     page()->cleanResources();
 }
 
-void WebAppBase::onCursorVisibilityChanged(const QString& jsscript)
+void WebAppBase::onCursorVisibilityChanged(const std::string& jsscript)
 {
     WebAppManager::instance()->sendEventToAllAppsAndAllFrames(jsscript);
 }
 
-void WebAppBase::serviceCall(const QString& url, const QString& payload, const QString& appId)
+void WebAppBase::serviceCall(const std::string& url, const std::string& payload, const std::string& appId)
 {
     LOG_INFO(MSGID_SERVICE_CALL, 2, PMLOGKS("APP_ID", qPrintable(appId)), PMLOGKS("URL", qPrintable(url)), "");
     WebAppManager::instance()->serviceCall(url, payload, appId);
