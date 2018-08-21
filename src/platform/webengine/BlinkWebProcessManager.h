@@ -19,7 +19,7 @@
 
 #include "WebProcessManager.h"
 
-class QString;
+class string;
 class WebAppBase;
 
 class BlinkWebProcessManager : public WebProcessManager {
@@ -27,7 +27,7 @@ public:
     // WebProcessManager
     QJsonObject getWebProcessProfiling() override;
     uint32_t getWebProcessPID(const WebAppBase* app) const override;
-    void deleteStorageData(const QString& identifier) override;
+    void deleteStorageData(const std::string& identifier) override;
     uint32_t getInitialWebViewProxyID() const override;
     void clearBrowsingData(const int removeBrowsingDataMask) override;
     int maskForBrowsingDataType(const char* type) override;

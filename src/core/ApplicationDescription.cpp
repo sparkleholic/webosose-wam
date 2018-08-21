@@ -28,6 +28,9 @@
 #include <QJsonValue>
 #include <QVariant>
 
+#include <string>
+#include <sstream>
+
 #include "ApplicationDescription.h"
 #include "LogManager.h"
 
@@ -72,7 +75,7 @@ const ApplicationDescription::WindowGroupInfo ApplicationDescription::getWindowG
         QJsonObject jsonObject = jsonDoc.object();
 
         if (!jsonObject.value("name").isUndefined())
-            info.name = jsonObject.value("name").toString();
+            info.name = jsonObject.value("name").toString().toStdString(); // TODO : Revisit this code while replacing QJsonObject
         if (!jsonObject.value("owner").isUndefined())
             info.isOwner = jsonObject.value("owner").toBool();
     }
@@ -98,7 +101,7 @@ const ApplicationDescription::WindowOwnerInfo ApplicationDescription::getWindowO
                 for (int i=0; i<ownerJsonArray.size(); i++) {
                     QVariantMap map = ownerJsonArray[i].toObject().toVariantMap();
                     if (!map.empty())
-                        info.layers.insert(map["name"].toString(), map["z"].toString().toInt());
+                        info.layers.insert(map["name"].toString().toStdString(), std::stoi(map["z"].toString().toStdString()));
                 }
             }
         }
@@ -117,10 +120,10 @@ const ApplicationDescription::WindowClientInfo ApplicationDescription::getWindow
         if (!jsonObject.value("clientInfo").isUndefined()) {
             QJsonObject clientJsonObject = jsonObject.value("clientInfo").toObject();
             if (!clientJsonObject.value("layer").isUndefined())
-                info.layer = clientJsonObject.value("layer").toString();
+                info.layer = clientJsonObject.value("layer").toString().toStdString();
 
             if (!clientJsonObject.value("hint").isUndefined())
-                info.hint = clientJsonObject.value("hint").toString();
+                info.hint = clientJsonObject.value("hint").toString().toStdString();
         }
     }
     return info;
@@ -160,7 +163,7 @@ ApplicationDescription* ApplicationDescription::fromJsonString(const char* jsonS
     if (jsonObj.contains("supportedEnyoBundleVersions")) {
         QJsonArray versions = jsonObj["supportedEnyoBundleVersions"].toArray();
         for (int i=0; i < versions.size(); i++)
-            appDesc->m_supportedEnyoBundleVersions.append(versions[i].toString());
+            appDesc->m_supportedEnyoBundleVersions.push_back(versions[i].toString().toStdString());
     }
 
     appDesc->m_id = jsonObj["id"].toString().toStdString();
@@ -199,6 +202,7 @@ ApplicationDescription* ApplicationDescription::fromJsonString(const char* jsonS
     if (!jsonObj.value("v8ExtraFlags").isUndefined())
         appDesc->m_v8ExtraFlags = jsonObj["v8ExtraFlags"].toString().toStdString();
 
+#if 0
     // Handle resolution
     if (!jsonObj.value("resolution").isUndefined()) {
         QString overrideResolution = jsonObj["resolution"].toString();
@@ -212,7 +216,34 @@ ApplicationDescription* ApplicationDescription::fromJsonString(const char* jsonS
             appDesc->m_heightOverride = 0;
         }
     }
-
+#else
+    // Handle resolution
+    if (!jsonObj.value("resolution").isUndefined()) {
+        std::string overrideResolution = jsonObj["resolution"].toString().toStdString();
+        #if 0
+        std::list<string> resList(overrideResolution.split("x", std::string::KeepEmptyParts, Qt::CaseInsensitive));
+        #else
+        std::list<std::string> resList;
+        /*
+        std::string delimiter = "x";
+        std::string token;
+        std::istringstream tokenStream(overrideResolution);
+        while (std::getline(tokenStream, token, std::tolower(delimiter)) ||
+        std::getline(tokenStream, token, std::toupper(delimiter)) {
+            resList.push_back(token);
+        }
+        */
+        #endif
+        if(resList.size() == 2) {
+            appDesc->m_widthOverride = stoi(*(resList.begin()));
+            appDesc->m_heightOverride = stoi(*(resList.begin()++));
+        }
+        if(appDesc->m_widthOverride < 0 || appDesc->m_heightOverride < 0) {
+            appDesc->m_widthOverride = 0;
+            appDesc->m_heightOverride = 0;
+        }
+    }
+#endif
     // Handle keyFilterTable
     //Key code is changed only for facebooklogin WebApp
     if (!jsonObj.value("keyFilterTable").isUndefined()) {

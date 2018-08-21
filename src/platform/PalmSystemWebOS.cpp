@@ -29,18 +29,18 @@
 PalmSystemWebOS::PalmSystemWebOS(WebAppBase* app)
     : m_app(static_cast<WebAppWayland*>(app))
     , m_initialized(false)
-    , m_launchParams(QString())
+    , m_launchParams(std::string())
 {
 }
 
-void PalmSystemWebOS::setLaunchParams(const QString& params)
+void PalmSystemWebOS::setLaunchParams(const std::string& params)
 {
-    QString p = params;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(QByteArray(params.toStdString().c_str()));
+    std::string p = params;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(QByteArray(params.c_str()));
     QJsonObject jsonObject = jsonDoc.object();
 
     if (jsonDoc.isEmpty() || jsonObject.isEmpty())
-        p = QString();
+        p = std::string();
 
     m_launchParams = p;
 }
@@ -51,18 +51,19 @@ QJsonDocument PalmSystemWebOS::initialize()
 
     // Setup initial data set
     QJsonObject data;
-
-    data.insert(QStringLiteral("launchParams"), launchParams());
-    data.insert(QStringLiteral("country"), country());
-    data.insert(QStringLiteral("currentCountryGroup"), getDeviceInfo("CountryGroup"));
-    data.insert(QStringLiteral("locale"), locale());
-    data.insert(QStringLiteral("localeRegion"), localeRegion());
-    data.insert(QStringLiteral("isMinimal"), isMinimal());
-    data.insert(QStringLiteral("identifier"), identifier());
-    data.insert(QStringLiteral("screenOrientation"), screenOrientation());
-    data.insert(QStringLiteral("activityId"), QJsonValue((double)activityId()));
-    data.insert(QStringLiteral("phoneRegion"), phoneRegion());
-    data.insert(QStringLiteral("folderPath"), QString::fromStdString((m_app->getAppDescription())->folderPath()));
+#if 0
+    data.insert(std::stringLiteral("launchParams"), launchParams());
+    data.insert(std::stringLiteral("country"), country());
+    data.insert(std::stringLiteral("currentCountryGroup"), getDeviceInfo("CountryGroup"));
+    data.insert(std::stringLiteral("locale"), locale());
+    data.insert(std::stringLiteral("localeRegion"), localeRegion());
+    data.insert(std::stringLiteral("isMinimal"), isMinimal());
+    data.insert(std::stringLiteral("identifier"), identifier());
+    data.insert(std::stringLiteral("screenOrientation"), screenOrientation());
+    data.insert(std::stringLiteral("activityId"), QJsonValue((double)activityId()));
+    data.insert(std::stringLiteral("phoneRegion"), phoneRegion());
+    data.insert(std::stringLiteral("folderPath"), std::string::fromStdString((m_app->getAppDescription())->folderPath()));
+#endif
     QJsonDocument doc(data);
     return doc;
 }
@@ -136,7 +137,7 @@ void PalmSystemWebOS::setGroupClientEnvironment(GroupClientCallKey callKey, cons
     ApplicationDescription* appDesc = m_app ? m_app->getAppDescription() : 0;
     if (appDesc) {
         ApplicationDescription::WindowGroupInfo groupInfo = appDesc->getWindowGroupInfo();
-        if (!groupInfo.name.isEmpty() && !groupInfo.isOwner) {
+        if (!groupInfo.name.empty() && !groupInfo.isOwner) {
             QJsonDocument jsonDoc = QJsonDocument::fromJson(params);
             switch (callKey) {
                 case KeyMask:
@@ -185,7 +186,7 @@ bool PalmSystemWebOS::cursorVisibility()
     return m_app->cursorVisibility();
 }
 
-void PalmSystemWebOS::updateLaunchParams(const QString& launchParams)
+void PalmSystemWebOS::updateLaunchParams(const std::string& launchParams)
 {
     m_app->page()->setLaunchParams(launchParams);
 }

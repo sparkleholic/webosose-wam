@@ -79,7 +79,7 @@ protected:
     void onDiscardCodeCache(uint32_t pid);
     bool onPurgeSurfacePool(uint32_t pid);
     QJsonObject getWebProcessProfiling();
-    QJsonObject closeByInstanceId(QString instanceId);
+    QJsonObject closeByInstanceId(std::string instanceId);
     int maskForBrowsingDataType(const char* type);
     void onClearBrowsingData(const int removeBrowsingDataMask);
     void setProxyRules(const std::string& proxy_rules);
@@ -90,25 +90,25 @@ protected:
     void startContainerTimer();
     void restartContainerApp();
 #endif
-    void setDeviceInfo(const QString& name, const QString& value);
+    void setDeviceInfo(const std::string& name, const std::string& value);
     void setUiSize(int width, int height);
-    void setSystemLanguage(const QString& language);
-    QString getSystemLanguage();
-    void setForceCloseApp(const QString& appId);
-    void deleteStorageData(const QString& identifier);
-    void killCustomPluginProcess(const QString& appBasePath);
+    void setSystemLanguage(const std::string& language);
+    std::string getSystemLanguage();
+    void setForceCloseApp(const std::string& appId);
+    void deleteStorageData(const std::string& identifier);
+    void killCustomPluginProcess(const std::string& appBasePath);
     void requestKillWebProcess(uint32_t pid);
     bool shouldLaunchContainerAppOnDemand();
     void updateNetworkStatus(const QJsonObject& object);
     void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level);
     void setAccessibilityEnabled(bool enable);
-    uint32_t getWebProcessId(const QString& appId);
+    uint32_t getWebProcessId(const std::string& appId);
 
     std::list<const WebAppBase*> runningApps();
     std::list<const WebAppBase*> runningApps(uint32_t pid);
     std::vector<ApplicationInfo> list(bool includeSystemApps = false);
 
-    bool isEnyoApp(const QString& apppId);
+    bool isEnyoApp(const std::string& apppId);
 };
 
 #endif // WEBAPPMANAGERSERVICE_H

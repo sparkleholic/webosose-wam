@@ -95,8 +95,9 @@ void WebAppWaylandWindow::platformBack()
     LOG_INFO(MSGID_WAM_DEBUG, 1, PMLOGKS("APP_ID", qPrintable(m_webApp->appId())), "WebAppWaylandWindow::platformBack(); generate RECENT key");
 }
 
-void WebAppWaylandWindow::setCursor(const QString & cursorArg, int hotspot_x, int hotspot_y)
+void WebAppWaylandWindow::setCursor(const std::string & cursorArg, int hotspot_x, int hotspot_y)
 {
+#if 0
     webos::CustomCursorType type = webos::CUSTOM_CURSOR_NOT_USE;
     if (cursorArg.isEmpty() || !cursorArg.compare("default"))
         LOG_DEBUG("[%s] %s; arg: %s; Restore Cursor to webos::CUSTOM_CURSOR_NOT_USE", qPrintable(m_webApp->appId()), __PRETTY_FUNCTION__, cursorArg.toUtf8().data());
@@ -116,6 +117,7 @@ void WebAppWaylandWindow::setCursor(const QString & cursorArg, int hotspot_x, in
         m_cursorEnabled = false;
     else
         m_cursorEnabled = true; // all mouse event will be filtered
+#endif
 }
 
 void WebAppWaylandWindow::attachWebContents(void* webContents)

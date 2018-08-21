@@ -17,7 +17,7 @@
 #ifndef WEBAPPFACTORYINTERFACE_H
 #define WEBAPPFACTORYINTERFACE_H
 
-#include <QString>
+#include <string>
 #include <QUrl>
 #include <QtPlugin>
 
@@ -27,9 +27,9 @@ class WebPageBase;
 
 class WebAppFactoryInterface {
 public:
-    virtual WebAppBase* createWebApp(QString winType, ApplicationDescription* desc = 0) = 0;
-    virtual WebAppBase* createWebApp(QString winType, WebPageBase* page, ApplicationDescription* desc = 0) = 0;
-    virtual WebPageBase* createWebPage(QUrl url, ApplicationDescription* desc, QString launchParams = "") = 0;
+    virtual WebAppBase* createWebApp(std::string winType, ApplicationDescription* desc = 0) = 0;
+    virtual WebAppBase* createWebApp(std::string winType, WebPageBase* page, ApplicationDescription* desc = 0) = 0;
+    virtual WebPageBase* createWebPage(QUrl url, ApplicationDescription* desc, std::string launchParams = "") = 0;
 };
 
 #define WebAppFactoryInterface_iid "org.qt-project.Qt.WebAppFactoryInterface"

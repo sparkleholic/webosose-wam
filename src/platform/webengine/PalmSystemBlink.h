@@ -19,27 +19,30 @@
 
 #include "PalmSystemWebOS.h"
 
+class string;
+class list;
+
 class PalmSystemBlink : public PalmSystemWebOS {
 public:
     PalmSystemBlink(WebAppBase* app);
 
-    QString handleBrowserControlMessage(const QString& message, const QStringList& params);
+    std::string handleBrowserControlMessage(const std::string& message, const std::list<std::string>& params);
 
     // PalmSystemWebOS
     void setCountry() override;
-    void setLaunchParams(const QString& params) override;
+    void setLaunchParams(const std::string& params) override;
 
-    virtual void setLocale(const QString& params);
+    virtual void setLocale(const std::string& params);
     virtual double devicePixelRatio();
 
 protected:
     // PalmSystemWebOS
     QJsonDocument initialize() override;
-    QString identifier() const override;
-    void setLoadErrorPolicy(const QString& params) override;
+    std::string identifier() const override;
+    void setLoadErrorPolicy(const std::string& params) override;
 
-    virtual QString trustLevel() const;
-    virtual void onCloseNotify(const QString& params);
+    virtual std::string trustLevel() const;
+    virtual void onCloseNotify(const std::string& params);
 };
 
 #endif // PALMSYSTEMBLINK_H_

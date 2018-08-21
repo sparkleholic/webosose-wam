@@ -45,9 +45,9 @@ DeviceInfoImpl::DeviceInfoImpl()
         return;
     }
 
-    QString jsonStr = file.readAll();
+    std::string jsonStr = file.readAll().toStdString();
     file.close();
-
+#if 0
     QJsonDocument localeInfoDoc = QJsonDocument::fromJson(jsonStr.toUtf8());
     if (localeInfoDoc.isNull()) {
         LOG_ERROR(MSGID_LOCALEINFO_READ_FAIL, 1, PMLOGKS("CONTENT", jsonStr.toStdString().c_str()), "");
@@ -56,21 +56,25 @@ DeviceInfoImpl::DeviceInfoImpl()
 
     QJsonObject localeInfo = localeInfoDoc.object().value("localeInfo").toObject();
 
-    QString language(localeInfo.value("locales").toObject().value("UI").toString());
-    QString localcountry(localeInfoDoc.object().value("country").toString());
-    QString smartservicecountry(localeInfoDoc.object().value("smartServiceCountryCode3").toString());
-
+    std::string language(localeInfo.value("locales").toObject().value("UI").toString());
+    std::string localcountry(localeInfoDoc.object().value("country").toString());
+    std::string smartservicecountry(localeInfoDoc.object().value("smartServiceCountryCode3").toString());
+#else
+    std::string language;
+    std::string localcountry;
+    std::string smartservicecountry;
     setSystemLanguage(language);
     setDeviceInfo("LocalCountry", localcountry);
     setDeviceInfo("SmartServiceCountry", smartservicecountry);
+#endif
 }
 
-bool DeviceInfoImpl::getDeviceInfo(QString name, QString &value)
+bool DeviceInfoImpl::getDeviceInfo(std::string name, std::string &value)
 {
     return DeviceInfo::getDeviceInfo(name, value);
 }
 
-void DeviceInfoImpl::setDeviceInfo(QString name, QString value)
+void DeviceInfoImpl::setDeviceInfo(std::string name, std::string value)
 {
     DeviceInfo::setDeviceInfo(name, value);
 }
@@ -97,12 +101,12 @@ void DeviceInfoImpl::initDisplayInfo()
     int hardwareScreenWidth = 0;
     int hardwareScreenHeight = 0;
 
-    QString hardwareScreenWidthStr;
-    QString hardwareScreenHeightStr;
+    std::string hardwareScreenWidthStr;
+    std::string hardwareScreenHeightStr;
     if (getDeviceInfo("HardwareScreenWidth", hardwareScreenWidthStr) &&
         getDeviceInfo("HardwareScreenHeight", hardwareScreenHeightStr)) {
-        hardwareScreenWidth = hardwareScreenWidthStr.toInt();
-        hardwareScreenHeight = hardwareScreenHeightStr.toInt();
+        hardwareScreenWidth = stoi(hardwareScreenWidthStr);
+        hardwareScreenHeight = stoi(hardwareScreenHeightStr);
     } else {
         getDisplayWidth(hardwareScreenWidth);
         getDisplayHeight(hardwareScreenHeight);
@@ -123,13 +127,19 @@ void DeviceInfoImpl::initPlatformInfo()
        "platformVersionMajor": 00,
        "platformVersionMinor": 00,
     */
-
+#if 0
     QString value;     
      if (getDeviceInfo("ModelName", value))
          m_modelName = value.toStdString();
      if (getDeviceInfo("FirmwareVersion", value))
         m_platformVersion = value.toStdString();
-
+#else
+    std::string value;     
+     if (getDeviceInfo("ModelName", value))
+         m_modelName = value; //.toStdString();
+     if (getDeviceInfo("FirmwareVersion", value))
+        m_platformVersion = value; //.toStdString();
+#endif
     std::string platformVersion = m_platformVersion;
 
     size_t npos1 = 0, npos2 = 0;

@@ -28,18 +28,23 @@
 #include "webos/common/webos_constants.h"
 #include "webos/window_group_configuration.h"
 
+#include <string>
+
 static int kLaunchFinishAssureTimeoutMs = 5000;
 
 #define URL_SIZE_LIMIT 512
-static QString truncateURL(const QString& url)
+#if 0
+// TODO : defined but not used [-Werror=unused-function]
+static std::string truncateURL(const std::string& url)
 {
     if(url.size() < URL_SIZE_LIMIT)
         return url;
-    QString res = QString(url);
-    return res.replace(URL_SIZE_LIMIT / 2, url.size() - URL_SIZE_LIMIT, QStringLiteral(" ... "));
+    std::string res = std::string(url);
+    return res.replace(URL_SIZE_LIMIT / 2, url.size() - URL_SIZE_LIMIT, " ... ");
 }
+#endif
 
-WebAppWayland::WebAppWayland(QString type, int surface_id, int width, int height)
+WebAppWayland::WebAppWayland(std::string type, int surface_id, int width, int height)
     : WebAppBase()
     , m_appWindow(0)
     , m_windowType(type)
@@ -53,7 +58,7 @@ WebAppWayland::WebAppWayland(QString type, int surface_id, int width, int height
     init(width, height, surface_id);
 }
 
-WebAppWayland::WebAppWayland(QString type, WebAppWaylandWindow* window, int width, int height)
+WebAppWayland::WebAppWayland(std::string type, WebAppWaylandWindow* window, int width, int height)
     : WebAppBase()
     , m_appWindow(window)
     , m_windowType(type)
@@ -69,6 +74,10 @@ WebAppWayland::WebAppWayland(QString type, WebAppWaylandWindow* window, int widt
 WebAppWayland::~WebAppWayland()
 {
     delete m_appWindow;
+}
+
+void WebAppWayland::init(int width, int height) {
+    init(width, height, 0);
 }
 
 void WebAppWayland::init(int width, int height, int surface_id)
@@ -92,7 +101,7 @@ void WebAppWayland::init(int width, int height, int surface_id)
 #endif
 
     // set compositor window type
-    setWindowProperty(QStringLiteral("_WEBOS_WINDOW_TYPE"), m_windowType);
+    // setWindowProperty("_WEBOS_WINDOW_TYPE", m_windowType); // TODO
     LOG_DEBUG("App created window [%s]", qPrintable(m_windowType));
 
     if (qgetenv("LAUNCH_FINISH_ASSURE_TIMEOUT").toInt() != 0)
@@ -141,7 +150,7 @@ void WebAppWayland::forwardWebOSEvent(WebOSEvent* event) const
 void WebAppWayland::attach(WebPageBase *page)
 {
     WebAppBase::attach(page);
-
+#if 0
     setWindowProperty(QStringLiteral("appId"), appId());
     setWindowProperty(QStringLiteral("launchingAppId"), launchingAppId());
     setWindowProperty(QStringLiteral("title"),
@@ -161,7 +170,7 @@ void WebAppWayland::attach(WebPageBase *page)
         getAppDescription()->backHistoryAPIDisabled());
     setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT,
         getAppDescription()->handleExitKey());
-
+#endif
    doAttach();
 }
 
@@ -233,11 +242,11 @@ void WebAppWayland::onStageDeactivated()
     LOG_INFO(MSGID_WEBAPP_STAGE_DEACITVATED, 2, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
 }
 
-void WebAppWayland::configureWindow(QString& type)
+void WebAppWayland::configureWindow(std::string& type)
 {
     m_windowType = type;
     m_appWindow->setWebApp(this);
-
+#if 0
     setWindowProperty(QStringLiteral("_WEBOS_WINDOW_TYPE"), type);
     setWindowProperty(QStringLiteral("appId"), appId());
     setWindowProperty(QStringLiteral("launchingAppId"), launchingAppId());
@@ -255,7 +264,7 @@ void WebAppWayland::configureWindow(QString& type)
         getAppDescription()->backHistoryAPIDisabled());
     setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT,
         getAppDescription()->handleExitKey());
-
+#endif
     ApplicationDescription* appDesc = getAppDescription();
     if (!appDesc->groupWindowDesc().empty())
         setupWindowGroup(appDesc);
@@ -268,23 +277,23 @@ void WebAppWayland::setupWindowGroup(ApplicationDescription* desc)
         return;
 
     ApplicationDescription::WindowGroupInfo groupInfo = desc->getWindowGroupInfo();
-    if (groupInfo.name.isEmpty())
+    if (groupInfo.name.empty())
         return;
 
     if (groupInfo.isOwner) {
         ApplicationDescription::WindowOwnerInfo ownerInfo = desc->getWindowOwnerInfo();
-        webos::WindowGroupConfiguration config(groupInfo.name.toStdString());
+        webos::WindowGroupConfiguration config(groupInfo.name);
         config.SetIsAnonymous(ownerInfo.allowAnonymous);
-        QMap<QString, int>::iterator iter = ownerInfo.layers.begin();
+        QMap<std::string, int>::iterator iter = ownerInfo.layers.begin();
         while (iter != ownerInfo.layers.end()){
-          config.AddLayer(webos::WindowGroupLayerConfiguration(iter.key().toStdString(), iter.value()));
+          config.AddLayer(webos::WindowGroupLayerConfiguration(iter.key(), iter.value()));
           iter++;
         }
         m_appWindow->CreateWindowGroup(config);
         LOG_INFO(MSGID_CREATE_SURFACEGROUP, 2, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
     } else {
         ApplicationDescription::WindowClientInfo clientInfo = desc->getWindowClientInfo();
-        m_appWindow->AttachToWindowGroup(groupInfo.name.toStdString(), clientInfo.layer.toStdString());
+        m_appWindow->AttachToWindowGroup(groupInfo.name, clientInfo.layer);
         LOG_INFO(MSGID_ATTACH_SURFACEGROUP, 3, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKS("OWNER_ID", qPrintable(groupInfo.name)), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
     }
 }
@@ -326,7 +335,7 @@ void WebAppWayland::setInputRegion(const QJsonDocument& jsonDoc)
 }
 
 
-void WebAppWayland::setWindowProperty(const QString& name, const QVariant& value)
+void WebAppWayland::setWindowProperty(const std::string& name, const QVariant& value)
 {
     webos::WebOSKeyMask mask = static_cast<webos::WebOSKeyMask>(0);
     if (name == "_WEBOS_ACCESS_POLICY_KEYS_BACK")
@@ -336,7 +345,7 @@ void WebAppWayland::setWindowProperty(const QString& name, const QVariant& value
     // if mask is not set, not need to call setKeyMask
     if (mask != static_cast<webos::WebOSKeyMask>(0))
         setKeyMask(mask, value.toBool());
-    m_appWindow->SetWindowProperty(name.toStdString(), value.toString().toStdString());
+    m_appWindow->SetWindowProperty(name, value.toString().toStdString());
 }
 
 void WebAppWayland::platformBack()
@@ -344,14 +353,14 @@ void WebAppWayland::platformBack()
     m_appWindow->platformBack();
 }
 
-void WebAppWayland::setCursor(const QString& cursorArg, int hotspot_x, int hotspot_y)
+void WebAppWayland::setCursor(const std::string& cursorArg, int hotspot_x, int hotspot_y)
 {
     m_appWindow->setCursor(cursorArg, hotspot_x, hotspot_y);
 }
 
-static QMap<QString, webos::WebOSKeyMask>& getKeyMaskTable()
+static QMap<std::string, webos::WebOSKeyMask>& getKeyMaskTable()
 {
-    static QMap<QString, webos::WebOSKeyMask> mapTable;
+    static QMap<std::string, webos::WebOSKeyMask> mapTable;
 
     if (mapTable.isEmpty()) {
         mapTable["KeyMaskNone"]      = static_cast<webos::WebOSKeyMask>(0);
@@ -379,14 +388,15 @@ static QMap<QString, webos::WebOSKeyMask>& getKeyMaskTable()
 
 void WebAppWayland::setKeyMask(const QJsonDocument& jsonDoc)
 {
-    static QMap<QString, webos::WebOSKeyMask>& mapTable = getKeyMaskTable();
+    static QMap<std::string, webos::WebOSKeyMask>& mapTable = getKeyMaskTable();
     unsigned int keyMask = 0;
 
     if (jsonDoc.isArray()) {
         QJsonArray jsonArray = jsonDoc.array();
-
+#if 0
         for (int i = 0; i < jsonArray.size(); i++)
             keyMask |= mapTable.value(jsonArray[i].toString());
+#endif
     }
 #if defined(OS_WEBOS)
     webos::WebOSPlatform::GetInstance()->SetKeyMask(m_windowHandle, static_cast<webos::WebOSKeyMask>(keyMask));
@@ -507,7 +517,7 @@ void WebAppWayland::webPageLoadFinishedSlot()
         return;
     }
 
-    QString logUrl = truncateURL(page()->url().toString());
+    // std::string logUrl = truncateURL(page()->url()); // TODO : Change it after porting of QUrl
     LOG_INFO_WITH_CLOCK(MSGID_APP_LOADED, 5,
              PMLOGKS("PerfType", "AppLaunch"),
              PMLOGKS("PerfGroup", qPrintable((page()->appId()))),
@@ -579,7 +589,11 @@ void WebAppWayland::showWindowSlot()
 
 void WebAppWayland::titleChanged()
 {
+#if 0
     setWindowProperty(QStringLiteral("subtitle"), page()->title());
+#else
+    //setWindowProperty("subtitle", page()->title()); // TODO
+#endif
 }
 
 void WebAppWayland::firstFrameVisuallyCommitted()
@@ -603,10 +617,17 @@ void WebAppWayland::navigationHistoryChanged()
 {
     if (!getAppDescription()->backHistoryAPIDisabled()) {
         // if backHistoryAPIDisabled is true, no chance to change this value
+#if 0
         setWindowProperty(QStringLiteral("_WEBOS_ACCESS_POLICY_KEYS_BACK"),
                           page()->canGoBack() ?
                           QStringLiteral("true") : /* send next back key to WAM */
                           QStringLiteral("false")); /* Do not send back key to WAM. LSM should handle it */
+#else
+        setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_BACK",
+                          page()->canGoBack() ?
+                          "true" : /* send next back key to WAM */
+                          "false"); /* Do not send back key to WAM. LSM should handle it */
+#endif 
     }
 }
 
@@ -620,7 +641,7 @@ void WebAppWayland::webViewRecreatedSlot()
 
 void WebAppWayland::setForceActivateVtgIfRequired()
 {
-    QString screenRotation;
+    std::string screenRotation;
 
     if (WebAppManager::instance() && page()) {
         if (WebAppManager::instance()->getDeviceInfo("ScreenRotation", screenRotation) && screenRotation != "off")
@@ -637,28 +658,51 @@ void InputManager::OnCursorVisibilityChanged(bool visible)
     LOG_DEBUG("InputManager::onCursorVisibilityChanged; Global Cursor visibility Changed to %s; send cursorStateChange event to all app, all frames", visible? "true" : " false");
     SetVisible(visible);
     // send event about  cursorStateChange
+#if 0
     QString cursorStateChangeEvt = QStringLiteral(
         "    var cursorEvent=new CustomEvent('cursorStateChange', { detail: { 'visibility' : %1 } });"
         "    cursorEvent.visibility = %2;"
         "    if(document) document.dispatchEvent(cursorEvent);"
     ).arg(visible ? "true" : "false"). arg(visible ? "true" : "false");
-
+#else
+    std::string cursorStateChangeEvt;
+    cursorStateChangeEvt.append("    var cursorEvent=new CustomEvent('cursorStateChange', { detail: { 'visibility' : ");
+    cursorStateChangeEvt.append(visible ? "true" : "false");
+    cursorStateChangeEvt.append(" } });");
+    cursorStateChangeEvt.append("    cursorEvent.visibility = ");
+    cursorStateChangeEvt.append(visible ? "true" : "false");
+    cursorStateChangeEvt.append(";");
+    cursorStateChangeEvt.append("    if(document) document.dispatchEvent(cursorEvent);");
+#endif
     // send javascript event : cursorStateChange with param to All app
     // if javascript has setTimeout() like webOSlaunch or webOSRelaunch, then app can not get this event when app is in background
     // because javascript is freezed and timer is too, since app is in background, timer is never fired
     WebAppBase::onCursorVisibilityChanged(cursorStateChangeEvt);
 }
 
-void WebAppWayland::sendWebOSMouseEvent(const QString& eventName)
+void WebAppWayland::sendWebOSMouseEvent(const std::string& eventName)
 {
     if (eventName == "Enter" || eventName == "Leave") {
         // send webOSMouse event to app
+#if 0
         QString javascript = QStringLiteral(
             "console.log('[WAM] fires webOSMouse event : %1');"
             "var mouseEvent =new CustomEvent('webOSMouse', { detail: { type : '%2' }});"
             "document.dispatchEvent(mouseEvent);").arg(eventName).arg(eventName);
         LOG_DEBUG("[%s] WebAppWayland::sendWebOSMouseEvent; dispatch webOSMouse; %s", qPrintable(appId()), qPrintable(eventName));
         page()->evaluateJavaScript(javascript);
+#else
+        std::string javascript;
+        javascript.append("console.log('[WAM] fires webOSMouse event : ");
+        javascript.append(eventName);
+        javascript.append("');");
+        javascript.append("var mouseEvent =new CustomEvent('webOSMouse', { detail: { type : '");
+        javascript.append(eventName);
+        javascript.append("' }});");
+        javascript.append("document.dispatchEvent(mouseEvent);");
+        LOG_DEBUG("[%s] WebAppWayland::sendWebOSMouseEvent; dispatch webOSMouse; %s", qPrintable(appId()), qPrintable(eventName));
+        page()->evaluateJavaScript(javascript);       
+#endif
     }
 }
 
@@ -702,6 +746,7 @@ void WebAppWayland::moveInputRegion(int height)
 }
 
 void WebAppWayland::keyboardVisibilityChanged(bool visible, int height) {
+    
     WebAppBase::keyboardVisibilityChanged(visible, height);
     moveInputRegion(height);
 }

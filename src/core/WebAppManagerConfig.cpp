@@ -34,6 +34,7 @@ WebAppManagerConfig::WebAppManagerConfig()
 
 void WebAppManagerConfig::initConfiguration()
 {
+#if 0
     m_webAppFactoryPluginTypes = QLatin1String(qgetenv("WEBAPPFACTORY"));
 
     m_webAppFactoryPluginPath = QLatin1String(qgetenv("WEBAPPFACTORY_PLUGIN_PATH"));
@@ -73,9 +74,50 @@ void WebAppManagerConfig::initConfiguration()
         m_userScriptPath = QLatin1String("webOSUserScripts/userScript.js");
 
     m_name = qgetenv("WAM_NAME").data();
+#else
+    m_webAppFactoryPluginTypes = getenv("WEBAPPFACTORY");
+
+    m_webAppFactoryPluginPath = getenv("WEBAPPFACTORY_PLUGIN_PATH");
+    if (m_webAppFactoryPluginPath.empty()) {
+        m_webAppFactoryPluginPath = "/usr/lib/webappmanager/plugins";
+    }
+
+    std::string suspendDelay = getenv("WAM_SUSPEND_DELAY_IN_MS");
+    m_suspendDelayTime = std::max(stoi(suspendDelay), 1);
+
+    m_webProcessConfigPath = getenv("WEBPROCESS_CONFIGURATION_PATH");
+    if (m_webProcessConfigPath.empty())
+        m_webProcessConfigPath = "/etc/wam/com.webos.wam.json";
+
+    m_errorPageUrl = getenv("WAM_ERROR_PAGE");
+
+    if (strcmp(getenv("DISABLE_CONTAINER"), "1") == 0)
+        m_containerAppEnabled = false;
+
+    if (strcmp(getenv("LOAD_DYNAMIC_PLUGGABLE"), "1") == 0)
+        m_dynamicPluggableLoadEnabled = true;
+
+    if (strcmp(getenv("POST_WEBPROCESS_CREATED_DISABLED"), "1"))
+        m_postWebProcessCreatedDisabled =  true;
+
+    if (strcmp(getenv("LAUNCH_TIME_CHECK"), "1"))
+        m_checkLaunchTimeEnabled = true;
+
+    if (strcmp(getenv("USE_SYSTEM_APP_OPTIMIZATION"), "1"))
+        m_useSystemAppOptimization = true;
+
+    if (strcmp(getenv("ENABLE_LAUNCH_OPTIMIZATION"), "1"))
+        m_launchOptimizationEnabled = true;
+
+    m_userScriptPath = getenv("USER_SCRIPT_PATH");
+    if (m_userScriptPath.empty())
+        m_userScriptPath = "webOSUserScripts/userScript.js";
+
+    m_name = getenv("WAM_NAME");
+#endif
 }
 
-QVariant WebAppManagerConfig::getConfiguration(QString name)
+QVariant WebAppManagerConfig::getConfiguration(std::string name)
 {
     QVariant value(0);
 
@@ -86,7 +128,7 @@ QVariant WebAppManagerConfig::getConfiguration(QString name)
     return value;
 }
 
-void WebAppManagerConfig::setConfiguration(QString name, QVariant value)
+void WebAppManagerConfig::setConfiguration(std::string name, QVariant value)
 {
     m_configuration.insert(name, value);
 }
@@ -99,6 +141,6 @@ void WebAppManagerConfig::postInitConfiguration()
 
     if (access("/var/luna/preferences/devmode_enabled", F_OK) == 0) {
         m_devModeEnabled = true;
-        m_telluriumNubPath = QLatin1String(qgetenv("TELLURIUM_NUB_PATH"));
+        m_telluriumNubPath = getenv("TELLURIUM_NUB_PATH");
     }
 }
