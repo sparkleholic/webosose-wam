@@ -28,6 +28,8 @@
 #include "WebPageObserver.h"
 #include "WebProcessManager.h"
 
+#include <sstream>
+
 // TODO : Check usage of it.
 #define CONSOLE_DEBUG(AAA) evaluateJavaScript(std::stringLiteral("console.debug('") + std::stringLiteral(AAA) + std::stringLiteral("');"))
 
@@ -104,65 +106,35 @@ void WebPageBase::load()
 
 void WebPageBase::setupLaunchEvent()
 {
-#if 0
-    QString launchEventJS = QStringLiteral(
-            "(function() {"
-            "    var launchEvent = new CustomEvent('webOSLaunch', { detail: %1 });"
-            "    if(document.readyState === 'complete') {"
-            "        setTimeout(function() {"
-            "            document.dispatchEvent(launchEvent);"
-            "        }, 1);"
-            "    } else {"
-            "        document.addEventListener('DOMContentLoaded', function() {"
-            "            setTimeout(function() {"
-            "                document.dispatchEvent(launchEvent);"
-            "            }, 1);"
-            "        });"
-            "    }"
-            "})();"
-            ).arg(launchParams().isEmpty() ? "{}" : launchParams());
-#else
-    std::string launchEventJS; // = std::stringLiteral(
-    launchEventJS.append("(function() {");
-    launchEventJS.append("    var launchEvent = new CustomEvent('webOSLaunch', { detail: ");
-    launchEventJS.append(launchParams().empty() ? "{}" : launchParams());
-    launchEventJS.append(") });");
-    launchEventJS.append("    if(document.readyState === 'complete') {");
-    launchEventJS.append("        setTimeout(function() {");
-    launchEventJS.append("            document.dispatchEvent(launchEvent);");
-    launchEventJS.append("        }, 1);");
-    launchEventJS.append("    } else {");
-    launchEventJS.append("        document.addEventListener('DOMContentLoaded', function() {");
-    launchEventJS.append("            setTimeout(function() {");
-    launchEventJS.append("                document.dispatchEvent(launchEvent);");
-    launchEventJS.append("            }, 1);");
-    launchEventJS.append("        });");
-    launchEventJS.append("    }");
-    launchEventJS.append("})();");
-#endif
+    std::stringstream ss;
+    ss << "(function() {" << std::endl;
+    ss << "    var launchEvent = new CustomEvent('webOSLaunch', { detail: " <<
+     (launchParams().empty() ? "{}" : launchParams()) << " });" << std::endl;
+    ss << "    if(document.readyState === 'complete') {" << std::endl;
+    ss << "        setTimeout(function() {" << std::endl;
+    ss << "            document.dispatchEvent(launchEvent);" << std::endl;
+    ss << "        }, 1);" << std::endl;
+    ss << "    } else {" << std::endl;
+    ss << "        document.addEventListener('DOMContentLoaded', function() {" << std::endl;
+    ss << "            setTimeout(function() {" << std::endl;
+    ss << "                document.dispatchEvent(launchEvent);" << std::endl;
+    ss << "            }, 1);" << std::endl;
+    ss << "        });" << std::endl;
+    ss << "    }" << std::endl;
+    ss << "})();";
 
-    addUserScript(launchEventJS);
+    addUserScript(ss.str());
 }
 
 void WebPageBase::sendLocaleChangeEvent(const std::string& language)
 {
-#if 0
-    evaluateJavaScript(QStringLiteral(
-        "setTimeout(function () {"
-        "    var localeEvent=new CustomEvent('webOSLocaleChange');"
-        "    document.dispatchEvent(localeEvent);"
-        "}, 1);"
-    ));
-#else
-    // https://solarianprogrammer.com/2011/10/16/cpp-11-raw-strings-literals-tutorial/
-    std::string script =
-        R"(setTimeout(function () {"
-        "    var localeEvent=new CustomEvent('webOSLocaleChange');"
-        "    document.dispatchEvent(localeEvent);"
-        "}, 1);)";
+    std::stringstream ss;
+    ss << "setTimeout(function () {" << std::endl;
+    ss << "    var localeEvent=new CustomEvent('webOSLocaleChange');" << std::endl;
+    ss << "    document.dispatchEvent(localeEvent);" << std::endl;
+    ss << "}, 1);";
 
-    evaluateJavaScript(script);
-#endif
+    evaluateJavaScript(ss.str());
 }
 
 void WebPageBase::cleanResources()
@@ -273,25 +245,16 @@ void WebPageBase::sendRelaunchEvent()
     // Send the relaunch event on the next tick after javascript is loaded
     // This is a workaround for a problem where WebKit can't free the page
     // if we don't use a timeout here.
-#if 0
-    evaluateJavaScript(QStringLiteral(
-        "setTimeout(function () {"
-        "    console.log('[WAM] fires webOSRelaunch event');"
-        "    var launchEvent=new CustomEvent('webOSRelaunch', { detail: %1 });"
-        "    document.dispatchEvent(launchEvent);"
-        "}, 1);").arg(launchParams().isEmpty() ? "{}" : launchParams()));
-#else
-    std::string script;
-    script.append("setTimeout(function () {");
-    script.append("    console.log('[WAM] fires webOSRelaunch event');");
-    script.append("    var launchEvent=new CustomEvent('webOSRelaunch', { detail: ");
-    script.append(launchParams().empty() ? "{}" : launchParams());
-    script.append(" });");
-    script.append("    document.dispatchEvent(launchEvent);");
-    script.append("}, 1);");
 
-    evaluateJavaScript(script);
-#endif
+    std::stringstream ss;
+    ss << "setTimeout(function () {" << std::endl;
+    ss << "    console.log('[WAM] fires webOSRelaunch event');" << std::endl;
+    ss << "    var launchEvent=new CustomEvent('webOSRelaunch', { detail: " <<
+        (launchParams().empty() ? "{}" : launchParams()) << " });" << std::endl;
+    ss << "    document.dispatchEvent(launchEvent);" << std::endl;
+    ss << "}, 1);";
+
+    evaluateJavaScript(ss.str());
 }
 
 void WebPageBase::urlChangedSlot()
@@ -400,26 +363,18 @@ void WebPageBase::doLoadSlot()
 bool WebPageBase::hasLoadErrorPolicy(bool isHttpResponseError, int errorCode)
 {
     if (!m_loadErrorPolicy.compare("event")) {
-#if 0
-       evaluateJavaScript(QStringLiteral(
-           "{"
-           "    console.log('[WAM3] create webOSLoadError event');"
-           "    var launchEvent=new CustomEvent('webOSLoadError', { detail : { genericError : %1, errorCode : %2}});"
-           "    document.dispatchEvent(launchEvent);"
-           "}" ).arg(isHttpResponseError?"false":"true").arg(errorCode));
-#else
-        std::string script;
-        script.append("{");
-        script.append("    console.log('[WAM3] create webOSLoadError event');");
-        script.append("    var launchEvent=new CustomEvent('webOSLoadError', { detail : { genericError : ");
-        script.append(isHttpResponseError?"false":"true");
-        script.append(", errorCode : ");
-        script.append(std::to_string(errorCode));
-        script.append("}});");
-        script.append("    document.dispatchEvent(launchEvent);");
-        script.append("}");
-        evaluateJavaScript(script);
-#endif
+
+        std::stringstream ss;
+        ss << "{" << std::endl;
+        ss << "    console.log('[WAM3] create webOSLoadError event');" << std::endl;
+        ss << "    var launchEvent=new CustomEvent('webOSLoadError', { detail : { genericError : " <<
+            (isHttpResponseError?"false":"true") << ", errorCode : " <<
+            errorCode << "}});" << std::endl;
+        ss << "    document.dispatchEvent(launchEvent);" << std::endl;
+        ss << "}";
+
+        evaluateJavaScript(ss.str());
+
         //App has load error policy, do not show platform load error page
         return true;
     }
@@ -455,60 +410,28 @@ void WebPageBase::postWebProcessCreated(uint32_t pid)
 void WebPageBase::setBackgroundColorOfBody(const std::string& color)
 {
     // for error page only, set default background color to white by executing javascript
-#if 0
-    QString whiteBackground = QStringLiteral(
-        "(function() {"
-        "    if(document.readyState === 'complete' || document.readyState === 'interactive') { "
-        "       if(document.body.style.backgroundColor)"
-        "           console.log('[Server Error] Already set document.body.style.backgroundColor');"
-        "       else {"
-        "           console.log('[Server Error] set background Color of body to %1');"
-        "           document.body.style.backgroundColor = '%2';"
-        "       }"
-        "     } else {"
-        "        document.addEventListener('DOMContentLoaded', function() {"
-        "           if(document.body.style.backgroundColor)"
-        "               console.log('[Server Error] Already set document.body.style.backgroundColor');"
-        "           else {"
-        "               console.log('[Server Error] set background Color of body to %3');"
-        "               document.body.style.backgroundColor = '%4';"
-        "           }"
-        "        });"
-        "    }"
-        "})();"
-    ).arg(color).arg(color).arg(color).arg(color);
-#else
-	std::string whiteBackground;// = std::stringLiteral(
-    whiteBackground.append("(function() {");
-    whiteBackground.append("    if(document.readyState === 'complete' || document.readyState === 'interactive') { ");
-    whiteBackground.append("       if(document.body.style.backgroundColor)");
-    whiteBackground.append("           console.log('[Server Error] Already set document.body.style.backgroundColor');");
-    whiteBackground.append("       else {");
-    whiteBackground.append("           console.log('[Server Error] set background Color of body to ");
-    whiteBackground.append(color);
-    whiteBackground.append("');");
-    whiteBackground.append("           document.body.style.backgroundColor = '");
-    whiteBackground.append(color);
-    whiteBackground.append("';");
-    whiteBackground.append("       }");
-    whiteBackground.append("     } else {");
-    whiteBackground.append("        document.addEventListener('DOMContentLoaded', function() {");
-    whiteBackground.append("           if(document.body.style.backgroundColor)");
-    whiteBackground.append("               console.log('[Server Error] Already set document.body.style.backgroundColor');");
-    whiteBackground.append("           else {");
-    whiteBackground.append("               console.log('[Server Error] set background Color of body to ");
-    whiteBackground.append(color);
-    whiteBackground.append("');");
-    whiteBackground.append("               document.body.style.backgroundColor = '%4';");
-    whiteBackground.append("           }");
-    whiteBackground.append("        });");
-    whiteBackground.append("    }");
-    whiteBackground.append("})();");
-    
-    //);
-    //.arg(color).arg(color).arg(color).arg(color);
-#endif
-    evaluateJavaScript(whiteBackground);
+    std::stringstream ss;
+    ss << "(function() {" << std::endl;
+    ss << "    if(document.readyState === 'complete' || document.readyState === 'interactive') { " << std::endl;
+    ss << "       if(document.body.style.backgroundColor)" << std::endl;
+    ss << "           console.log('[Server Error] Already set document.body.style.backgroundColor');" << std::endl;
+    ss << "       else {" << std::endl;
+    ss << "           console.log('[Server Error] set background Color of body to " << color << "');" << std::endl;
+    ss << "           document.body.style.backgroundColor = '" << color << "';" << std::endl;
+    ss << "       }" << std::endl;
+    ss << "     } else {" << std::endl;
+    ss << "        document.addEventListener('DOMContentLoaded', function() {" << std::endl;
+    ss << "           if(document.body.style.backgroundColor)" << std::endl;
+    ss << "               console.log('[Server Error] Already set document.body.style.backgroundColor');" << std::endl;
+    ss << "           else {" << std::endl;
+    ss << "               console.log('[Server Error] set background Color of body to " << color << "');" << std::endl;
+    ss << "               document.body.style.backgroundColor = '" << color << "';" << std::endl;
+    ss << "           }" << std::endl;
+    ss << "        });" << std::endl;
+    ss << "    }" << std::endl;
+    ss << "})();";
+
+    evaluateJavaScript(ss.str());
 }
 
 std::string WebPageBase::defaultFont()

@@ -17,6 +17,8 @@
 #include "WebPageBlink.h"
 
 #include <cmath>
+#include <WamString.h>
+#include <sstream>
 
 #include <QtCore/QDir>
 #include <QtCore/QMultiMap>
@@ -542,40 +544,34 @@ void WebPageBlink::resumeWebPagePaintingAndJSExecution()
 std::string WebPageBlink::escapeData(const std::string& value)
 {
     std::string escapedValue(value);
-#if 0
-    escapedValue.replace("\\", "\\\\")
-                .replace("'", "\\'")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r");
-#endif
+    WamString::findAndReplaceAll(escapedValue, "\\", "\\\\");
+    WamString::findAndReplaceAll(escapedValue, "'", "\\'");
+    WamString::findAndReplaceAll(escapedValue, "\n", "\\n");
+    WamString::findAndReplaceAll(escapedValue, "\r", "\\r");
     return escapedValue;
 }
 
 void WebPageBlink::reloadExtensionData()
 {
-#if 0
-    std::string eventJS = R(
-       "if (typeof(PalmSystem) != 'undefined') {"
-       "  PalmSystem.reloadInjectionData();"
-       "};"
-    );
+    std::string eventJS = R"WAM_DELIMITER(
+       if (typeof(PalmSystem) != 'undefined') {
+         PalmSystem.reloadInjectionData();
+       };
+    )WAM_DELIMITER";
     LOG_INFO(MSGID_PALMSYSTEM, 2, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", getWebProcessPID()), "Reload");
     evaluateJavaScript(eventJS);
-#endif
 }
 
 void WebPageBlink::updateExtensionData(const std::string& key, const std::string& value)
 {
-#if 0
-    std::string eventJS = R(
-       "if (typeof(PalmSystem) != 'undefined') {"
-       "  PalmSystem.updateInjectionData('%1', '%2');"
-       "};"
-    ).arg(escapeData(key)).arg(escapeData(value));
+    std::stringstream ss;
+    ss << "if (typeof(PalmSystem) != 'undefined') {" << std::endl;
+    ss << "  PalmSystem.updateInjectionData('" << escapeData(key) << "', '" << escapeData(value) << "');" << std::endl;
+    ss << "};";
+
     LOG_INFO(MSGID_PALMSYSTEM, 2, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", getWebProcessPID()), "Update; key:%s; value:%s",
         qPrintable(key), qPrintable(value));
-    evaluateJavaScript(eventJS);
-#endif
+    evaluateJavaScript(ss.str());
 }
 
 void WebPageBlink::updatePageSettings()
@@ -973,14 +969,9 @@ void WebPageBlink::setHasOnCloseCallback(bool hasCloseCallback)
 
 void WebPageBlink::executeCloseCallback(bool forced)
 {
-#if 0
-    QString script = QStringLiteral(
-       "window.PalmSystem._onCloseWithNotify_('%1');").arg(forced?"forced" : "normal");
-#else
-    std::string script;
-    //= R("window.PalmSystem._onCloseWithNotify_('%1');").arg(forced?"forced" : "normal");
-#endif
-    evaluateJavaScript(script);
+    std::stringstream ss;
+    ss << "window.PalmSystem._onCloseWithNotify_('" << (forced ? "forced" : "normal") << "');";
+    evaluateJavaScript(ss.str());
 
     m_closeCallbackTimer.start(kExecuteCloseCallbackTimeOutMs, this, &WebPageBlink::timeoutCloseCallback);
 }
@@ -1033,7 +1024,6 @@ void WebPageBlink::updateMediaCodecCapability()
 
 double WebPageBlink::devicePixelRatio()
 {
-#if 0
     double appWidth = static_cast<double>(m_appDesc->widthOverride());
     double appHeight =  static_cast<double>(m_appDesc->heightOverride());
     if(appWidth == 0) appWidth = static_cast<double>(currentUiWidth());
@@ -1065,20 +1055,15 @@ double WebPageBlink::devicePixelRatio()
     }
     LOG_DEBUG("[%s] WebPageBlink::devicePixelRatio(); devicePixelRatio : %f; deviceWidth : %f, deviceHeight : %f, appWidth : %f, appHeight : %f",
         qPrintable(appId()), devicePixelRatio, deviceWidth, deviceHeight, appWidth, appHeight);
-#else
-    double devicePixelRatio = 1.0;   
-#endif
     return devicePixelRatio;
 }
 
 void WebPageBlink::setSupportDolbyHDRContents()
 {
-#if 0
     std::string supportDolbyHDRContents;
     getDeviceInfo("supportDolbyHDRContents", supportDolbyHDRContents);
     LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", getWebProcessPID()), "supportDolbyHDRContents:%s", qPrintable(supportDolbyHDRContents));
     d->pageView->SetSupportDolbyHDRContents(supportDolbyHDRContents == "true");
-#endif
 }
 
 void WebPageBlink::updateDatabaseIdentifier()
@@ -1117,7 +1102,6 @@ void WebPageBlink::setLoadErrorPolicy(const std::string& policy)
 
 bool WebPageBlink::decidePolicyForResponse(bool isMainFrame, int statusCode, const std::string& url, const std::string& statusText)
 {
-#if 0
     LOG_INFO(MSGID_WAM_DEBUG, 7, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", getWebProcessPID()), PMLOGKFV("STATUS_CODE", "%d", statusCode),
         PMLOGKS("URL", url.c_str()), PMLOGKS("TEXT", statusText.c_str()), PMLOGKS("MAIN_FRAME", isMainFrame ? "true" : "false"), PMLOGKS("RESPONSE_POLICY", isMainFrame ? "event" : "default"), "");
 
@@ -1127,9 +1111,6 @@ bool WebPageBlink::decidePolicyForResponse(bool isMainFrame, int statusCode, con
     // how to blink handle this response
     // ACR requirement : even if received error response from subframe(iframe)ACR app should handle that as a error
     return m_hasCustomPolicyForResponse;
-#else
-    return false;
-#endif
 }
 
 bool WebPageBlink::acceptsVideoCapture()
@@ -1144,20 +1125,16 @@ bool WebPageBlink::acceptsAudioCapture()
 
 void WebPageBlink::keyboardVisibilityChanged(bool visible)
 {
-#if 0
-    std::string javascript = R(
-        "console.log('[WAM] fires keyboardStateChange event : %1');"
-        "    var keyboardStateEvent =new CustomEvent('keyboardStateChange', { detail: { 'visibility' : %2 } });"
-        "    keyboardStateEvent.visibility = %3;"
-        "    if(document) document.dispatchEvent(keyboardStateEvent);"
-    ).arg(visible ? "true" : "false").arg(visible ? "true" : "false").arg(visible ? "true" : "false");
-    evaluateJavaScript(javascript);
-#endif
+    std::stringstream ss;
+    ss << "console.log('[WAM] fires keyboardStateChange event : " << (visible ? "true" : "false") << "');" << std::endl;
+    ss << "    var keyboardStateEvent =new CustomEvent('keyboardStateChange', { detail: { 'visibility' : " << (visible ? "true" : "false") << " } });" << std::endl;
+    ss << "    keyboardStateEvent.visibility = " << (visible ? "true" : "false") << ";" << std::endl;
+    ss << "    if(document) document.dispatchEvent(keyboardStateEvent);";
+    evaluateJavaScript(ss.str());
 }
 
 void WebPageBlink::updateIsLoadErrorPageFinish()
 {
-#if 0
     // If currently loading finished URL is not error page,
     // m_isLoadErrorPageFinish will be updated
     bool wasErrorPage = m_isLoadErrorPageFinish;
@@ -1173,7 +1150,6 @@ void WebPageBlink::updateIsLoadErrorPageFinish()
         setTrustLevel(defaultTrustLevel());
         updateExtensionData("trustLevel", trustLevel());
     }
-#endif
 }
 
 void WebPageBlink::setAudioGuidanceOn(bool on)

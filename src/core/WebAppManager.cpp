@@ -38,6 +38,8 @@
 #include "WebProcessManager.h"
 #include "WindowTypes.h"
 
+#include "WamString.h"
+
 #include "webos/public/runtime.h"
 
 static const int kContinuousReloadingLimit = 3;
@@ -208,49 +210,45 @@ void WebAppManager::onLaunchContainerBasedApp(const std::string& url, std::strin
     //repost web process status to QoSM
     postWebProcessCreated(appId.c_str(), getWebProcessId(appId.c_str()));
 
-    std::string eventJS;
-#if 0
-    = std::stringLiteral(
-        "setTimeout(function () {"
-        "    var launchEvent=new CustomEvent('webOSContainer', { detail: %1 });"
-        "    launchEvent.containerName='%2';"
-        "    launchEvent.containerDirectory='%3';"
-        "    launchEvent.containerStyle='%4';"
-        "    launchEvent.containerScript='%5';"
-        "    document.dispatchEvent(launchEvent);"
-        "}, 1);"
-    );
-#endif
-
-    page->evaluateJavaScript(eventJS);
-#if 0
-        .arg(launchDetail.size() ? launchDetail.replace(QChar('\''), std::string("\\'")) : "{}")
-        .arg(std::string::fromStdString(appDesc->title()).replace(QChar('\''), std::string("\\'")))
-        .arg(std::string::fromStdString(appDesc->folderPath()).replace(QChar('\''), std::string("\\'")))
-        .arg(std::string::fromStdString(appDesc->containerCSS()).replace(QChar('\''), std::string("\\'")))
-        .arg(std::string::fromStdString(appDesc->containerJS()).replace(QChar('\''), std::string("\\'")))
-    );
-#endif
-
-    if (!appDesc->enyoBundleVersion().empty()) {
-#if 0
-        page->evaluateJavaScript(QStringLiteral(
-            "if (container.setVersion != null) {"
-            "    container.setVersion('%1');"
-            "}"
-        ).arg(QString::fromStdString(appDesc->enyoBundleVersion())));
-#else
-        std::string script;
-        script.append("if (container.setVersion != null) {");
-        script.append("    container.setVersion('");
-        script.append(appDesc->enyoBundleVersion());
-        script.append("');");
-        script.append("}");
-
-        page->evaluateJavaScript(script);
-#endif
+    if (launchDetail.size()) {
+        WamString::findAndReplaceAll(launchDetail, std::string("\'"), std::string("\\'"));
+    } else {
+        launchDetail.assign("{}");
     }
 
+    std::string title(appDesc->title());
+    WamString::findAndReplaceAll(title, std::string("\'"), std::string("\\'"));
+
+    std::string folderPath(appDesc->folderPath());
+    WamString::findAndReplaceAll(folderPath, std::string("\'"), std::string("\\'"));
+
+    std::string containerCSS(appDesc->containerCSS());
+    WamString::findAndReplaceAll(containerCSS, std::string("\'"), std::string("\\'"));
+
+    std::string containerJS(appDesc->containerJS());
+    WamString::findAndReplaceAll(containerJS, std::string("\'"), std::string("\\'"));
+
+    std::stringstream ss;
+    ss << "setTimeout(function () {" << std::endl;
+    ss << "    var launchEvent=new CustomEvent('webOSContainer', { detail: " << launchDetail <<" });" << std::endl;
+    ss << "    launchEvent.containerName='" << title << "';" << std::endl;
+    ss << "    launchEvent.containerDirectory='" << folderPath << "';" << std::endl;
+    ss << "    launchEvent.containerStyle='" << containerCSS << "';" << std::endl;
+    ss << "    launchEvent.containerScript='"<< containerJS << "';" << std::endl;
+    ss << "    document.dispatchEvent(launchEvent);" << std::endl;
+    ss << "}, 1);";
+    std::string eventJS = ss.str();
+
+    page->evaluateJavaScript(eventJS);
+
+    ss.clear();
+    if (!appDesc->enyoBundleVersion().empty()) {
+        ss << "if (container.setVersion != null) {" << std::endl;
+        ss << "    container.setVersion('%1');" << std::endl;
+        ss << "}";
+        std::string versionInfo = ss.str();
+        page->evaluateJavaScript(versionInfo);
+    }
     webPageAdded(page);
 
     PMTRACE("APP_ATTACHED_TO_CONTAINER");
