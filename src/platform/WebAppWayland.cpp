@@ -658,51 +658,28 @@ void InputManager::OnCursorVisibilityChanged(bool visible)
     LOG_DEBUG("InputManager::onCursorVisibilityChanged; Global Cursor visibility Changed to %s; send cursorStateChange event to all app, all frames", visible? "true" : " false");
     SetVisible(visible);
     // send event about  cursorStateChange
-#if 0
-    QString cursorStateChangeEvt = QStringLiteral(
-        "    var cursorEvent=new CustomEvent('cursorStateChange', { detail: { 'visibility' : %1 } });"
-        "    cursorEvent.visibility = %2;"
-        "    if(document) document.dispatchEvent(cursorEvent);"
-    ).arg(visible ? "true" : "false"). arg(visible ? "true" : "false");
-#else
-    std::string cursorStateChangeEvt;
-    cursorStateChangeEvt.append("    var cursorEvent=new CustomEvent('cursorStateChange', { detail: { 'visibility' : ");
-    cursorStateChangeEvt.append(visible ? "true" : "false");
-    cursorStateChangeEvt.append(" } });");
-    cursorStateChangeEvt.append("    cursorEvent.visibility = ");
-    cursorStateChangeEvt.append(visible ? "true" : "false");
-    cursorStateChangeEvt.append(";");
-    cursorStateChangeEvt.append("    if(document) document.dispatchEvent(cursorEvent);");
-#endif
+    std::stringstream ss;
+    ss << "    var cursorEvent=new CustomEvent('cursorStateChange', { detail: { 'visibility' : " << (visible ? "true" : "false") << " } });" << std::endl;
+    ss << "    cursorEvent.visibility = " << (visible ? "true" : "false") << ";" << std::endl;
+    ss << "    if(document) document.dispatchEvent(cursorEvent);";
+
     // send javascript event : cursorStateChange with param to All app
     // if javascript has setTimeout() like webOSlaunch or webOSRelaunch, then app can not get this event when app is in background
     // because javascript is freezed and timer is too, since app is in background, timer is never fired
-    WebAppBase::onCursorVisibilityChanged(cursorStateChangeEvt);
+    WebAppBase::onCursorVisibilityChanged(ss.str());
 }
 
 void WebAppWayland::sendWebOSMouseEvent(const std::string& eventName)
 {
     if (eventName == "Enter" || eventName == "Leave") {
         // send webOSMouse event to app
-#if 0
-        QString javascript = QStringLiteral(
-            "console.log('[WAM] fires webOSMouse event : %1');"
-            "var mouseEvent =new CustomEvent('webOSMouse', { detail: { type : '%2' }});"
-            "document.dispatchEvent(mouseEvent);").arg(eventName).arg(eventName);
+        std::stringstream ss;
+        ss << "console.log('[WAM] fires webOSMouse event : " << eventName << "');" << std::endl;
+        ss << "var mouseEvent =new CustomEvent('webOSMouse', { detail: { type : '" << eventName << "' }});" << std::endl;
+        ss << "document.dispatchEvent(mouseEvent);";
+
         LOG_DEBUG("[%s] WebAppWayland::sendWebOSMouseEvent; dispatch webOSMouse; %s", qPrintable(appId()), qPrintable(eventName));
-        page()->evaluateJavaScript(javascript);
-#else
-        std::string javascript;
-        javascript.append("console.log('[WAM] fires webOSMouse event : ");
-        javascript.append(eventName);
-        javascript.append("');");
-        javascript.append("var mouseEvent =new CustomEvent('webOSMouse', { detail: { type : '");
-        javascript.append(eventName);
-        javascript.append("' }});");
-        javascript.append("document.dispatchEvent(mouseEvent);");
-        LOG_DEBUG("[%s] WebAppWayland::sendWebOSMouseEvent; dispatch webOSMouse; %s", qPrintable(appId()), qPrintable(eventName));
-        page()->evaluateJavaScript(javascript);       
-#endif
+        page()->evaluateJavaScript(ss.str());
     }
 }
 

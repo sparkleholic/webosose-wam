@@ -20,6 +20,8 @@
 #include <QByteArray>
 #include <QFile>
 
+#include <sstream>
+
 std::string PalmSystemBase::getDeviceInfo(std::string name)
 {
     std::string value;
@@ -41,17 +43,6 @@ QVariant PalmSystemBase::getResource(QVariant a, QVariant b)
 
 std::string PalmSystemBase::country() const
 {
-#if 0
-    QString localcountry;
-    QString smartServiceCountry;
-    QString country;
-
-    WebAppManager::instance()->getDeviceInfo("LocalCountry", localcountry);
-    WebAppManager::instance()->getDeviceInfo("SmartServiceCountry", smartServiceCountry);
-
-    country = QString("{ \"country\": \"%1\", \"smartServiceCountry\": \"%2\" }");
-    country = country.arg(localcountry).arg(smartServiceCountry);
-#else
     std::string localcountry;
     std::string smartServiceCountry;
     std::string country;
@@ -59,20 +50,10 @@ std::string PalmSystemBase::country() const
     WebAppManager::instance()->getDeviceInfo("LocalCountry", localcountry);
     WebAppManager::instance()->getDeviceInfo("SmartServiceCountry", smartServiceCountry);
 
-    // country = std::string("{ \"country\": \"%1\", \"smartServiceCountry\": \"%2\" }");
-    // country = country.arg(localcountry).arg(smartServiceCountry);
-    country.append("{");
-    country.append("\"country\":");
-    country.append("\"");
-    country.append(localcountry);
-    country.append("\",");
-    country.append("\"smartServiceCountry\":");
-    country.append("\"");
-    country.append(smartServiceCountry);
-    country.append("\"");
-    country.append("}");
-    return country;
-#endif
+    std::stringstream ss;
+    ss << "{ \"country\": \"" << localcountry << "\", \"smartServiceCountry\": \"" << smartServiceCountry << "\" }";
+
+    return ss.str();
 }
 
 std::string PalmSystemBase::locale() const
