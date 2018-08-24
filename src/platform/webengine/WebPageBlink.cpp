@@ -108,7 +108,6 @@ WebPageBlink::~WebPageBlink()
 
 void WebPageBlink::init()
 {
-#if 0
     d->pageView = createPageView();
     d->pageView->setDelegate(this);
     d->pageView->Initialize(m_appDesc->id(),
@@ -123,11 +122,11 @@ void WebPageBlink::init()
     d->pageView->SetUserAgent(d->pageView->DefaultUserAgent() + " " + getWebAppManagerConfig()->getName());
 
     // TODO : need to replace qgetenv
-    if(qgetenv("ENABLE_INSPECTOR") == "1")
+    if(strcmp(getenv("ENABLE_INSPECTOR"),"1") == 0)
         d->pageView->SetInspectable(true);
 
-    if(!qgetenv("PRIVILEGED_PLUGIN_PATH").isEmpty()) {
-        std::string privileged_plugin_path = QLatin1String(qgetenv("PRIVILEGED_PLUGIN_PATH"));
+    if(!std::string(getenv("PRIVILEGED_PLUGIN_PATH")).empty()) {
+        std::string privileged_plugin_path = getenv("PRIVILEGED_PLUGIN_PATH");
         d->pageView->AddAvailablePluginDir(privileged_plugin_path);
     }
 
@@ -181,7 +180,6 @@ void WebPageBlink::init()
     updateBackHistoryAPIDisabled();
 
     d->pageView->UpdatePreferences();
-#endif
     loadExtension();
 }
 
@@ -418,7 +416,7 @@ void WebPageBlink::suspendWebPageAll()
     if (m_isSuspended || m_enableBackgroundRun)
         return;
 
-    if (!(qgetenv("WAM_KEEP_RTC_CONNECTIONS_ON_SUSPEND") == "1")) {
+    if (strcmp(getenv("WAM_KEEP_RTC_CONNECTIONS_ON_SUSPEND"), "1") != 0) {
         // On sending applications to background, disconnect RTC
         d->pageView->DropAllPeerConnections(webos::DROP_PEER_CONNECTION_REASON_PAGE_HIDDEN);
     }

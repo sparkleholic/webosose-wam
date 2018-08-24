@@ -34,47 +34,6 @@ WebAppManagerConfig::WebAppManagerConfig()
 
 void WebAppManagerConfig::initConfiguration()
 {
-#if 0
-    m_webAppFactoryPluginTypes = QLatin1String(qgetenv("WEBAPPFACTORY"));
-
-    m_webAppFactoryPluginPath = QLatin1String(qgetenv("WEBAPPFACTORY_PLUGIN_PATH"));
-    if (m_webAppFactoryPluginPath.isEmpty()) {
-        m_webAppFactoryPluginPath = QLatin1String("/usr/lib/webappmanager/plugins");
-    }
-
-    QString suspendDelay = QLatin1String(qgetenv("WAM_SUSPEND_DELAY_IN_MS"));
-    m_suspendDelayTime = std::max(suspendDelay.toInt(), 1);
-
-    m_webProcessConfigPath = QLatin1String(qgetenv("WEBPROCESS_CONFIGURATION_PATH"));
-    if (m_webProcessConfigPath.isEmpty())
-        m_webProcessConfigPath = QLatin1String("/etc/wam/com.webos.wam.json");
-
-    m_errorPageUrl = QLatin1String(qgetenv("WAM_ERROR_PAGE"));
-
-    if (qgetenv("DISABLE_CONTAINER") == "1")
-        m_containerAppEnabled = false;
-
-    if (qgetenv("LOAD_DYNAMIC_PLUGGABLE") == "1")
-        m_dynamicPluggableLoadEnabled = true;
-
-    if (qgetenv("POST_WEBPROCESS_CREATED_DISABLED") == "1")
-        m_postWebProcessCreatedDisabled =  true;
-
-    if (qgetenv("LAUNCH_TIME_CHECK") == "1")
-        m_checkLaunchTimeEnabled = true;
-
-    if (qgetenv("USE_SYSTEM_APP_OPTIMIZATION") == "1")
-        m_useSystemAppOptimization = true;
-
-    if (qgetenv("ENABLE_LAUNCH_OPTIMIZATION") == "1")
-        m_launchOptimizationEnabled = true;
-
-    m_userScriptPath = QLatin1String(qgetenv("USER_SCRIPT_PATH"));
-    if (m_userScriptPath.isEmpty())
-        m_userScriptPath = QLatin1String("webOSUserScripts/userScript.js");
-
-    m_name = qgetenv("WAM_NAME").data();
-#else
     m_webAppFactoryPluginTypes = getenv("WEBAPPFACTORY");
 
     m_webAppFactoryPluginPath = getenv("WEBAPPFACTORY_PLUGIN_PATH");
@@ -97,16 +56,16 @@ void WebAppManagerConfig::initConfiguration()
     if (strcmp(getenv("LOAD_DYNAMIC_PLUGGABLE"), "1") == 0)
         m_dynamicPluggableLoadEnabled = true;
 
-    if (strcmp(getenv("POST_WEBPROCESS_CREATED_DISABLED"), "1"))
+    if (strcmp(getenv("POST_WEBPROCESS_CREATED_DISABLED"), "1") == 0)
         m_postWebProcessCreatedDisabled =  true;
 
-    if (strcmp(getenv("LAUNCH_TIME_CHECK"), "1"))
+    if (strcmp(getenv("LAUNCH_TIME_CHECK"), "1") == 0)
         m_checkLaunchTimeEnabled = true;
 
-    if (strcmp(getenv("USE_SYSTEM_APP_OPTIMIZATION"), "1"))
+    if (strcmp(getenv("USE_SYSTEM_APP_OPTIMIZATION"), "1") == 0)
         m_useSystemAppOptimization = true;
 
-    if (strcmp(getenv("ENABLE_LAUNCH_OPTIMIZATION"), "1"))
+    if (strcmp(getenv("ENABLE_LAUNCH_OPTIMIZATION"), "1") == 0)
         m_launchOptimizationEnabled = true;
 
     m_userScriptPath = getenv("USER_SCRIPT_PATH");
@@ -114,7 +73,6 @@ void WebAppManagerConfig::initConfiguration()
         m_userScriptPath = "webOSUserScripts/userScript.js";
 
     m_name = getenv("WAM_NAME");
-#endif
 }
 
 QVariant WebAppManagerConfig::getConfiguration(std::string name)

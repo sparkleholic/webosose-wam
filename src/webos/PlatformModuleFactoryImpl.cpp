@@ -66,7 +66,7 @@ WebAppManagerConfig* PlatformModuleFactoryImpl::createWebAppManagerConfig()
 
 bool PlatformModuleFactoryImpl::useContainerApp()
 {
-    if (qgetenv("DISABLE_CONTAINER") == "1")
+    if (strcmp(getenv("DISABLE_CONTAINER"), "1") == 0)
         return false;
 
     return true;
