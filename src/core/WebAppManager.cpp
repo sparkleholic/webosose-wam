@@ -860,18 +860,13 @@ bool WebAppManager::isContainerBasedApp(ApplicationDescription* containerBasedAp
 
     // check the enyo bundle version
     if (!containerBasedAppDesc->enyoBundleVersion().empty()) {
-#if 0
-        QString enyoBundleVersion = QString::fromStdString(containerBasedAppDesc->enyoBundleVersion());
-        return containerAppDesc->supportedEnyoBundleVersions().contains(enyoBundleVersion);
-#else
+
         std::string enyoBundleVersion = containerBasedAppDesc->enyoBundleVersion();
         std::list<std::string> supportedEnyoBundleVersions = containerAppDesc->supportedEnyoBundleVersions();
         auto findInterator = std::find(supportedEnyoBundleVersions.begin(),
             supportedEnyoBundleVersions.end(),
             enyoBundleVersion);
-        return findInterator != supportedEnyoBundleVersions.end();// ? true : false;
-        //containerAppDesc->supportedEnyoBundleVersions().contains(enyoBundleVersion);
-#endif
+        return findInterator != supportedEnyoBundleVersions.end();
     }
 
     // check the enyo version

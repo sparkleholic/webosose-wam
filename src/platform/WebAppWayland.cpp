@@ -104,8 +104,8 @@ void WebAppWayland::init(int width, int height, int surface_id)
     // setWindowProperty("_WEBOS_WINDOW_TYPE", m_windowType); // TODO
     LOG_DEBUG("App created window [%s]", qPrintable(m_windowType));
 
-    if (qgetenv("LAUNCH_FINISH_ASSURE_TIMEOUT").toInt() != 0)
-        kLaunchFinishAssureTimeoutMs = qgetenv("LAUNCH_FINISH_ASSURE_TIMEOUT").toInt();
+    if (std::stoi(getenv("LAUNCH_FINISH_ASSURE_TIMEOUT")) != 0)
+        kLaunchFinishAssureTimeoutMs = std::stoi(getenv("LAUNCH_FINISH_ASSURE_TIMEOUT"));
 
     if (!webos::WebOSPlatform::GetInstance()->GetInputPointer()) {
         // Create InputManager instance.
