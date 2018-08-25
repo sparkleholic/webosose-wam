@@ -28,6 +28,7 @@
 #include <QJsonValue>
 #include <QVariant>
 
+#include <cctype>
 #include <string>
 #include <sstream>
 
@@ -202,48 +203,34 @@ ApplicationDescription* ApplicationDescription::fromJsonString(const char* jsonS
     if (!jsonObj.value("v8ExtraFlags").isUndefined())
         appDesc->m_v8ExtraFlags = jsonObj["v8ExtraFlags"].toString().toStdString();
 
-#if 0
-    // Handle resolution
-    if (!jsonObj.value("resolution").isUndefined()) {
-        QString overrideResolution = jsonObj["resolution"].toString();
-        QStringList resList(overrideResolution.split("x", QString::KeepEmptyParts, Qt::CaseInsensitive));
-        if(resList.size() == 2) {
-            appDesc->m_widthOverride = resList.at(0).toInt();
-            appDesc->m_heightOverride = resList.at(1).toInt();
-        }
-        if(appDesc->m_widthOverride < 0 || appDesc->m_heightOverride < 0) {
-            appDesc->m_widthOverride = 0;
-            appDesc->m_heightOverride = 0;
-        }
-    }
-#else
     // Handle resolution
     if (!jsonObj.value("resolution").isUndefined()) {
         std::string overrideResolution = jsonObj["resolution"].toString().toStdString();
-        #if 0
-        std::list<string> resList(overrideResolution.split("x", std::string::KeepEmptyParts, Qt::CaseInsensitive));
-        #else
         std::list<std::string> resList;
-        /*
-        std::string delimiter = "x";
+
+        // Sting spliting example
+        unsigned char delimiter = 'x';
         std::string token;
         std::istringstream tokenStream(overrideResolution);
-        while (std::getline(tokenStream, token, std::tolower(delimiter)) ||
-        std::getline(tokenStream, token, std::toupper(delimiter)) {
+        while (std::getline(tokenStream, token, static_cast<char>(std::tolower(delimiter))) ||
+            std::getline(tokenStream, token, static_cast<char>(std::toupper(delimiter)))) {
             resList.push_back(token);
         }
-        */
-        #endif
+
         if(resList.size() == 2) {
+#if 0
+            appDesc->m_widthOverride = resList.at(0).toInt();
+            appDesc->m_heightOverride = resList.at(1).toInt();
+#else
             appDesc->m_widthOverride = stoi(*(resList.begin()));
             appDesc->m_heightOverride = stoi(*(resList.begin()++));
+#endif
         }
         if(appDesc->m_widthOverride < 0 || appDesc->m_heightOverride < 0) {
             appDesc->m_widthOverride = 0;
             appDesc->m_heightOverride = 0;
         }
     }
-#endif
     // Handle keyFilterTable
     //Key code is changed only for facebooklogin WebApp
     if (!jsonObj.value("keyFilterTable").isUndefined()) {
