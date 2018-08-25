@@ -30,6 +30,7 @@
 #include "WebPageBase.h"
 
 #include <string>
+#include <sstream>
 
 #include <glib.h>
 
@@ -216,41 +217,65 @@ std::string WebProcessManager::getProcessKey(const ApplicationDescription* desc)
         return std::string();
 
     std::string key;
-#if 0
-    std::stringList idList, trustLevelList;
+    std::list<std::string> idList, trustLevelList;
     if (m_maximumNumberOfProcesses == 1)
-        key = std::stringLiteral("system");
+        key = "system";
     else if (m_maximumNumberOfProcesses == UINT_MAX) {
         if (desc->trustLevel() == "default" || desc->trustLevel() == "trusted")
-            key = std::stringLiteral("system");
+            key = "system";
         else
             key = desc->id().c_str();
     }
     else {
         for (int i = 0; i < m_webProcessGroupAppIDList.size(); i++) {
             std::string appId = m_webProcessGroupAppIDList.at(i);
-            if (appId.contains("*")) {
-                appId.remove(QChar('*'));
-                idList.append(appId.split(","));
-                Q_FOREACH(std::string id, idList) {
-                    if (std::string::fromUtf8(desc->id().c_str()).startsWith(id))
-                        key = m_webProcessGroupAppIDList.at(i);
+            std::size_t found = appId.find("*"); 
+            if (found != std::string::npos) {
+                appId.erase(found);
+
+                // Splitting string
+                char delimiter = ',';
+                std::string token;
+                std::istringstream tokenStream(appId);
+                while (std::getline(tokenStream, token, delimiter)) {
+                    idList.push_back(token);
+                }
+
+                for (std::string id : idList) {
+                    // returns offset 0 if 'id' is found at starting
+                    if(desc->id().find(id) == 0)
+                        key = m_webProcessGroupAppIDList.at(i);                        
                 }
             } else {
-                idList.append(appId.split(","));
-                Q_FOREACH(std::string id, idList) {
-                    if (!id.compare(desc->id().c_str()))
+                // Splitting string
+                char delimiter = ',';
+                std::string token;
+                std::istringstream tokenStream(appId);
+                while (std::getline(tokenStream, token, delimiter)) {
+                    idList.push_back(token);
+                }
+
+                for (std::string id : idList) {
+                    if (!id.compare(desc->id()))
                         return m_webProcessGroupAppIDList.at(i);
                 }
             }
         }
-        if (!key.isEmpty())
+        if (!key.empty())
             return key;
 
         for (int i = 0; i < m_webProcessGroupTrustLevelList.size(); i++) {
             std::string trustLevel = m_webProcessGroupTrustLevelList.at(i);
-            trustLevelList.append(trustLevel.split(","));
-            Q_FOREACH(std::string trust, trustLevelList) {
+
+            // Splitting string
+            char delimiter = ',';
+            std::string token;
+            std::istringstream tokenStream(trustLevel);
+            while (std::getline(tokenStream, token, delimiter)) {
+                trustLevelList.push_back(token);
+            }
+
+            for (std::string trust : trustLevelList) {
                 if (!trust.compare(desc->trustLevel().c_str())) {
                     return m_webProcessGroupTrustLevelList.at(i);
                 }
@@ -258,7 +283,6 @@ std::string WebProcessManager::getProcessKey(const ApplicationDescription* desc)
         }
         key = "system";
     }
-#endif
     return key;
 }
 

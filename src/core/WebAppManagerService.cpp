@@ -175,27 +175,6 @@ QJsonObject WebAppManagerService::closeByInstanceId(std::string instanceId)
 {
     LOG_INFO(MSGID_LUNA_API, 2, PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), PMLOGKS("API", "closeByInstanceId"), "");
     WebAppBase* app = WebAppManager::instance()->findAppByInstanceId(instanceId);
-#if 0
-    QString appId;
-    if (app) {
-        appId = app->appId();
-        WebAppManager::instance()->forceCloseAppInternal(app);
-    }
-
-    QJsonObject reply;
-    if(!appId.isNull()) {
-        reply["appId"] = appId;
-        reply["processId"] = instanceId;
-        reply["returnValue"] = true;
-    }
-    else {
-        LOG_INFO(MSGID_LUNA_API, 2, PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), PMLOGKS("API", "closeByInstanceId"), "No matched App; return false");
-        QString errMsg("Unknown Process");
-        reply["returnValue"] = false;
-        reply["errorText"] = errMsg;
-    }
-
-#else
     std::string appId;
     if (app) {
         appId = app->appId();
@@ -204,17 +183,27 @@ QJsonObject WebAppManagerService::closeByInstanceId(std::string instanceId)
 
     QJsonObject reply;
     if(!appId.empty()) {
+#if 0
+        reply["appId"] = appId;
+        reply["processId"] = instanceId;
+#else
         reply["appId"].toString().toStdString() = appId;
         reply["processId"].toString().toStdString() = instanceId;
+#endif
         reply["returnValue"] = true;
     }
     else {
         LOG_INFO(MSGID_LUNA_API, 2, PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), PMLOGKS("API", "closeByInstanceId"), "No matched App; return false");
+#if 0
+        QString errMsg("Unknown Process");
+        reply["returnValue"] = false;
+        reply["errorText"] = errMsg;
+#else
         std::string errMsg("Unknown Process");
         reply["returnValue"] = false;
         reply["errorText"].toString().toStdString() = errMsg;
-    }
 #endif
+    }
     return reply;
 }
 
