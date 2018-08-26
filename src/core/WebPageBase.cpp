@@ -16,7 +16,6 @@
 
 #include "WebPageBase.h"
 
-#include <QDir>
 #include <QFileInfo>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
@@ -28,6 +27,7 @@
 #include "WebPageObserver.h"
 #include "WebProcessManager.h"
 
+#include <experimental/filesystem>
 #include <sstream>
 
 // TODO : Check usage of it.
@@ -494,12 +494,22 @@ void WebPageBase::setCustomUserScript()
 {
     // 1. check app folder has userScripts
     // 2. check userscript.js there is, appfolder/webOSUserScripts/*.js
-#if 0
-    std::string userScriptFilePath = QDir(std::string::fromStdString(m_appDesc->folderPath())).filePath(getWebAppManagerConfig()->getUserScriptPath());
-    if(!QFileInfo(userScriptFilePath).isReadable())
+    namespace fs = std::experimental::filesystem;
+    fs::path userScriptDir(m_appDesc->folderPath());
+
+    std::string userScriptFilePath;
+    if (fs::exists(userScriptDir)) {
+        userScriptFilePath = userScriptDir.append(getWebAppManagerConfig()->getUserScriptPath()).string();
+    }
+
+    fs::perms perm = fs::status(userScriptFilePath).permissions();
+    bool isReadOnly = (perm & fs::perms::owner_read) != fs::perms::none;
+    if(!isReadOnly)
         return;
 
     LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", getWebProcessPID()), "User Scripts exists : %s", qPrintable(userScriptFilePath));
+#if 0
+    // TODO : check it while porting replacement for QUrl
     addUserScriptUrl(QUrl::fromLocalFile(userScriptFilePath));
 #endif
 }

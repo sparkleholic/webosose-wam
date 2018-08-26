@@ -17,10 +17,10 @@
 #include "WebPageBlink.h"
 
 #include <cmath>
-#include <WamString.h>
+#include <experimental/filesystem>
 #include <sstream>
+#include <WamString.h>
 
-#include <QtCore/QDir>
 #include <QtCore/QMultiMap>
 #include <QtCore/QUrl>
 #include <QtCore/QUrlQuery>
@@ -929,12 +929,15 @@ void WebPageBlink::setCustomPluginIfNeeded()
 
     std::string customPluginPath = m_appDesc->folderPath();
     customPluginPath.append("/plugins");
-#if 0
-    if (!QDir(customPluginPath).exists())
+
+    namespace fs = std::experimental::filesystem;
+    fs::path customPluginDir(customPluginPath);
+    if (!fs::exists(customPluginDir))
         return;
+
     if (!m_customPluginPath.compare(customPluginPath))
         return;
-#endif
+
     m_customPluginPath = customPluginPath;
     LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", getWebProcessPID()), PMLOGKS("CUSTOM_PLUGIN_PATH", qPrintable(m_customPluginPath)), "%s", __func__);
 
