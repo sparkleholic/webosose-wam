@@ -16,11 +16,12 @@
 
 #include "WebAppFactoryManager.h"
 
-#include <QtCore/QDir>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
 #include <QtCore/QPluginLoader>
 
+#include <algorithm>
+#include <experimental/filesystem>
 #include <string>
 
 #include "LogManager.h"
@@ -74,33 +75,34 @@ WebAppFactoryInterface* WebAppFactoryManager::loadPluggable(std::string appType)
         return 0;
 
     WebAppFactoryInterface* interface;
-    //https://en.cppreference.com/w/cpp/filesystem/directory_iterator
+    namespace fs = std::experimental::filesystem;
+    for(auto& file : fs::directory_iterator(m_webAppFactoryPluginPath)) {
+        if(fs::is_regular_file(file.symlink_status())) {
+            std::string fileName = fs::absolute(file); 
 #if 0
-    QDir pluginsDir(m_webAppFactoryPluginPath);
-    Q_FOREACH (std::string fileName, pluginsDir.entryList(QDir::Files)) {
-        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
-        std::string key = pluginLoader.metaData().value("MetaData").toObject().value("Keys").toArray().at(0).toString();
+            QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+            QString key = pluginLoader.metaData().value("MetaData").toObject().value("Keys").toArray().at(0).toString();
 
-        std::list<std::string>::iterator findIter = std::find(key.begin(), key.end(), appType);
-        if (findIter != key.end() || !m_loadPluggableOnDemand) {
-            QObject *plugin = pluginLoader.instance();
+            if (key.contains(appType) || !m_loadPluggableOnDemand) {
+                QObject *plugin = pluginLoader.instance();
 
-            if (plugin) {
-                interface = qobject_cast<WebAppFactoryInterface*>(plugin);
-                if (interface)
-                    m_interfaces.insert(key, interface);
-                if (!appType.empty())
-                    return interface;
-            } else {
-                LOG_WARNING(MSGID_PLUGIN_LOAD_FAIL, 1, PMLOGKS("ERROR", pluginLoader.errorString().toStdString().c_str()), "");
-                if (pluginLoader.isLoaded())
-                    pluginLoader.unload();
-                if (!appType.empty())
-                    return 0;
+                if (plugin) {
+                    interface = qobject_cast<WebAppFactoryInterface*>(plugin);
+                    if (interface)
+                        m_interfaces.insert(key, interface);
+                    if (!appType.isEmpty())
+                        return interface;
+                } else {
+                    LOG_WARNING(MSGID_PLUGIN_LOAD_FAIL, 1, PMLOGKS("ERROR", pluginLoader.errorString().toStdString().c_str()), "");
+                    if (pluginLoader.isLoaded())
+                        pluginLoader.unload();
+                    if (!appType.isEmpty())
+                        return 0;
+                }
             }
+#endif
         }
     }
-#endif
     return 0;
 }
 
