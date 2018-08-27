@@ -284,9 +284,9 @@ void WebAppWayland::setupWindowGroup(ApplicationDescription* desc)
         ApplicationDescription::WindowOwnerInfo ownerInfo = desc->getWindowOwnerInfo();
         webos::WindowGroupConfiguration config(groupInfo.name);
         config.SetIsAnonymous(ownerInfo.allowAnonymous);
-        QMap<std::string, int>::iterator iter = ownerInfo.layers.begin();
-        while (iter != ownerInfo.layers.end()){
-          config.AddLayer(webos::WindowGroupLayerConfiguration(iter.key(), iter.value()));
+        auto iter = ownerInfo.layers.begin();
+        while (iter != ownerInfo.layers.end()) {
+          config.AddLayer(webos::WindowGroupLayerConfiguration(iter->first, iter->second));
           iter++;
         }
         m_appWindow->CreateWindowGroup(config);
@@ -358,11 +358,11 @@ void WebAppWayland::setCursor(const std::string& cursorArg, int hotspot_x, int h
     m_appWindow->setCursor(cursorArg, hotspot_x, hotspot_y);
 }
 
-static QMap<std::string, webos::WebOSKeyMask>& getKeyMaskTable()
+static std::map<std::string, webos::WebOSKeyMask>& getKeyMaskTable()
 {
-    static QMap<std::string, webos::WebOSKeyMask> mapTable;
+    static std::map<std::string, webos::WebOSKeyMask> mapTable;
 
-    if (mapTable.isEmpty()) {
+    if (mapTable.empty()) {
         mapTable["KeyMaskNone"]      = static_cast<webos::WebOSKeyMask>(0);
         mapTable["KeyMaskHome"]      = webos::WebOSKeyMask::KEY_MASK_HOME;
         mapTable["KeyMaskBack"]      = webos::WebOSKeyMask::KEY_MASK_BACK;
@@ -388,7 +388,7 @@ static QMap<std::string, webos::WebOSKeyMask>& getKeyMaskTable()
 
 void WebAppWayland::setKeyMask(const QJsonDocument& jsonDoc)
 {
-    static QMap<std::string, webos::WebOSKeyMask>& mapTable = getKeyMaskTable();
+    static std::map<std::string, webos::WebOSKeyMask>& mapTable = getKeyMaskTable();
     unsigned int keyMask = 0;
 
     if (jsonDoc.isArray()) {

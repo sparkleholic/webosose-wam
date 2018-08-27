@@ -17,7 +17,7 @@
 #ifndef DEVICEINFO_H
 #define DEVICEINFO_H
 
-#include <QMap>
+#include <map>
 #include <string>
 
 class DeviceInfo {
@@ -37,7 +37,7 @@ public:
     virtual void setDeviceInfo(std::string name, std::string value);
 
 private:
-    QMap<std::string, std::string> m_deviceInfo;
+    std::map<std::string, std::string> m_deviceInfo;
 };
 
 #endif /* DEVICEINFO_H */

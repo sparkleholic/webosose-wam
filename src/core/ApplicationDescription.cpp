@@ -101,8 +101,11 @@ const ApplicationDescription::WindowOwnerInfo ApplicationDescription::getWindowO
 
                 for (int i=0; i<ownerJsonArray.size(); i++) {
                     QVariantMap map = ownerJsonArray[i].toObject().toVariantMap();
-                    if (!map.empty())
-                        info.layers.insert(map["name"].toString().toStdString(), std::stoi(map["z"].toString().toStdString()));
+                    if (!map.empty()) {
+                        std::string key = map["name"].toString().toStdString();
+                        int val = std::stoi(map["z"].toString().toStdString());
+                        info.layers.insert(make_pair(key, val));
+                    }
                 }
             }
         }

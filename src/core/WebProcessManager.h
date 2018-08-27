@@ -21,7 +21,7 @@
 
 #include <QJsonObject>
 #include <QList>
-#include <QMap>
+#include <map>
 #include <string>
 
 class ApplicationDescription;
@@ -82,7 +82,7 @@ protected:
         uint32_t codeCacheSize;
         bool requestKill;
     };
-    QMap<std::string, WebProcessInfo> m_webProcessInfoMap;
+    std::map<std::string, WebProcessInfo> m_webProcessInfoMap;
 
     uint32_t m_maximumNumberOfProcesses;
     QList<std::string> m_webProcessGroupAppIDList;

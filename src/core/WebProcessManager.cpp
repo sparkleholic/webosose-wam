@@ -29,8 +29,10 @@
 #include "WebAppManager.h"
 #include "WebPageBase.h"
 
+#include <ctype.h>
 #include <string>
 #include <sstream>
+#include <WamString.h>
 
 #include <glib.h>
 
@@ -64,7 +66,7 @@ bool WebProcessManager::webProcessInfoMapReady()
 {
     uint32_t count = 0;
     for (const auto& it : m_webProcessInfoMap) {
-        if (it.proxyID != 0)
+        if (it.second.proxyID != 0)
             count++;
     }
 
@@ -77,20 +79,20 @@ uint32_t WebProcessManager::getWebProcessProxyID(const ApplicationDescription *d
         return 0;
 
     std::string key = getProcessKey(desc);
+    auto it = m_webProcessInfoMap.find(key);
 
-    QMap<std::string, WebProcessInfo>::const_iterator it = m_webProcessInfoMap.find(key);
-    if (it == m_webProcessInfoMap.end() || !it.value().proxyID) {
+    if (it == m_webProcessInfoMap.end() || !it->second.proxyID) {
         return getInitialWebViewProxyID();
     }
 
-    return it.value().proxyID;
+    return it->second.proxyID;
 }
 
 uint32_t WebProcessManager::getWebProcessProxyID(uint32_t pid) const
 {
-    for (QMap<std::string, WebProcessInfo>::const_iterator it = m_webProcessInfoMap.begin(); it != m_webProcessInfoMap.end(); it++) {
-        if (it.value().webProcessPid == pid)
-            return it.value().proxyID;
+    for (std::map<std::string, WebProcessInfo>::const_iterator it = m_webProcessInfoMap.begin(); it != m_webProcessInfoMap.end(); it++) {
+        if (it->second.webProcessPid == pid)
+            return it->second.proxyID;
     }
     return 0;
 }
@@ -167,48 +169,25 @@ void WebProcessManager::readWebProcessPolicy()
 
 void WebProcessManager::setWebProcessCacheProperty(QJsonObject object, std::string key)
 {
-#if 0
-    WebProcessInfo info = WebProcessInfo(0, 0);
-    QString memoryCacheStr, codeCacheStr;
-    if (!object.value("memoryCache").isUndefined()) {
-        memoryCacheStr = object.value("memoryCache").toString();
-        if (memoryCacheStr.contains("MB"))
-            memoryCacheStr.remove(QString("MB"));
-
-        if (memoryCacheStr.toUInt())
-            info.memoryCacheSize = memoryCacheStr.toUInt();
-    }
-    if (!object.value("codeCache").isUndefined()) {
-        codeCacheStr = object.value("codeCache").toString();
-        if (codeCacheStr.contains("MB"))
-            codeCacheStr.remove(QString("MB"));
-
-        if (codeCacheStr.toUInt())
-            info.codeCacheSize = codeCacheStr.toUInt();
-    }
-#else
-    WebProcessInfo info = WebProcessInfo(0, 0);
+    WebProcessManager::WebProcessInfo info(0, 0);
     std::string memoryCacheStr, codeCacheStr;
     if (!object.value("memoryCache").isUndefined()) {
         memoryCacheStr = object.value("memoryCache").toString().toStdString();
-        //if (memoryCacheStr.contains("MB"))
-        //    memoryCacheStr.remove(std::string("MB"));
+        WamString::findAndReplaceAll(memoryCacheStr, std::string("MB"), std::string());
 
-        // TODO : validate input before stoi
-        // if (memoryCacheStr.toUInt())
-        info.memoryCacheSize = stoi(memoryCacheStr);//.toUInt();
+        bool isDigit = std::all_of(memoryCacheStr.begin(), memoryCacheStr.end(), ::isdigit);
+        if (isDigit)
+            info.memoryCacheSize = stoi(memoryCacheStr);
     }
     if (!object.value("codeCache").isUndefined()) {
         codeCacheStr = object.value("codeCache").toString().toStdString();;
-        //if (codeCacheStr.contains("MB"))
-        //    codeCacheStr.remove(std::string("MB"));
+        WamString::findAndReplaceAll(codeCacheStr, std::string("MB"), std::string());
 
-        // TODO : validate input before stoi
-        // if (codeCacheStr.toUInt())
-        info.codeCacheSize = stoi(codeCacheStr);//.toUInt();
+        bool isDigit = std::all_of(codeCacheStr.begin(), codeCacheStr.end(), ::isdigit);
+        if (isDigit)
+            info.memoryCacheSize = stoi(codeCacheStr);
     }
-#endif
-    m_webProcessInfoMap.insert(key, info);
+    m_webProcessInfoMap.insert(make_pair(key, info));
 }
 
 std::string WebProcessManager::getProcessKey(const ApplicationDescription* desc) const
@@ -288,9 +267,9 @@ std::string WebProcessManager::getProcessKey(const ApplicationDescription* desc)
 
 void WebProcessManager::killWebProcess(uint32_t pid)
 {
-    for(QMap<std::string, WebProcessInfo>::iterator it = m_webProcessInfoMap.begin(); it != m_webProcessInfoMap.end(); it++) {
-        if (it.value().webProcessPid == pid) {
-            it.value().requestKill = false;
+    for(auto it = m_webProcessInfoMap.begin(); it != m_webProcessInfoMap.end(); it++) {
+        if (it->second.webProcessPid == pid) {
+            it->second.requestKill = false;
             break;
         }
     }
@@ -303,10 +282,10 @@ void WebProcessManager::killWebProcess(uint32_t pid)
 
 void WebProcessManager::requestKillWebProcess(uint32_t pid)
 {
-    for (QMap<std::string, WebProcessInfo>::iterator it = m_webProcessInfoMap.begin(); it != m_webProcessInfoMap.end(); it++) {
-        if (it.value().webProcessPid == pid) {
+    for (auto it = m_webProcessInfoMap.begin(); it != m_webProcessInfoMap.end(); it++) {
+        if (it->second.webProcessPid == pid) {
             LOG_INFO(MSGID_KILL_WEBPROCESS_DELAYED, 1, PMLOGKFV("PID", "%u", pid), "");
-            it.value().requestKill = true;
+            it->second.requestKill = true;
             return;
         }
     }
