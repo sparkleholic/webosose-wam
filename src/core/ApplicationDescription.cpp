@@ -241,7 +241,7 @@ ApplicationDescription* ApplicationDescription::fromJsonString(const char* jsonS
         for (int i=0 ; i < keyFilterTable.size() ; i++) {
             QVariantMap map = keyFilterTable[i].toObject().toVariantMap();
             if (!map.empty())
-                appDesc->m_keyFilterTable[map["from"].toString().toInt()] = qMakePair(map["to"].toString().toInt(), map["modifier"].toString().toInt());
+                appDesc->m_keyFilterTable[map["from"].toString().toInt()] = std::make_pair(map["to"].toString().toInt(), map["modifier"].toString().toInt());
         }
     }
 
