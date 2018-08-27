@@ -19,7 +19,6 @@
 
 #include <QJsonObject>
 #include <map>
-#include <QPair>
 #include <string>
 #include <list>
 
@@ -147,7 +146,7 @@ public:
     bool allowAudioCapture() const { return m_allowAudioCapture; }
 
     //Key code is changed only for facebooklogin WebApp
-    const std::map<int, QPair<int, int>>& keyFilterTable() const
+    const std::map<int, std::pair<int, int>>& keyFilterTable() const
     {
         return m_keyFilterTable;
     }
@@ -215,7 +214,7 @@ private:
     bool m_backHistoryAPIDisabled;
     int m_widthOverride;
     int m_heightOverride;
-    std::map<int, QPair<int, int>> m_keyFilterTable;
+    std::map<int, std::pair<int, int>> m_keyFilterTable;
     std::string m_groupWindowDesc;
     bool m_doNotTrack;
     bool m_handleExitKey;
