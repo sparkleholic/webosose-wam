@@ -21,7 +21,6 @@
 #include <sstream>
 #include <WamString.h>
 
-#include <QtCore/QMultiMap>
 #include <QtCore/QUrl>
 #include <QtCore/QUrlQuery>
 #include <QTextStream>

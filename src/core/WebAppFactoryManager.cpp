@@ -61,9 +61,9 @@ WebAppFactoryManager::WebAppFactoryManager()
 
 WebAppFactoryInterface* WebAppFactoryManager::getPluggable(std::string appType)
 {
-    QMap<std::string, WebAppFactoryInterface*>::iterator iter = m_interfaces.find(appType);
+    auto iter = m_interfaces.find(appType);
     if (iter != m_interfaces.end())
-        return iter.value();
+        return iter->second;
 
     return loadPluggable(appType);
 }
@@ -134,7 +134,7 @@ WebPageBase* WebAppFactoryManager::createWebPage(std::string winType, QUrl url, 
     } else {
         // use default factory if cannot find appType.
         if (m_interfaces.find("default") != m_interfaces.end())
-            page = m_interfaces.value("default")->createWebPage(url, desc, launchParams);
+            page = m_interfaces["default"]->createWebPage(url, desc, launchParams);
     }
 
     if (page) page->init();

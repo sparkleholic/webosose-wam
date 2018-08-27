@@ -29,7 +29,7 @@ bool DeviceInfo::getDisplayWidth(int &value)
 
 void DeviceInfo::setDisplayWidth(int value)
 {
-    m_deviceInfo.insert("DisplayWidth", std::to_string(value));
+    m_deviceInfo.insert(make_pair("DisplayWidth", std::to_string(value)));
 }
 
 bool DeviceInfo::getDisplayHeight(int &value)
@@ -45,7 +45,7 @@ bool DeviceInfo::getDisplayHeight(int &value)
 
 void DeviceInfo::setDisplayHeight(int value)
 {
-    m_deviceInfo.insert("DisplayHeight", std::to_string(value));
+    m_deviceInfo.insert(make_pair("DisplayHeight", std::to_string(value)));
 }
 
 bool DeviceInfo::getSystemLanguage(std::string &value)
@@ -55,13 +55,14 @@ bool DeviceInfo::getSystemLanguage(std::string &value)
 
 void DeviceInfo::setSystemLanguage(std::string value)
 {
-    m_deviceInfo.insert("SystemLanguage", value);
+    m_deviceInfo.insert(make_pair("SystemLanguage", value));
 }
 
 bool DeviceInfo::getDeviceInfo(std::string name, std::string &value)
 {
-    if (m_deviceInfo.contains(name)) {
-        value = m_deviceInfo.value(name);
+    auto search = m_deviceInfo.find(name);
+    if (search != m_deviceInfo.end()) {
+        value = m_deviceInfo[name];
         return true;
     }
 
@@ -70,5 +71,5 @@ bool DeviceInfo::getDeviceInfo(std::string name, std::string &value)
 
 void DeviceInfo::setDeviceInfo(std::string name, std::string value)
 {
-    m_deviceInfo.insert(name, value);
+    m_deviceInfo.insert(make_pair(name, value));
 }

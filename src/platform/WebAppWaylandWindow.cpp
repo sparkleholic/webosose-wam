@@ -277,12 +277,13 @@ bool WebAppWaylandWindow::onCursorVisibileChangeEvent(WebOSEvent* e)
 
 unsigned int WebAppWaylandWindow::CheckKeyFilterTable(unsigned keycode, unsigned* modifier)
 {
-    QMap<int, QPair<int, int>> table = m_webApp->getAppDescription()->keyFilterTable();
+    std::map<int, QPair<int, int>> table = m_webApp->getAppDescription()->keyFilterTable();
 
     if (table.empty())
         return 0;
 
-    if (!table.contains(keycode))
+    auto search = table.find(keycode);
+    if (search == table.end())
         return 0;
 
     *modifier = table[keycode].second;

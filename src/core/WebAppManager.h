@@ -23,7 +23,7 @@
 #include <vector>
 
 #include <QJsonObject>
-#include <QMultiMap>
+#include <map>
 #include <string>
 
 #include "webos/webview_base.h"
@@ -186,12 +186,12 @@ private:
     bool isContainerApp(const std::string& url);
     uint32_t getContainerAppProxyID();
 
-    QMap<std::string, WebAppBase*> m_closingAppList;
+    std::map<std::string, WebAppBase*> m_closingAppList;
 
     // Mappings
-    QMap<std::string, WebPageBase*> m_shellPageMap;
+    std::map<std::string, WebPageBase*> m_shellPageMap;
     AppList m_appList;
-    QMultiMap<std::string, WebPageBase*> m_appPageMap;
+    std::multimap<std::string, WebPageBase*> m_appPageMap;
 
     PageList m_pagesToDeleteList;
     bool m_deletingPages;
@@ -205,7 +205,7 @@ private:
     WebAppManagerConfig* m_webAppManagerConfig;
     NetworkStatusManager* m_networkStatusManager;
 
-    QMap<std::string, int> m_lastCrashedAppIds;
+    std::map<std::string, int> m_lastCrashedAppIds;
 
     int m_suspendDelay;
 

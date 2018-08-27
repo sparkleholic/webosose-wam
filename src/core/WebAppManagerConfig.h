@@ -17,7 +17,7 @@
 #ifndef WEBAPPMANAGERCONFIG_H
 #define WEBAPPMANAGERCONFIG_H
 
-#include <QMap>
+#include <map>
 #include <string>
 #include <QVariant>
 
@@ -69,7 +69,7 @@ private:
     std::string m_userScriptPath;
     std::string m_name;
 
-    QMap<std::string, QVariant> m_configuration;
+    std::map<std::string, QVariant> m_configuration;
 };
 
 #endif /* WEBAPPMANAGERCONFIG_H */

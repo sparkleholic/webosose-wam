@@ -445,11 +445,11 @@ void WebAppManager::forceCloseAppInternal(WebAppBase* app)
 
 void WebAppManager::removeClosingAppList(const std::string& appId)
 {
-    QMap<std::string, WebAppBase*>::iterator it = m_closingAppList.find(appId);
+    auto it = m_closingAppList.find(appId);
     if (it == m_closingAppList.end())
         return;
 
-   m_closingAppList.remove(appId);
+    m_closingAppList.erase(it);
 }
 
 void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
@@ -467,7 +467,7 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
     webPageRemoved(app->page());
     removeWebAppFromWebProcessInfoMap(app->appId());
     postRunningAppList();
-    m_lastCrashedAppIds = QMap<std::string, int>();
+    m_lastCrashedAppIds = std::map<std::string, int>();
 
     // Set m_isClosing flag first, this flag will be checked in web page suspending
     page->setClosing(true);
@@ -481,7 +481,7 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
     if (ignoreCleanResource)
         delete app;
     else {
-        m_closingAppList.insert(app->appId(), app);
+        m_closingAppList.insert(make_pair(app->appId(), app));
 
         if (app == getContainerApp())
             m_containerAppManager->closeContainerApp();
@@ -537,10 +537,17 @@ bool WebAppManager::closeContainerApp()
 
 void WebAppManager::webPageAdded(WebPageBase* page)
 {
-    if (m_appPageMap.contains(page->appId(), page))
-        return;
+    // If key-value pair already exist in multimap then return
+    if (m_appPageMap.count(page->appId()) > 0) {
+        auto range = m_appPageMap.equal_range(page->appId());
+        for (auto i = range.first; i != range.second; ++i) {
+            if (i->second == page) {
+                return;
+            }
+        }
+    }
 
-    m_appPageMap.insert(page->appId(), page);
+    m_appPageMap.insert(make_pair(page->appId(), page));
 }
 
 void WebAppManager::webPageRemoved(WebPageBase* page)
@@ -553,7 +560,14 @@ void WebAppManager::webPageRemoved(WebPageBase* page)
         }
     }
 
-    m_appPageMap.remove(page->appId(), page);
+    if (m_appPageMap.count(page->appId()) > 0) {
+        auto range = m_appPageMap.equal_range(page->appId());
+        for (auto i = range.first; i != range.second; ++i) {
+            if (i->second == page) {
+                m_appPageMap.erase(i);
+            }
+        }
+    }
 }
 
 void WebAppManager::removeWebAppFromWebProcessInfoMap(std::string appId)
@@ -597,7 +611,7 @@ void WebAppManager::appDeleted(WebAppBase* app)
     m_appList.remove(app);
 
     if (!appId.empty())
-        m_shellPageMap.remove(appId);
+        m_shellPageMap.erase(appId);
 }
 
 void WebAppManager::setSystemLanguage(std::string language)

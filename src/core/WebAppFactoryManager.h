@@ -17,7 +17,7 @@
 #ifndef WEBAPPFACTORYMANAGER_H
 #define WEBAPPFACTORYMANAGER_H
 
-#include <QMap>
+#include <map>
 #include <list>
 
 #include "WebAppFactoryInterface.h"
@@ -34,7 +34,7 @@ public:
 private:
     static WebAppFactoryManager* m_instance;
     WebAppFactoryManager();
-    QMap<std::string, WebAppFactoryInterface*> m_interfaces;
+    std::map<std::string, WebAppFactoryInterface*> m_interfaces;
     std::string m_webAppFactoryPluginPath;
     std::list<std::string> m_factoryEnv;
     bool m_loadPluggableOnDemand;
