@@ -20,7 +20,7 @@
 #include <list>
 
 #include <QJsonObject>
-#include <QList>
+#include <vector>
 #include <map>
 #include <string>
 
@@ -85,8 +85,8 @@ protected:
     std::map<std::string, WebProcessInfo> m_webProcessInfoMap;
 
     uint32_t m_maximumNumberOfProcesses;
-    QList<std::string> m_webProcessGroupAppIDList;
-    QList<std::string> m_webProcessGroupTrustLevelList;
+    std::vector<std::string> m_webProcessGroupAppIDList;
+    std::vector<std::string> m_webProcessGroupTrustLevelList;
 };
 
 #endif /* WEBPROCESSMANAGER_H */

@@ -206,7 +206,7 @@ std::string WebProcessManager::getProcessKey(const ApplicationDescription* desc)
             key = desc->id().c_str();
     }
     else {
-        for (int i = 0; i < m_webProcessGroupAppIDList.size(); i++) {
+        for (unsigned int i = 0; i < m_webProcessGroupAppIDList.size(); i++) {
             std::string appId = m_webProcessGroupAppIDList.at(i);
             std::size_t found = appId.find("*"); 
             if (found != std::string::npos) {
@@ -243,7 +243,7 @@ std::string WebProcessManager::getProcessKey(const ApplicationDescription* desc)
         if (!key.empty())
             return key;
 
-        for (int i = 0; i < m_webProcessGroupTrustLevelList.size(); i++) {
+        for (unsigned int i = 0; i < m_webProcessGroupTrustLevelList.size(); i++) {
             std::string trustLevel = m_webProcessGroupTrustLevelList.at(i);
 
             // Splitting string
