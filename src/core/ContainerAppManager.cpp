@@ -16,7 +16,6 @@
 
 #include "ContainerAppManager.h"
 
-#include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
 
 #include "ApplicationDescription.h"
@@ -27,6 +26,10 @@
 #include "WebAppManagerUtils.h"
 #include "WebPageBase.h"
 #include "WindowTypes.h"
+
+#include <fstream>
+#include <iostream>
+#include <iostream>
 
 static std::string s_containerAppId = "com.webos.app.container";
 static int kContainerAppLaunchDuration = 300;
@@ -62,11 +65,11 @@ ContainerAppManager::~ContainerAppManager()
 
 void ContainerAppManager::loadContainerInfo()
 {
-    QFile file;
-    file.setFileName("/var/luna/preferences/container.json");
-    if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    std::ifstream file; 
+    file.open("/var/luna/preferences/container.json", std::ios::in); 
+    if (file) {
         std::string str;
-        str = file.readAll().toStdString();
+        file >> str;
         file.close();
 
         QJsonDocument containerDoc = QJsonDocument::fromJson(QByteArray(str.data()));

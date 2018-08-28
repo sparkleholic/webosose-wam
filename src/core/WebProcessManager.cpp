@@ -17,7 +17,6 @@
 #include "WebProcessManager.h"
 
 #include <signal.h>
-#include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
 
@@ -30,6 +29,8 @@
 #include "WebPageBase.h"
 
 #include <ctype.h>
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <WamString.h>
@@ -122,16 +123,18 @@ std::string WebProcessManager::getWebProcessMemSize(uint32_t pid) const
 
 void WebProcessManager::readWebProcessPolicy()
 {
-#if 0
+
     std::string webProcessConfigurationPath = WebAppManager::instance()->config()->getWebProcessConfigPath();
 
-    QFile file(webProcessConfigurationPath);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    std::fstream file;
+    file.open(webProcessConfigurationPath, std::ios::in);
+    if (!file)
         return;
 
-    std::string jsonStr = file.readAll();
+    std::string jsonStr;
+    file >> jsonStr;
     file.close();
-
+#if 0
     QJsonDocument webProcessEnvironment = QJsonDocument::fromJson(jsonStr.toUtf8());
     if (webProcessEnvironment.isNull()) {
         LOG_ERROR(MSGID_WEBPROCESSENV_READ_FAIL, 1, PMLOGKS("CONTENT", jsonStr.c_str()), "");

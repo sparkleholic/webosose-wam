@@ -18,8 +18,9 @@
 #include "WebAppManager.h"
 
 #include <QByteArray>
-#include <QFile>
 
+#include <fstream>
+#include <iostream>
 #include <sstream>
 
 std::string PalmSystemBase::getDeviceInfo(std::string name)
@@ -32,11 +33,18 @@ std::string PalmSystemBase::getDeviceInfo(std::string name)
 
 QVariant PalmSystemBase::getResource(QVariant a, QVariant b)
 {
-    QFile f(a.toString());
-    if (!f.open(QIODevice::ReadOnly))
+    std::fstream file;
+    file.open(a.toString().toStdString(), std::ios::in);
+    if (!file)
         return QVariant();
 
-    QByteArray data = f.readAll();
+    std::string str;
+    file >> str;
+#if 0
+    QByteArray data = str;
+#else
+    QByteArray data;
+#endif
 
     return QVariant(data.constData());
 }
