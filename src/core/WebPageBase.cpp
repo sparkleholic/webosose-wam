@@ -16,7 +16,6 @@
 
 #include "WebPageBase.h"
 
-#include <QFileInfo>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 

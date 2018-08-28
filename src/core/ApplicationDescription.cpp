@@ -221,14 +221,10 @@ ApplicationDescription* ApplicationDescription::fromJsonString(const char* jsonS
         }
 
         if(resList.size() == 2) {
-#if 0
-            appDesc->m_widthOverride = resList.at(0).toInt();
-            appDesc->m_heightOverride = resList.at(1).toInt();
-#else
-            appDesc->m_widthOverride = stoi(*(resList.begin()));
-            appDesc->m_heightOverride = stoi(*(resList.begin()++));
-#endif
+            appDesc->m_widthOverride = stoi(*(resList.begin())); // Get first element of list
+            appDesc->m_heightOverride = stoi(*(resList.begin()++)); // Get second element of list
         }
+
         if(appDesc->m_widthOverride < 0 || appDesc->m_heightOverride < 0) {
             appDesc->m_widthOverride = 0;
             appDesc->m_heightOverride = 0;

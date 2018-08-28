@@ -22,9 +22,10 @@
 #include "WebAppWayland.h"
 #include "WebPageBase.h"
 
-#include <QFile>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonDocument>
+
+#include <experimental/filesystem>
 
 PalmSystemWebOS::PalmSystemWebOS(WebAppBase* app)
     : m_app(static_cast<WebAppWayland*>(app))
@@ -80,7 +81,9 @@ bool PalmSystemWebOS::isKeyboardVisible() const
 
 bool PalmSystemWebOS::isMinimal() const
 {
-    return QFile::exists("/var/luna/preferences/ran-firstuse");
+    namespace fs = std::experimental::filesystem;
+    fs::path p("/var/luna/preferences/ran-firstuse");
+    return fs::exists(p);
 }
 
 int PalmSystemWebOS::activityId() const
