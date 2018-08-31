@@ -65,7 +65,7 @@ HEADERS += \
         WebViewBase.h \
         WebRuntime.h \
         WindowTypes.h \
-        WamString.h
+        WamUtils.h
 
 pmlog {
     SOURCES += LogManagerPmLog.cpp

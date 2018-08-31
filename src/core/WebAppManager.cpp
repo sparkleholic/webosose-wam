@@ -38,7 +38,7 @@
 #include "WebProcessManager.h"
 #include "WindowTypes.h"
 
-#include "WamString.h"
+#include "WamUtils.h"
 
 #include "webos/public/runtime.h"
 
@@ -211,22 +211,22 @@ void WebAppManager::onLaunchContainerBasedApp(const std::string& url, std::strin
     postWebProcessCreated(appId.c_str(), getWebProcessId(appId.c_str()));
 
     if (launchDetail.size()) {
-        WamString::findAndReplaceAll(launchDetail, std::string("\'"), std::string("\\'"));
+        WamUtils::findAndReplaceAll(launchDetail, std::string("\'"), std::string("\\'"));
     } else {
         launchDetail.assign("{}");
     }
 
     std::string title(appDesc->title());
-    WamString::findAndReplaceAll(title, std::string("\'"), std::string("\\'"));
+    WamUtils::findAndReplaceAll(title, std::string("\'"), std::string("\\'"));
 
     std::string folderPath(appDesc->folderPath());
-    WamString::findAndReplaceAll(folderPath, std::string("\'"), std::string("\\'"));
+    WamUtils::findAndReplaceAll(folderPath, std::string("\'"), std::string("\\'"));
 
     std::string containerCSS(appDesc->containerCSS());
-    WamString::findAndReplaceAll(containerCSS, std::string("\'"), std::string("\\'"));
+    WamUtils::findAndReplaceAll(containerCSS, std::string("\'"), std::string("\\'"));
 
     std::string containerJS(appDesc->containerJS());
-    WamString::findAndReplaceAll(containerJS, std::string("\'"), std::string("\\'"));
+    WamUtils::findAndReplaceAll(containerJS, std::string("\'"), std::string("\\'"));
 
     std::stringstream ss;
     ss << "setTimeout(function () {" << std::endl;
