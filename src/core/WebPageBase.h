@@ -18,7 +18,6 @@
 #define WEBPAGEBASE_H
 
 #include <QObject>
-#include <QtCore/QUrl>
 
 #include "ObserverList.h"
 
@@ -52,7 +51,7 @@ public:
     };
 
     WebPageBase();
-    WebPageBase(const QUrl& url, ApplicationDescription* desc, const std::string& params);
+    WebPageBase(const std::string& url, ApplicationDescription* desc, const std::string& params);
     virtual ~WebPageBase();
 
     // WebPageBase
@@ -61,10 +60,10 @@ public:
     virtual void setLaunchParams(const std::string& params);
     virtual void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level) {}
     virtual std::string getIdentifier() const;
-    virtual QUrl url() const = 0; /* return current url */
-    virtual QUrl defaultUrl() const { return m_defaultUrl; } /* return default url */
-    virtual void setDefaultUrl(QUrl url) { m_defaultUrl = url; } /* just set default url */
-    virtual void replaceBaseUrl(QUrl newUrl) = 0;
+    virtual std::string url() const = 0; /* return current url */
+    virtual std::string defaultUrl() const { return m_defaultUrl; } /* return default url */
+    virtual void setDefaultUrl(std::string url) { m_defaultUrl = url; } /* just set default url */
+    virtual void replaceBaseUrl(std::string newUrl) = 0;
     virtual void loadUrl(const std::string& url) = 0;
     virtual int progress() const = 0;
     virtual bool hasBeenShown() const = 0;
@@ -161,7 +160,7 @@ protected:
     virtual void handleForceDeleteWebPage();
     virtual void loadDefaultUrl() = 0;
     virtual void addUserScript(const std::string& script) = 0;
-    virtual void addUserScriptUrl(const QUrl& url) = 0;
+    virtual void addUserScriptUrl(const std::string& url) = 0;
     virtual int suspendDelay();
     virtual bool hasLoadErrorPolicy(bool isHttpResponseError, int errorCode);
     virtual void loadErrorPage(int errorCode) = 0;
@@ -193,7 +192,7 @@ protected:
     bool m_isLoadErrorPageFinish;
     bool m_isLoadErrorPageStart;
     bool m_enableBackgroundRun;
-    QUrl m_defaultUrl;
+    std::string m_defaultUrl;
     std::string m_launchParams;
     std::string m_loadErrorPolicy;
     ObserverList<WebPageObserver> m_observers;

@@ -18,12 +18,10 @@
 
 #include <cmath>
 #include <experimental/filesystem>
+#include <fstream>
 #include <sstream>
+#include <unordered_map>
 #include <WamUtils.h>
-
-#include <QtCore/QUrl>
-#include <QtCore/QUrlQuery>
-#include <QTextStream>
 
 #include "ApplicationDescription.h"
 #include "BlinkWebProcessManager.h"
@@ -49,7 +47,9 @@ std::string getHostname(const std::string& url)
   QString q_url = QString::fromStdString(url);
   return QUrl(q_url).host();
 #else
-  std::string q_url = url;
+  std::unordered_map<std::string, std::string> m;
+  WamUtils::parseURL(url, m);
+  std::string q_url = m["HOST"];
   return q_url; // TODO : Implement logic to extract host form URL.
 #endif
 }
@@ -82,7 +82,7 @@ public:
 };
 
 
-WebPageBlink::WebPageBlink(const QUrl& url, ApplicationDescription* desc, const std::string& params)
+WebPageBlink::WebPageBlink(const std::string& url, ApplicationDescription* desc, const std::string& params)
     : WebPageBase(url, desc, params)
     , d(new WebPageBlinkPrivate(this))
     , m_isPaused(false)
@@ -223,7 +223,7 @@ void WebPageBlink::setFocus(bool focus)
 
 void WebPageBlink::loadDefaultUrl()
 {
-    d->pageView->LoadUrl(defaultUrl().toString().toStdString());
+    d->pageView->LoadUrl(defaultUrl());
 }
 
 int WebPageBlink::progress() const
@@ -236,14 +236,14 @@ bool WebPageBlink::hasBeenShown() const
     return m_hasBeenShown;
 }
 
-void WebPageBlink::replaceBaseUrl(QUrl newUrl)
+void WebPageBlink::replaceBaseUrl(std::string newUrl)
 {
-    d->pageView->ReplaceBaseURL(newUrl.toString().toStdString(), url().toString().toStdString());
+    d->pageView->ReplaceBaseURL(newUrl, url());
 }
 
-QUrl WebPageBlink::url() const
+std::string WebPageBlink::url() const
 {
-    return QUrl(d->pageView->GetUrl().c_str());
+    return d->pageView->GetUrl().c_str();
 }
 
 uint32_t WebPageBlink::getWebProcessProxyID()
@@ -828,31 +828,41 @@ void WebPageBlink::addUserScript(const std::string& script)
     d->pageView->addUserScript(script);
 }
 
-void WebPageBlink::addUserScriptUrl(const QUrl& url)
+void WebPageBlink::addUserScriptUrl(const std::string& url)
 {
-#if 0
     std::string path;
+#if 0
     if (url.isLocalFile()) {
         path = url.toLocalFile();
+#else
+    // NOTE : This is temporary change.
+    // TODO : Find better solution.
+    // std::unordered_map is added in include for this change
+    std::unordered_map<std::string, std::string> urlInfo;
+    WamUtils::parseURL(url, urlInfo);
+    if (urlInfo["PROTOCOL"] == "file") {
+        path = urlInfo["HOST"];
     }
+#endif
     else {
         LOG_DEBUG("WebPageBlink: Couldn't open '%s' as user script because only file:/// URLs are supported.", qPrintable(url.toString()));
         return;
     }
 
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    std::fstream file;
+    file.open(path, std::ios::in);
+    if (!file) {
         LOG_DEBUG("WebPageBlink: Couldn't open '%s' as user script due to error '%s'.", qPrintable(url.toString()), qPrintable(file.errorString()));
         return;
     }
 
-    QByteArray contents = file.readAll();
-    if (contents.isEmpty()) {
+    std::string contents;
+    file >> contents;
+    if (contents.empty()) {
         LOG_DEBUG("WebPageBlink: Ignoring '%s' as user script because file is empty.", qPrintable(url.toString()));
         return;
     }
-    d->pageView->addUserScript(contents.toStdString());
-#endif
+    d->pageView->addUserScript(contents);
 }
 
 void WebPageBlink::setupStaticUserScripts()
@@ -860,10 +870,22 @@ void WebPageBlink::setupStaticUserScripts()
     d->pageView->clearUserScripts();
 #if 0
     // Load Tellurium test framework if available, as a UserScript
-    std::string telluriumNubPath_ = telluriumNubPath();
+    QString telluriumNubPath_ = telluriumNubPath();
     if (!telluriumNubPath_.isEmpty()) {
         LOG_DEBUG("Loading tellurium nub at %s", qPrintable(telluriumNubPath_));
         addUserScriptUrl(QUrl::fromLocalFile(telluriumNubPath_));
+    }
+#else
+    // Load Tellurium test framework if available, as a UserScript
+    std::string telluriumNubPath_ = telluriumNubPath();
+    if (!telluriumNubPath_.empty()) {
+        LOG_DEBUG("Loading tellurium nub at %s", qPrintable(telluriumNubPath_));
+
+        // QUrl::fromLocalFile : Returns a QUrl representation of localFile, interpreted as a local file. 
+        // QUrl::fromLocalFile("file.txt"); => QUrl("file:file.txt")
+        // TODO : This changes are for testing purpose only.
+        telluriumNubPath_ = "file:" + telluriumNubPath_;
+        addUserScriptUrl(telluriumNubPath_);
     }
 #endif
 }

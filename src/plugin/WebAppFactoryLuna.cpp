@@ -51,7 +51,7 @@ WebAppBase* WebAppFactoryLuna::createWebApp(std::string winType, WebPageBase* pa
     return createWebApp(winType, desc);
 }
 
-WebPageBase* WebAppFactoryLuna::createWebPage(QUrl url, ApplicationDescription* desc, std::string launchParams)
+WebPageBase* WebAppFactoryLuna::createWebPage(std::string url, ApplicationDescription* desc, std::string launchParams)
 {
     return new WebPageBlink(url, desc, launchParams);
 }

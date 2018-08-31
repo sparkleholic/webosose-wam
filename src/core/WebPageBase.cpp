@@ -28,6 +28,8 @@
 
 #include <experimental/filesystem>
 #include <sstream>
+#include <unordered_map>
+#include <WamUtils.h>
 
 // TODO : Check usage of it.
 #define CONSOLE_DEBUG(AAA) evaluateJavaScript(std::stringLiteral("console.debug('") + std::stringLiteral(AAA) + std::stringLiteral("');"))
@@ -45,7 +47,7 @@ WebPageBase::WebPageBase()
 {
 }
 
-WebPageBase::WebPageBase(const QUrl& url, ApplicationDescription* desc, const std::string& params)
+WebPageBase::WebPageBase(const std::string& url, ApplicationDescription* desc, const std::string& params)
     : m_appDesc(desc)
     , m_appId(desc->id())
     , m_suspendAtLoad(false)
@@ -185,10 +187,6 @@ bool WebPageBase::doHostedWebAppRelaunch(const std::string& launchParams)
     // check deeplinking relaunch condition
 #if 0
     QJsonObject obj = QJsonDocument::fromJson(launchParams.toUtf8()).object();
-#else
-    QByteArray qBA(launchParams.c_str(), launchParams.length());
-    QJsonObject obj = QJsonDocument::fromJson(qBA).object();
-#endif
     if (url().scheme() ==  "file"
         || m_defaultUrl.scheme() != "file"
         || obj.isEmpty() /* no launchParams, { }, and this should be check with object().isEmpty()*/
@@ -198,6 +196,22 @@ bool WebPageBase::doHostedWebAppRelaunch(const std::string& launchParams)
             "%s; NOT enough deeplinking condition; return false", __func__);
         return false;
     }
+#else
+    QByteArray qBA(launchParams.c_str(), launchParams.length());
+    QJsonObject obj = QJsonDocument::fromJson(qBA).object();
+    std::unordered_map<std::string, std::string> urlInfo, defaultUrlInfo;
+    WamUtils::parseURL(url(), urlInfo);
+    WamUtils::parseURL(m_defaultUrl, urlInfo);
+    if (urlInfo["PROTOCOL"] ==  "file"
+        || defaultUrlInfo["PROTOCOL"] != "file"
+         || obj.isEmpty() /* no launchParams, { }, and this should be check with object().isEmpty()*/
+         || obj.value("contentTarget").isUndefined()
+         || (m_appDesc && !m_appDesc->handlesDeeplinking())) {
+        LOG_INFO(MSGID_WEBPAGE_RELAUNCH, 2, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKFV("PID", "%d", getWebProcessPID()),
+            "%s; NOT enough deeplinking condition; return false", __func__);
+        return false;
+    }
+#endif
 
     // Do deeplinking relaunch
     setLaunchParams(launchParams);
@@ -390,7 +404,20 @@ void WebPageBase::applyPolicyForUrlResponse(bool isMainFrame, const std::string&
             // If app does not have policy for load error and
             // this error response is from main frame document
             // then before open server error page, reset the body's background color to white
-            setBackgroundColorOfBody(std::stringLiteral("white"));
+            setBackgroundColorOfBody(QStringLiteral("white"));
+        }
+    }
+#else
+    std::string qUrl = url;
+    static const int s_httpErrorStatusCode = 400;
+    std::unordered_map<std::string, std::string> urlInfo;
+    WamUtils::parseURL(qUrl, urlInfo);
+    if (urlInfo["PROTOCOL"] != "file" &&  status_code >= s_httpErrorStatusCode) {
+        if(!hasLoadErrorPolicy(true, status_code) && isMainFrame) {
+            // If app does not have policy for load error and
+            // this error response is from main frame document
+            // then before open server error page, reset the body's background color to white
+            setBackgroundColorOfBody("white");
         }
     }
 #endif
@@ -510,6 +537,8 @@ void WebPageBase::setCustomUserScript()
 #if 0
     // TODO : check it while porting replacement for QUrl
     addUserScriptUrl(QUrl::fromLocalFile(userScriptFilePath));
+#else
+    addUserScriptUrl("file:" + userScriptFilePath);
 #endif
 }
 

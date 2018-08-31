@@ -466,7 +466,7 @@ void WebAppBase::setUiSize(int width, int height) {
 
 void WebAppBase::webPageUrlChangedSlot()
 {
-    d->m_url = d->m_page->url().toString().toStdString();
+    d->m_url = d->m_page->url();
 }
 
 void WebAppBase::setPreferredLanguages(std::string language)
