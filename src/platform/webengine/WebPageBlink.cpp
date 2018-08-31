@@ -19,7 +19,7 @@
 #include <cmath>
 #include <experimental/filesystem>
 #include <sstream>
-#include <WamString.h>
+#include <WamUtils.h>
 
 #include <QtCore/QUrl>
 #include <QtCore/QUrlQuery>
@@ -541,10 +541,10 @@ void WebPageBlink::resumeWebPagePaintingAndJSExecution()
 std::string WebPageBlink::escapeData(const std::string& value)
 {
     std::string escapedValue(value);
-    WamString::findAndReplaceAll(escapedValue, "\\", "\\\\");
-    WamString::findAndReplaceAll(escapedValue, "'", "\\'");
-    WamString::findAndReplaceAll(escapedValue, "\n", "\\n");
-    WamString::findAndReplaceAll(escapedValue, "\r", "\\r");
+    WamUtils::findAndReplaceAll(escapedValue, "\\", "\\\\");
+    WamUtils::findAndReplaceAll(escapedValue, "'", "\\'");
+    WamUtils::findAndReplaceAll(escapedValue, "\n", "\\n");
+    WamUtils::findAndReplaceAll(escapedValue, "\r", "\\r");
     return escapedValue;
 }
 

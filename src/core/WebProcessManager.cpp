@@ -33,7 +33,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <WamString.h>
+#include <WamUtils.h>
 
 #include <glib.h>
 
@@ -176,7 +176,7 @@ void WebProcessManager::setWebProcessCacheProperty(QJsonObject object, std::stri
     std::string memoryCacheStr, codeCacheStr;
     if (!object.value("memoryCache").isUndefined()) {
         memoryCacheStr = object.value("memoryCache").toString().toStdString();
-        WamString::findAndReplaceAll(memoryCacheStr, std::string("MB"), std::string());
+        WamUtils::findAndReplaceAll(memoryCacheStr, std::string("MB"), std::string());
 
         bool isDigit = std::all_of(memoryCacheStr.begin(), memoryCacheStr.end(), ::isdigit);
         if (isDigit)
@@ -184,7 +184,7 @@ void WebProcessManager::setWebProcessCacheProperty(QJsonObject object, std::stri
     }
     if (!object.value("codeCache").isUndefined()) {
         codeCacheStr = object.value("codeCache").toString().toStdString();;
-        WamString::findAndReplaceAll(codeCacheStr, std::string("MB"), std::string());
+        WamUtils::findAndReplaceAll(codeCacheStr, std::string("MB"), std::string());
 
         bool isDigit = std::all_of(codeCacheStr.begin(), codeCacheStr.end(), ::isdigit);
         if (isDigit)
