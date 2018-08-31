@@ -124,7 +124,7 @@ WebAppBase* WebAppFactoryManager::createWebApp(std::string winType, WebPageBase*
     return NULL;
 }
 
-WebPageBase* WebAppFactoryManager::createWebPage(std::string winType, QUrl url, ApplicationDescription* desc, std::string appType, std::string launchParams)
+WebPageBase* WebAppFactoryManager::createWebPage(std::string winType, std::string url, ApplicationDescription* desc, std::string appType, std::string launchParams)
 {
     WebPageBase *page = NULL;
 

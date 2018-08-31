@@ -183,8 +183,8 @@ void WebAppManager::onLaunchContainerBasedApp(const std::string& url, std::strin
 
     if (winType == WT_FLOATING)
         page->setEnableBackgroundRun(appDesc->isEnableBackgroundRun());
-    page->replaceBaseUrl(QUrl(url.c_str()));
-    page->setDefaultUrl(QUrl(url.c_str()));
+    page->replaceBaseUrl(url.c_str());
+    page->setDefaultUrl(url.c_str());
 
     app->setAppDescription((ApplicationDescription *)appDesc);
     app->setAppProperties(args);
@@ -386,7 +386,7 @@ WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, std::string winTy
         return 0;
     }
 
-    WebPageBase* page = WebAppFactoryManager::instance()->createWebPage(winType, QUrl(url.c_str()), (ApplicationDescription *)appDesc, appDesc->subType().c_str(), args.c_str());
+    WebPageBase* page = WebAppFactoryManager::instance()->createWebPage(winType, url.c_str(), (ApplicationDescription *)appDesc, appDesc->subType().c_str(), args.c_str());
 
     //set use launching time optimization true while app loading.
     page->setUseLaunchOptimization(true);

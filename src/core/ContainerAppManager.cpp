@@ -29,7 +29,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <iostream>
 
 static std::string s_containerAppId = "com.webos.app.container";
 static int kContainerAppLaunchDuration = 300;
@@ -145,7 +144,7 @@ WebAppBase* ContainerAppManager::launchContainerAppInternal(const std::string& i
     }
 
     std::string url = desc->entryPoint();
-    WebPageBase* page = WebAppFactoryManager::instance()->createWebPage(WT_CARD, QUrl(url.c_str()), desc, desc->subType().c_str());
+    WebPageBase* page = WebAppFactoryManager::instance()->createWebPage(WT_CARD, url.c_str(), desc, desc->subType().c_str());
 
     // Turning off inline caching on container app, too.
     if (m_useContainerAppOptimization)

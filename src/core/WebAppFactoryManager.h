@@ -27,7 +27,7 @@ public:
     static WebAppFactoryManager* instance();
     WebAppBase* createWebApp(std::string winType, ApplicationDescription* desc = 0, std::string appType = "");
     WebAppBase* createWebApp(std::string winType, WebPageBase* page, ApplicationDescription* desc = 0, std::string appType = "");
-    WebPageBase* createWebPage(std::string winType, QUrl url, ApplicationDescription* desc, std::string appType = "", std::string launchParams = "");
+    WebPageBase* createWebPage(std::string winType, std::string url, ApplicationDescription* desc, std::string appType = "", std::string launchParams = "");
     WebAppFactoryInterface* getPluggable(std::string appType);
     WebAppFactoryInterface* loadPluggable(std::string appType = "");
 
