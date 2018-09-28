@@ -83,6 +83,7 @@ protected:
     void onClearBrowsingData(const int removeBrowsingDataMask);
     void onAppInstalled(const std::string& app_id);
     void onAppRemoved(const std::string& app_id);
+    void setProxyServer(const std::string& ip, const std::string& port);
 
     void setDeviceInfo(const QString& name, const QString& value);
     void setUiSize(int width, int height);

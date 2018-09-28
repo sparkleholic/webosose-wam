@@ -107,5 +107,5 @@ int BlinkWebProcessManager::maskForBrowsingDataType(const char* type)
 }
 
 void BlinkWebProcessManager::setProxyServer(const std::string& ip, const std::string& port) {
-    return BlinkWebViewProfileHelper::setProxyServer(ip, port);
+    BlinkWebViewProfileHelper::setProxyServer(ip, port);
 }

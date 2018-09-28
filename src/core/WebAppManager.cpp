@@ -806,6 +806,7 @@ QString WebAppManager::identifierForSecurityOrigin(const QString& identifier)
 
 void WebAppManager::setProxyServer(const std::string& ip, const std::string& port)
 {
-    m_webProcessManager->setProxyServer(ip, port);
+    if (m_webProcessManager)
+        m_webProcessManager->setProxyServer(ip, port);
 }
 
