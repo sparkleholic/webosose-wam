@@ -24,7 +24,7 @@ CONFIG += no_keywords
 SOURCES += \
         Main.cpp
 
-LIBS += -lWebAppMgr -lWebAppMgrCore
+LIBS += -lWebAppMgr -lWebAppMgrCore -lstdc++fs
 
 TARGET = WebAppMgr
 
