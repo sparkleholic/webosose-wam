@@ -804,9 +804,9 @@ QString WebAppManager::identifierForSecurityOrigin(const QString& identifier)
     return QString("%1%2").arg(lowcase_identifier).arg(webos::WebViewBase::kSecurityOriginPostfix.c_str());
 }
 
-void WebAppManager::setProxyServer(const std::string& ip, const std::string& port)
+void WebAppManager::buildWebViewProfile(const std::string& app_id, const std::string& proxy_host, const std::string& proxy_port)
 {
     if (m_webProcessManager)
-        m_webProcessManager->setProxyServer(ip, port);
+        m_webProcessManager->buildWebViewProfile(app_id, proxy_host, proxy_port);
 }
 
