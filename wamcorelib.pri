@@ -21,6 +21,7 @@ include(common.pri)
 SOURCES += \
         ApplicationDescription.cpp \
         DeviceInfo.cpp \
+        JsonHelper.cpp \
         LogManager.cpp \
         NetworkStatus.cpp \
         NetworkStatusManager.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
 HEADERS += \
         ApplicationDescription.h \
         DeviceInfo.h \
+        JsonHelper.h \
         LogManager.h \
         LogMsgId.h \
         NetworkStatus.h \

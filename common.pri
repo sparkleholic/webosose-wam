@@ -130,7 +130,8 @@ isEmpty(CHROMIUM_SRC_DIR) {
 }
 INCLUDEPATH += $${CHROMIUM_SRC_DIR}
 
-QMAKE_CXXFLAGS += -fno-rtti -fno-exceptions -Wall -fpermissive -funwind-tables
+QMAKE_CXXFLAGS += -fno-rtti -Wall -fpermissive -funwind-tables
+
 QMAKE_CXXFLAGS += -std=c++14
 QMAKE_LFLAGS += -rdynamic
 
