@@ -21,10 +21,9 @@
 #include <sstream>
 #include <unistd.h>
 
-#include <QtCore/QJsonDocument>
-
 #include "ApplicationDescription.h"
 #include "DeviceInfo.h"
+#include "JsonHelper.h"
 #include "LogManager.h"
 #include "NetworkStatusManager.h"
 #include "PlatformModuleFactory.h"
@@ -165,8 +164,8 @@ void WebAppManager::onRelaunchApp(const std::string& instanceId, const std::stri
 
     // Do not relaunch when preload args is setted
     // luna-send -n 1 luna://com.webos.applicationManager/launch '{"id":<AppId> "preload":<PreloadState> }'
-    QJsonDocument doc = QJsonDocument::fromJson(args.c_str());
-    QJsonObject obj = doc.object();
+    Json::Value obj;
+    readJsonFromString(args, obj);
 
     // if this app is keepAlive and window.close() was once and relaunch now no matter preloaded, fastswitching, launch by launch API
     // need to clear the flag if it needs
@@ -174,7 +173,8 @@ void WebAppManager::onRelaunchApp(const std::string& instanceId, const std::stri
         app->setClosePageRequested(false);
 
     if (!obj["preload"].isString()
-        && !obj["launchedHidden"].toBool()) {
+        && obj["launchedHidden"].isBool()
+        && !obj["launchedHidden"].asBool()) {
         app->relaunch(args.c_str(), launchingAppId.c_str());
     } else {
         LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", qPrintable(app->appId())), PMLOGKS("INSTANCE_ID", qPrintable(QString::fromStdString(instanceId))), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "Relaunch with preload option, ignore");
@@ -669,7 +669,7 @@ std::vector<ApplicationInfo> WebAppManager::list( bool includeSystemApps )
     return list;
 }
 
-QJsonObject WebAppManager::getWebProcessProfiling()
+Json::Value WebAppManager::getWebProcessProfiling()
 {
     return m_webProcessManager->getWebProcessProfiling();
 }
@@ -753,7 +753,7 @@ void WebAppManager::serviceCall(const QString& url, const QString& payload, cons
         m_serviceSender->serviceCall(url, payload, appId);
 }
 
-void WebAppManager::updateNetworkStatus(const QJsonObject& object)
+void WebAppManager::updateNetworkStatus(const Json::Value& object)
 {
     NetworkStatus status;
     status.fromJsonObject(object);
