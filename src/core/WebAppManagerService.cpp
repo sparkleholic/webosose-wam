@@ -42,18 +42,18 @@ bool WebAppManagerService::onPauseApp(const std::string& instanceId)
     return WebAppManager::instance()->onPauseApp(instanceId);
 }
 
-QJsonObject WebAppManagerService::onLogControl(const std::string& keys, const std::string& value)
+Json::Value WebAppManagerService::onLogControl(const std::string& keys, const std::string& value)
 {
     LogManager::setLogControl(keys, value);
 
-    QJsonObject reply;
+    Json::Value reply(Json::objectValue);
 
     reply["event"] = LogManager::getDebugEventsEnabled();
     reply["bundleMessage"] = LogManager::getDebugBundleMessagesEnabled();
     reply["mouseMove"] = LogManager::getDebugMouseMoveEnabled();
     reply["returnValue"] = true;
 
-    return reply;
+    return std::move(reply);
 }
 
 bool WebAppManagerService::onCloseAllApps(uint32_t pid)

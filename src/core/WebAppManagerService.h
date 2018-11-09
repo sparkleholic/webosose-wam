@@ -17,9 +17,6 @@
 #ifndef WEBAPPMANAGERSERVICE_H
 #define WEBAPPMANAGERSERVICE_H
 
-//FIXME: Remove once QJson* is fully dropped from WebAppManagerService
-#include <QJsonObject>
-
 #include "WebAppManager.h"
 
 #include "webos/webview_base.h"
@@ -57,17 +54,17 @@ public:
 
     virtual bool startService() = 0;
     // methods published to the bus
-    virtual QJsonObject launchApp(QJsonObject request) = 0;
-    virtual QJsonObject killApp(QJsonObject request) = 0;
-    virtual QJsonObject pauseApp(QJsonObject request) = 0;
-    virtual QJsonObject logControl(QJsonObject request) = 0;
-    virtual QJsonObject setInspectorEnable(QJsonObject request) = 0;
-    virtual QJsonObject closeAllApps(QJsonObject request) = 0;
-    virtual QJsonObject discardCodeCache(QJsonObject request) = 0;
-    virtual QJsonObject listRunningApps(QJsonObject request, bool subscribed) = 0;
-    virtual QJsonObject getWebProcessSize(QJsonObject request) = 0;
-    virtual QJsonObject clearBrowsingData(QJsonObject request) = 0;
-    virtual QJsonObject webProcessCreated(QJsonObject request, bool subscribed) = 0;
+    virtual Json::Value launchApp(const Json::Value &request) = 0;
+    virtual Json::Value killApp(const Json::Value &request) = 0;
+    virtual Json::Value pauseApp(const Json::Value &request) = 0;
+    virtual Json::Value logControl(const Json::Value &request) = 0;
+    virtual Json::Value setInspectorEnable(const Json::Value &request) = 0;
+    virtual Json::Value closeAllApps(const Json::Value &request) = 0;
+    virtual Json::Value discardCodeCache(const Json::Value &request) = 0;
+    virtual Json::Value listRunningApps(const Json::Value &request, bool subscribed) = 0;
+    virtual Json::Value getWebProcessSize(const Json::Value &request) = 0;
+    virtual Json::Value clearBrowsingData(const Json::Value &request) = 0;
+    virtual Json::Value webProcessCreated(const Json::Value &request, bool subscribed) = 0;
 
 protected:
     std::string onLaunch(const std::string& appDescString,
@@ -76,9 +73,10 @@ protected:
         int& errCode,
         std::string& errMsg);
 
+
     bool onKillApp(const std::string& appId, const std::string& instanceId, bool force = false);
     bool onPauseApp(const std::string& instanceId);
-    QJsonObject onLogControl(const std::string& keys, const std::string& value);
+    Json::Value onLogControl(const std::string& keys, const std::string& value);
     bool onCloseAllApps(uint32_t pid = 0);
     bool isDiscardCodeCacheRequired();
     void onDiscardCodeCache(uint32_t pid);
