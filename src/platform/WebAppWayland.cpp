@@ -527,9 +527,6 @@ void WebAppWayland::doAttach()
         page()->setKeepAliveWebApp(keepAlive());
 
     setForceActivateVtgIfRequired();
-
-    connect(page(), SIGNAL(webPageClosePageRequested()), this, SLOT(webPageClosePageRequestedSlot()));
-    connect(page(), SIGNAL(webViewRecreated()), this, SLOT(webViewRecreatedSlot()));
 }
 
 void WebAppWayland::raise()
@@ -562,7 +559,7 @@ void WebAppWayland::goBackground()
     }
 }
 
-void WebAppWayland::webPageLoadFinishedSlot()
+void WebAppWayland::webPageLoadFinished()
 {
     if (getHiddenWindow())
         return;
@@ -575,7 +572,7 @@ void WebAppWayland::webPageLoadFinishedSlot()
     doPendingRelaunch();
 }
 
-void WebAppWayland::webPageLoadFailedSlot(int errorCode)
+void WebAppWayland::webPageLoadFailed(int errorCode)
 {
     // Do not load error page while preoload app launching.
     if (preloadState() != NONE_PRELOAD)
@@ -635,12 +632,6 @@ bool WebAppWayland::hideWindow()
     return true;
 }
 
-
-void WebAppWayland::showWindowSlot()
-{
-    showWindow();
-}
-
 void WebAppWayland::titleChanged()
 {
     setWindowProperty(QStringLiteral("subtitle"), page()->title());
@@ -676,7 +667,7 @@ void WebAppWayland::navigationHistoryChanged()
     }
 }
 
-void WebAppWayland::webViewRecreatedSlot()
+void WebAppWayland::webViewRecreated()
 {
     m_appWindow->attachWebContents(page()->getWebContents());
     m_appWindow->RecreatedWebContents();

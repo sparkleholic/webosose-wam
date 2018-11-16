@@ -263,7 +263,7 @@ void WebPageBase::handleLoadFinished()
         "WebPageBase::handleLoadFinished; m_suspendAtLoad : %s",
             m_suspendAtLoad ? "true; suspend in this time" : "false");
 
-    Q_EMIT webPageLoadFinished();
+    FOR_EACH_OBSERVER(WebPageObserver, m_observers, webPageLoadFinished());
 
     // if there was an attempt made to suspend while this page was loading, then
     // we flag m_suspendAtLoad = true, and suspend it after it is loaded. This is
