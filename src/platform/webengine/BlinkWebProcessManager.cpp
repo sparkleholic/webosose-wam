@@ -16,9 +16,11 @@
 
 #include "BlinkWebProcessManager.h"
 
+#include <map>
 #include <memory>
+#include <set>
+
 #include <json/value.h>
-#include <QtCore/QList>
 #include <QString>
 
 #include "WebPageBlink.h"
@@ -39,34 +41,32 @@ Json::Value BlinkWebProcessManager::getWebProcessProfiling()
     Json::Value reply(Json::objectValue);
     Json::Value processArray(Json::arrayValue);
     uint32_t pid;
-    QList<uint32_t> processIdList;
+    std::set<uint32_t> processIdList;
 
-    QMap<uint32_t, WebAppBase*> runningAppList;
+    std::multimap<uint32_t, WebAppBase*> runningAppsMap;
     std::list<const WebAppBase*> running = runningApps();
 
     for (auto it = running.begin(); it != running.end(); ++it) {
         WebAppBase* app = findAppByInstanceId((*it)->instanceId());
         pid = getWebProcessPID(app);
-        if (!processIdList.contains(pid))
-            processIdList.append(pid);
+        processIdList.insert(pid);
 
-        runningAppList.insertMulti(pid, app);
+        runningAppsMap.emplace(pid, app);
     }
 
-    for (int id = 0; id < processIdList.size(); id++) {
+    for (uint32_t pid : processIdList) {
         Json::Value processObject(Json::objectValue);
         Json::Value appArray(Json::arrayValue);
-        pid = processIdList.at(id);
 
         processObject["pid"] = QString::number(pid).toStdString();
         processObject["webProcessSize"] = getWebProcessMemSize(pid).toStdString();
         //starfish-surface is note used on Blink
         processObject["tileSize"] = 0;
-        QList<WebAppBase*> processApp = runningAppList.values(pid);
-        for (int app = 0; app < processApp.size(); app++) {
+        auto processes = runningAppsMap.equal_range(pid);
+        for (auto p = processes.first; p != processes.second; ++p) {
             Json::Value appObject(Json::objectValue);
-            appObject["id"] = processApp.at(app)->appId().toStdString();
-            appObject["instanceId"] = processApp.at(app)->instanceId().toStdString();
+            appObject["id"] = p->second->appId().toStdString();
+	    appObject["instanceId"] = p->second->instanceId().toStdString();
             appArray.append(appObject);
         }
         processObject["runningApps"] = appArray;

@@ -336,11 +336,12 @@ void WebAppManager::forceCloseAppInternal(WebAppBase* app)
 
 void WebAppManager::removeClosingAppList(const QString& instanceId)
 {
-    QMap<QString, WebAppBase*>::iterator it = m_closingAppList.find(instanceId);
+
+    const auto &it = m_closingAppList.find(instanceId);
     if (it == m_closingAppList.end())
         return;
 
-   m_closingAppList.remove(instanceId);
+   m_closingAppList.erase(it);
 }
 
 void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
@@ -360,7 +361,7 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
     webPageRemoved(app->page());
     removeWebAppFromWebProcessInfoMap(app->appId());
     postRunningAppList();
-    m_lastCrashedAppIds = QMap<QString, int>();
+    m_lastCrashedAppIds = std::map<QString, int>();
 
     // Set m_isClosing flag first, this flag will be checked in web page suspending
     page->setClosing(true);
@@ -374,7 +375,7 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
     if (ignoreCleanResource)
         delete app;
     else {
-        m_closingAppList.insert(app->instanceId(), app);
+        m_closingAppList.insert(std::make_pair(app->instanceId(), app));
 
         if (page->isRegisteredCloseCallback()) {
             LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", qPrintable(app->appId())), PMLOGKS("INSTANCE_ID", qPrintable(app->instanceId())), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "CloseCallback; execute");
@@ -415,10 +416,17 @@ bool WebAppManager::closeAllApps(uint32_t pid)
 
 void WebAppManager::webPageAdded(WebPageBase* page)
 {
-    if (m_appPageMap.contains(page->appId().toStdString(), page))
-        return;
+    auto appId = page->appId().toStdString();
+    if (m_appPageMap.count(appId) > 0) {
+        auto range = m_appPageMap.equal_range(appId);
+        for (auto i = range.first; i != range.second; ++i) {
+            if (i->second == page) {
+                return;
+            }
+        }
+    }
 
-    m_appPageMap.insert(page->appId().toStdString(), page);
+    m_appPageMap.insert(std::make_pair(appId, page));
 }
 
 void WebAppManager::webPageRemoved(WebPageBase* page)
@@ -431,7 +439,17 @@ void WebAppManager::webPageRemoved(WebPageBase* page)
         }
     }
 
-    m_appPageMap.remove(page->appId().toStdString(), page);
+    auto appId = page->appId().toStdString();
+    if (m_appPageMap.count(appId) > 0) {
+        auto range = m_appPageMap.equal_range(appId);
+        for (auto i = range.first; i != range.second; ++i) {
+            if (i->second == page) {
+                m_appPageMap.erase(i);
+            }
+        }
+    }
+
+    m_shellPageMap.erase(appId);
 }
 
 void WebAppManager::removeWebAppFromWebProcessInfoMap(QString appId)
@@ -488,7 +506,7 @@ void WebAppManager::appDeleted(WebAppBase* app)
     m_appList.remove(app);
 
     if (!appId.empty())
-        m_shellPageMap.remove(appId);
+        m_shellPageMap.erase(appId);
 }
 
 void WebAppManager::setSystemLanguage(QString language)

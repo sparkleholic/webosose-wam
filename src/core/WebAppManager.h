@@ -18,12 +18,11 @@
 #define WEBAPPMANAGER_H
 
 #include <list>
-#include <map>
 #include <memory>
+#include <map>
 #include <string>
 #include <vector>
 
-#include <QMultiMap>
 #include <QString>
 
 #include "webos/webview_base.h"
@@ -176,12 +175,12 @@ private:
     typedef std::list<WebPageBase*> PageList;
 
     bool isRunningApp(const std::string& id);
-    QMap<QString, WebAppBase*> m_closingAppList;
+    std::map<QString, WebAppBase*> m_closingAppList;
 
     // Mappings
-    QMap<std::string, WebPageBase*> m_shellPageMap;
+    std::map<std::string, WebPageBase*> m_shellPageMap;
     AppList m_appList;
-    QMultiMap<std::string, WebPageBase*> m_appPageMap;
+    std::multimap<std::string, WebPageBase*> m_appPageMap;
 
     PageList m_pagesToDeleteList;
     bool m_deletingPages;
@@ -195,7 +194,7 @@ private:
     std::unique_ptr<WebAppManagerConfig> m_webAppManagerConfig;
     std::unique_ptr<NetworkStatusManager> m_networkStatusManager;
 
-    QMap<QString, int> m_lastCrashedAppIds;
+    std::map<QString, int> m_lastCrashedAppIds;
 
     int m_suspendDelay;
     int m_maxCustomSuspendDelay;
