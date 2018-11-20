@@ -333,22 +333,22 @@ void WebAppWayland::setupWindowGroup(ApplicationDescription* desc)
         return;
 
     ApplicationDescription::WindowGroupInfo groupInfo = desc->getWindowGroupInfo();
-    if (groupInfo.name.isEmpty())
+    if (groupInfo.name.empty())
         return;
 
     if (groupInfo.isOwner) {
         ApplicationDescription::WindowOwnerInfo ownerInfo = desc->getWindowOwnerInfo();
-        webos::WindowGroupConfiguration config(groupInfo.name.toStdString());
+        webos::WindowGroupConfiguration config(groupInfo.name);
         config.SetIsAnonymous(ownerInfo.allowAnonymous);
         for (const auto &l : ownerInfo.layers) {
-          config.AddLayer(webos::WindowGroupLayerConfiguration(l.first.toStdString(), l.second));
+          config.AddLayer(webos::WindowGroupLayerConfiguration(l.first, l.second));
         }
         m_appWindow->CreateWindowGroup(config);
         LOG_INFO(MSGID_CREATE_SURFACEGROUP, 3, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKS("INSTANCE_ID", qPrintable(instanceId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
     } else {
         ApplicationDescription::WindowClientInfo clientInfo = desc->getWindowClientInfo();
-        m_appWindow->AttachToWindowGroup(groupInfo.name.toStdString(), clientInfo.layer.toStdString());
-        LOG_INFO(MSGID_ATTACH_SURFACEGROUP, 4, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKS("OWNER_ID", qPrintable(groupInfo.name)), PMLOGKS("INSTANCE_ID", qPrintable(instanceId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
+        m_appWindow->AttachToWindowGroup(groupInfo.name, clientInfo.layer);
+        LOG_INFO(MSGID_ATTACH_SURFACEGROUP, 4, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKS("OWNER_ID", qPrintable(groupInfo.name.c_str())), PMLOGKS("INSTANCE_ID", qPrintable(instanceId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
     }
 }
 
@@ -474,7 +474,7 @@ void WebAppWayland::focusLayer()
     ApplicationDescription * desc = getAppDescription();
     if (desc) {
         ApplicationDescription::WindowClientInfo clientInfo = desc->getWindowClientInfo();
-        LOG_DEBUG("FocusLayer(layer:%s) [%s]",qPrintable(clientInfo.layer) ,qPrintable(appId()));
+        LOG_DEBUG("FocusLayer(layer:%s) [%s]", clientInfo.layer.c_str() ,qPrintable(appId()));
     }
 }
 
