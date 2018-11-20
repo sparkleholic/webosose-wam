@@ -27,6 +27,7 @@ SOURCES += \
         NetworkStatusManager.cpp \
         PalmSystemBase.cpp \
         PlugInService.cpp \
+        StringUtils.cpp \
         Timer.cpp \
         WebAppBase.cpp \
         WebAppFactoryManager.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
         PlatformModuleFactory.h \
         PlugInService.h \
         ServiceSender.h \
+        StringUtils.h \
         Timer.h \
         WebAppBase.h \
         WebAppFactoryInterface.h \
