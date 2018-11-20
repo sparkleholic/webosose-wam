@@ -457,6 +457,7 @@ void WebAppManager::removeWebAppFromWebProcessInfoMap(QString appId)
     // Deprecated (2016-04-01)
 }
 
+// FIXME: QString -> std::string
 WebAppBase* WebAppManager::findAppById(const QString& appId)
 {
     for (AppList::iterator it = m_appList.begin(); it != m_appList.end(); ++it) {
@@ -610,7 +611,7 @@ void WebAppManager::requestKillWebProcess(uint32_t pid)
     // Deprecated (2016-0401)
 }
 
-void WebAppManager::deleteStorageData(const QString& identifier)
+void WebAppManager::deleteStorageData(const std::string& identifier)
 {
     m_webProcessManager->deleteStorageData(identifierForSecurityOrigin(identifier));
 }

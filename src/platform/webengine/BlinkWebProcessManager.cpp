@@ -21,7 +21,6 @@
 #include <set>
 
 #include <json/value.h>
-#include <QString>
 
 #include "WebPageBlink.h"
 #include "WebAppBase.h"
@@ -58,8 +57,8 @@ Json::Value BlinkWebProcessManager::getWebProcessProfiling()
         Json::Value processObject(Json::objectValue);
         Json::Value appArray(Json::arrayValue);
 
-        processObject["pid"] = QString::number(pid).toStdString();
-        processObject["webProcessSize"] = getWebProcessMemSize(pid).toStdString();
+        processObject["pid"] = std::to_string(pid);
+        processObject["webProcessSize"] = getWebProcessMemSize(pid);
         //starfish-surface is note used on Blink
         processObject["tileSize"] = 0;
         auto processes = runningAppsMap.equal_range(pid);
@@ -78,7 +77,7 @@ Json::Value BlinkWebProcessManager::getWebProcessProfiling()
     return std::move(reply);
 }
 
-void BlinkWebProcessManager::deleteStorageData(const QString& identifier)
+void BlinkWebProcessManager::deleteStorageData(const std::string& identifier)
 {
     std::list<const WebAppBase*> runningAppList = runningApps();
     if (!runningAppList.empty()) {
@@ -88,7 +87,7 @@ void BlinkWebProcessManager::deleteStorageData(const QString& identifier)
 
     BlinkWebView* webview = new BlinkWebView();
     if (webview) {
-        webview->DeleteWebStorages(identifier.toStdString());
+        webview->DeleteWebStorages(identifier);
         delete webview;
     }
 }

@@ -93,7 +93,7 @@ protected:
     void setSystemLanguage(const QString& language);
     QString getSystemLanguage();
     void setForceCloseApp(const QString& appId, const QString& instanceId);
-    void deleteStorageData(const QString& identifier);
+    void deleteStorageData(const std::string& identifier);
     void killCustomPluginProcess(const QString& appBasePath);
     void requestKillWebProcess(uint32_t pid);
     void updateNetworkStatus(const Json::Value& object);
