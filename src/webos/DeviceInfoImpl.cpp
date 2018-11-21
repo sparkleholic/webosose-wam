@@ -16,6 +16,7 @@
 
 #include "DeviceInfoImpl.h"
 #include "LogManager.h"
+#include "StringUtils.h"
 
 #ifdef HAS_LUNA_SERVICE
 #include <lunaprefs.h>
@@ -25,7 +26,6 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <string>
 
 DeviceInfoImpl::DeviceInfoImpl()
     : m_screenWidth(0)
@@ -62,9 +62,9 @@ void DeviceInfoImpl::initialize()
     QString localcountry(localeInfoDoc.object().value("country").toString());
     QString smartservicecountry(localeInfoDoc.object().value("smartServiceCountryCode3").toString());
 
-    setSystemLanguage(language);
-    setDeviceInfo("LocalCountry", localcountry);
-    setDeviceInfo("SmartServiceCountry", smartservicecountry);
+    setSystemLanguage(language.toStdString());
+    setDeviceInfo("LocalCountry", localcountry.toStdString());
+    setDeviceInfo("SmartServiceCountry", smartservicecountry.toStdString());
 }
 
 bool DeviceInfoImpl::getInfoFromLunaPrefs(const char* key, std::string& value)
@@ -89,12 +89,12 @@ void DeviceInfoImpl::initDisplayInfo()
     int hardwareScreenWidth = 0;
     int hardwareScreenHeight = 0;
 
-    QString hardwareScreenWidthStr;
-    QString hardwareScreenHeightStr;
+    std::string hardwareScreenWidthStr;
+    std::string hardwareScreenHeightStr;
     if (getDeviceInfo("HardwareScreenWidth", hardwareScreenWidthStr) &&
         getDeviceInfo("HardwareScreenHeight", hardwareScreenHeightStr)) {
-        hardwareScreenWidth = hardwareScreenWidthStr.toInt();
-        hardwareScreenHeight = hardwareScreenHeightStr.toInt();
+        hardwareScreenWidth = stringTo<int>(hardwareScreenWidthStr);
+        hardwareScreenHeight = stringTo<int>(hardwareScreenHeightStr);
     } else {
         getDisplayWidth(hardwareScreenWidth);
         getDisplayHeight(hardwareScreenHeight);
@@ -116,11 +116,11 @@ void DeviceInfoImpl::initPlatformInfo()
        "platformVersionMinor": 00,
     */
 
-    QString value;
+    std::string value;
      if (getDeviceInfo("ModelName", value))
-         m_modelName = value.toStdString();
+         m_modelName = value;
      if (getDeviceInfo("FirmwareVersion", value))
-        m_platformVersion = value.toStdString();
+        m_platformVersion = value;
 
     std::string platformVersion = m_platformVersion;
 

@@ -88,10 +88,10 @@ protected:
     void onAppRemoved(const std::string& app_id);
     void buildWebViewProfile(const std::string& app_id, const std::string& proxy_host, const std::string& proxy_port);
 
-    void setDeviceInfo(const QString& name, const QString& value);
+    void setDeviceInfo(const std::string& name, const std::string& value);
     void setUiSize(int width, int height);
-    void setSystemLanguage(const QString& language);
-    QString getSystemLanguage();
+    void setSystemLanguage(const std::string& language);
+    std::string getSystemLanguage();
     void setForceCloseApp(const QString& appId, const QString& instanceId);
     void deleteStorageData(const std::string& identifier);
     void killCustomPluginProcess(const std::string& appBasePath);

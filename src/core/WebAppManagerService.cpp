@@ -96,7 +96,7 @@ void WebAppManagerService::onAppRemoved(const std::string& app_id) {
   WebAppManager::instance()->appRemoved(app_id);
 }
 
-void WebAppManagerService::setDeviceInfo(const QString &name, const QString &value)
+void WebAppManagerService::setDeviceInfo(const std::string &name, const std::string &value)
 {
     WebAppManager::instance()->setDeviceInfo(name, value);
 }
@@ -106,14 +106,14 @@ void WebAppManagerService::setUiSize(int width, int height)
     WebAppManager::instance()->setUiSize(width, height);
 }
 
-void WebAppManagerService::setSystemLanguage(const QString &language)
+void WebAppManagerService::setSystemLanguage(const std::string &language)
 {
     WebAppManager::instance()->setSystemLanguage(language);
 }
 
-QString WebAppManagerService::getSystemLanguage()
+std::string WebAppManagerService::getSystemLanguage()
 {
-    QString language;
+    std::string language;
     WebAppManager::instance()->getSystemLanguage(language);
     return language;
 }

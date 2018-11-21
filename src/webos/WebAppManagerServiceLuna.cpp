@@ -431,10 +431,11 @@ void WebAppManagerServiceLuna::getSystemLocalePreferencesCallback(QJsonObject re
     if(language.isEmpty())
         return;
 
-    if(language == WebAppManagerService::getSystemLanguage())
+    QString sysLanguage = QString::fromStdString(WebAppManagerService::getSystemLanguage());
+    if(language == sysLanguage)
         return;
 
-    WebAppManagerService::setSystemLanguage(language);
+    WebAppManagerService::setSystemLanguage(language.toStdString());
 }
 
 void WebAppManagerServiceLuna::memoryManagerConnectCallback(QJsonObject reply)
