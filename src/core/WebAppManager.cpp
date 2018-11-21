@@ -137,12 +137,14 @@ int WebAppManager::currentUiHeight()
     return height;
 }
 
+//FIXME: WebAppManager: qstr2stdstr
 bool WebAppManager::getSystemLanguage(QString &value)
 {
     if (!m_deviceInfo) return false;
     return m_deviceInfo->getSystemLanguage(value);
 }
 
+//FIXME: WebAppManager: qstr2stdstr
 bool WebAppManager::getDeviceInfo(QString name, QString &value)
 {
     if (!m_deviceInfo) return false;
@@ -191,13 +193,12 @@ bool WebAppManager::isDiscardCodeCacheRequired()
     return false; // Deprecated (2016-04-01)
 }
 
-bool WebAppManager::setInspectorEnable(QString & appId)
+bool WebAppManager::setInspectorEnable(const std::string& appId)
 {
      // 1. find appId from then running App List,
-    for (AppList::const_iterator it = m_appList.begin(); it != m_appList.end(); ++it) {
-        WebAppBase* app = (*it);
-        if(appId == app->page()->appId()) {
-            LOG_DEBUG("[%s] setInspectorEnable", qPrintable(appId));
+    for (const auto &app : m_appList) {
+        if(appId == app->page()->appId().toStdString()) {
+            LOG_DEBUG("[%s] setInspectorEnable", appId.c_str());
             app->page()->setInspectorEnable();
             return true;
         }
@@ -227,7 +228,7 @@ bool WebAppManager::onKillApp(const std::string& appId, const std::string& insta
 {
     WebAppBase* app = findAppByInstanceId(QString::fromStdString(instanceId));
     if (app == nullptr || (app->appId().toStdString() != appId)) {
-        LOG_INFO(MSGID_KILL_APP, 2, PMLOGKS("APP_ID", qPrintable(QString::fromStdString(appId))), PMLOGKS("INSTANCE_ID", qPrintable(QString::fromStdString(instanceId))), "App doesn't exist; return");
+        LOG_INFO(MSGID_KILL_APP, 2, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", instanceId.c_str()), "App doesn't exist; return");
         return false;
     }
 
@@ -278,12 +279,12 @@ std::list<const WebAppBase*> WebAppManager::runningApps(uint32_t pid)
     return apps;
 }
 
-WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, QString winType,
-                                       std::shared_ptr<ApplicationDescription> appDesc, const std::string& instanceId,
+WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, const std::string& winType,
+                                       const std::shared_ptr<ApplicationDescription> appDesc, const std::string& instanceId,
                                        const std::string& args, const std::string& launchingAppId,
                                        int& errCode, std::string& errMsg)
 {
-    WebAppBase* app = WebAppFactoryManager::instance()->createWebApp(winType, appDesc, appDesc->subType().c_str());
+    WebAppBase* app = WebAppFactoryManager::instance()->createWebApp(winType, appDesc, appDesc->subType());
 
     if (!app) {
         errCode = ERR_CODE_LAUNCHAPP_UNSUPPORTED_TYPE;
@@ -291,7 +292,7 @@ WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, QString winType,
         return nullptr;
     }
 
-    WebPageBase* page = WebAppFactoryManager::instance()->createWebPage(winType, QUrl(url.c_str()), appDesc, appDesc->subType().c_str(), args.c_str());
+    WebPageBase* page = WebAppFactoryManager::instance()->createWebPage(winType, QUrl(url.c_str()), appDesc, appDesc->subType(), args);
 
     //set use launching time optimization true while app loading.
     page->setUseLaunchOptimization(true);
@@ -300,13 +301,13 @@ WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, QString winType,
       page->setEnableBackgroundRun(appDesc->isEnableBackgroundRun());
 
     app->setAppDescription(appDesc);
-    app->setAppProperties(QString::fromStdString(args));
-    app->setInstanceId(QString::fromStdString(instanceId));
-    app->setLaunchingAppId(QString::fromStdString(launchingAppId));
+    app->setAppProperties(args);
+    app->setInstanceId(instanceId);
+    app->setLaunchingAppId(launchingAppId);
     if (m_webAppManagerConfig->isCheckLaunchTimeEnabled())
       app->startLaunchTimer();
     app->attach(page);
-    app->setPreloadState(QString::fromStdString(args));
+    app->setPreloadState(args);
 
     page->load();
     webPageAdded(page);
@@ -359,9 +360,9 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
     std::string type = app->getAppDescription()->defaultWindowType();
     appDeleted(app);
     webPageRemoved(app->page());
-    removeWebAppFromWebProcessInfoMap(app->appId());
+    removeWebAppFromWebProcessInfoMap(app->appId().toStdString());
     postRunningAppList();
-    m_lastCrashedAppIds = std::map<QString, int>();
+    m_lastCrashedAppIds = std::map<std::string, int>();
 
     // Set m_isClosing flag first, this flag will be checked in web page suspending
     page->setClosing(true);
@@ -375,7 +376,8 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
     if (ignoreCleanResource)
         delete app;
     else {
-        m_closingAppList.insert(std::make_pair(app->instanceId(), app));
+
+        m_closingAppList.emplace(std::make_pair(app->instanceId(), app));
 
         if (page->isRegisteredCloseCallback()) {
             LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", qPrintable(app->appId())), PMLOGKS("INSTANCE_ID", qPrintable(app->instanceId())), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "CloseCallback; execute");
@@ -452,21 +454,18 @@ void WebAppManager::webPageRemoved(WebPageBase* page)
     m_shellPageMap.erase(appId);
 }
 
-void WebAppManager::removeWebAppFromWebProcessInfoMap(QString appId)
+void WebAppManager::removeWebAppFromWebProcessInfoMap(const std::string& appId)
 {
     // Deprecated (2016-04-01)
 }
 
-// FIXME: QString -> std::string
-WebAppBase* WebAppManager::findAppById(const QString& appId)
+WebAppBase* WebAppManager::findAppById(const std::string& appId)
 {
-    for (AppList::iterator it = m_appList.begin(); it != m_appList.end(); ++it) {
-        WebAppBase* app = (*it);
-
-        if (app->page() && app->appId() == appId)
+    for (const auto &app : m_appList) {
+        //FIXME: WebApp: qstr2stdstr
+        if (app->page() && app->appId().toStdString() == appId)
             return app;
     }
-
     return 0;
 }
 
@@ -485,10 +484,8 @@ std::list<WebAppBase*> WebAppManager::findAppsById(const QString& appId)
 
 WebAppBase* WebAppManager::findAppByInstanceId(const QString& instanceId)
 {
-    for (AppList::iterator it = m_appList.begin(); it != m_appList.end(); ++it) {
-        WebAppBase* app = (*it);
-
-        if (app->page() && (app->instanceId() == instanceId))
+    for (const auto &app : m_appList) {
+        if (app->page() && app->instanceId() == instanceId)
             return app;
     }
 
@@ -510,6 +507,7 @@ void WebAppManager::appDeleted(WebAppBase* app)
         m_shellPageMap.erase(appId);
 }
 
+// FIXME: WebAppManager: qstr2stdstr
 void WebAppManager::setSystemLanguage(QString language)
 {
     if (!m_deviceInfo) return;
@@ -525,6 +523,7 @@ void WebAppManager::setSystemLanguage(QString language)
     LOG_DEBUG("New system language: %s", language.toStdString().c_str());
 }
 
+// FIXME: WebAppManager: qstr2stdstr
 void WebAppManager::setDeviceInfo(QString name, QString value)
 {
     if (!m_deviceInfo) return;
@@ -533,11 +532,11 @@ void WebAppManager::setDeviceInfo(QString name, QString value)
     if (m_deviceInfo->getDeviceInfo(name, oldValue) && (oldValue == value)) return;
 
     m_deviceInfo->setDeviceInfo(name, value);
-    broadcastWebAppMessage(WebAppMessageType::DeviceInfoChanged, name);
+    broadcastWebAppMessage(WebAppMessageType::DeviceInfoChanged, name.toStdString());
     LOG_DEBUG("SetDeviceInfo %s; %s to %s", name.toStdString().c_str(), oldValue.toStdString().c_str(), value.toStdString().c_str());
 }
 
-void WebAppManager::broadcastWebAppMessage(WebAppMessageType type, const QString& message)
+void WebAppManager::broadcastWebAppMessage(WebAppMessageType type, const std::string& message)
 {
     for (AppList::const_iterator it = m_appList.begin(); it != m_appList.end(); ++it) {
         WebAppBase* app = (*it);
@@ -552,8 +551,9 @@ bool WebAppManager::processCrashed(QString appId, QString instanceId) {
 
     if (app->isWindowed()) {
         if (app->isActivated()) {
-            int count = m_lastCrashedAppIds[app->appId()];
-            m_lastCrashedAppIds[app->appId()] = count + 1;
+            auto id = app->appId().toStdString(); // FIXME: WebApp: qstr2stdstr
+            int count = m_lastCrashedAppIds[id];
+            m_lastCrashedAppIds[id] = count + 1;
 
             int reloadingLimit = app->isNormal() ? kContinuousReloadingLimit-1 : kContinuousReloadingLimit;
 
@@ -574,7 +574,7 @@ bool WebAppManager::processCrashed(QString appId, QString instanceId) {
     return true;
 }
 
-const QString WebAppManager::windowTypeFromString(const std::string& str)
+const std::string WebAppManager::windowTypeFromString(const std::string& str)
 {
     if(str == "overlay")
         return WT_OVERLAY;
@@ -616,7 +616,7 @@ void WebAppManager::deleteStorageData(const std::string& identifier)
     m_webProcessManager->deleteStorageData(identifierForSecurityOrigin(identifier));
 }
 
-void WebAppManager::killCustomPluginProcess(const QString &basePath)
+void WebAppManager::killCustomPluginProcess(const std::string& basePath)
 {
     // Deprecated (2016-04-01)
 }
@@ -643,7 +643,7 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
         return std::string();
 
     std::string url = desc->entryPoint();
-    QString winType = windowTypeFromString(desc->defaultWindowType());
+    std::string winType = windowTypeFromString(desc->defaultWindowType());
     errMsg.erase();
 
     // Set displayAffinity (multi display support)
@@ -654,7 +654,7 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
 
     std::string instanceId = jsonObject.value("instanceId").toString().toStdString();
 
-    LOG_DEBUG("windowType=[%s] Done", winType.toStdString().c_str());
+    LOG_DEBUG("windowType=[%s] Done", winType.c_str());
 
     // Check if app is already running
     if (isRunningApp(instanceId)) {
@@ -686,11 +686,10 @@ std::vector<ApplicationInfo> WebAppManager::list( bool includeSystemApps )
     std::vector<ApplicationInfo> list;
 
     std::list<const WebAppBase*> running = runningApps();
-    for (auto it = running.begin(); it != running.end(); ++it) {
-        const WebAppBase* webAppBase = *it;
-        if( webAppBase->appId().size() || (!webAppBase->appId().size() && includeSystemApps ) ) {
-            uint32_t pid = m_webProcessManager->getWebProcessPID(webAppBase);
-            list.push_back(ApplicationInfo( webAppBase->instanceId(), webAppBase->appId(), pid));
+    for (const auto &app : running) {
+        if(app->appId().size() || (!app->appId().size() && includeSystemApps)) {
+            uint32_t pid = m_webProcessManager->getWebProcessPID(app);
+            list.push_back(ApplicationInfo(app->instanceId(), app->appId().toStdString(), pid)); // FIXME: WebApp: qstr2stdstr
         }
     }
 
@@ -763,19 +762,18 @@ void WebAppManager::setAccessibilityEnabled(bool enabled)
     m_isAccessibilityEnabled = enabled;
 }
 
-void WebAppManager::sendEventToAllAppsAndAllFrames(const QString& jsscript)
+void WebAppManager::sendEventToAllAppsAndAllFrames(const std::string& jsscript)
 {
-    for (auto it = m_appList.begin(); it != m_appList.end(); ++it) {
-        WebAppBase* app = (*it);
+    for (const auto &app : m_appList) {
         if (app->page()) {
-            LOG_DEBUG("[%s] send event with %s", qPrintable(app->appId()), qPrintable(jsscript));
+            LOG_DEBUG("[%s] send event with %s", qPrintable(app->appId()), jsscript.c_str());
             // to send all subFrame, use this function instead of evaluateJavaScriptInAllFrames()
             app->page()->evaluateJavaScriptInAllFrames(jsscript);
         }
     }
 }
 
-void WebAppManager::serviceCall(const QString& url, const QString& payload, const QString& appId)
+void WebAppManager::serviceCall(const std::string& url, const std::string& payload, const std::string& appId)
 {
     if (m_serviceSender)
         m_serviceSender->serviceCall(url, payload, appId);
@@ -790,7 +788,7 @@ void WebAppManager::updateNetworkStatus(const Json::Value& object)
     m_networkStatusManager->updateNetworkStatus(status);
 }
 
-bool WebAppManager::isEnyoApp(const QString& appId)
+bool WebAppManager::isEnyoApp(const std::string& appId)
 {
     WebAppBase* app = findAppById(appId);
     if (app && !app->getAppDescription()->enyoVersion().empty())

@@ -41,7 +41,7 @@ static QString truncateURL(const QString& url)
     return res.replace(URL_SIZE_LIMIT / 2, url.size() - URL_SIZE_LIMIT, QStringLiteral(" ... "));
 }
 
-WebAppWayland::WebAppWayland(QString type,
+WebAppWayland::WebAppWayland(const std::string& type,
 			     int surface_id,
                              int width, int height,
                              int displayId,
@@ -60,7 +60,7 @@ WebAppWayland::WebAppWayland(QString type,
     init(width, height, surface_id);
 }
 
-WebAppWayland::WebAppWayland(QString type, WebAppWaylandWindow* window,
+WebAppWayland::WebAppWayland(const std::string& type, WebAppWaylandWindow* window,
                              int width, int height,
                              int displayId,
                              const std::string& location_hint)
@@ -126,8 +126,8 @@ void WebAppWayland::init(int width, int height, int surface_id)
     m_appWindow->setWebApp(this);
 
     // set compositor window type
-    setWindowProperty(QStringLiteral("_WEBOS_WINDOW_TYPE"), m_windowType);
-    LOG_DEBUG("App created window [%s]", qPrintable(m_windowType));
+    setWindowProperty(QStringLiteral("_WEBOS_WINDOW_TYPE"), QString::fromStdString(m_windowType)); // FIXME: WebApp: qstr2stdstr
+    LOG_DEBUG("App created window [%s]", m_windowType.c_str());
 
     if (m_displayId != kUndefinedDisplayId) {
       setWindowProperty(QStringLiteral("displayAffinity"), m_displayId);
@@ -183,7 +183,7 @@ void WebAppWayland::attach(WebPageBase *page)
 
     setWindowProperty(QStringLiteral("appId"), appId());
     setWindowProperty(QStringLiteral("instanceId"), instanceId());
-    setWindowProperty(QStringLiteral("launchingAppId"), launchingAppId());
+    setWindowProperty(QStringLiteral("launchingAppId"), QString::fromStdString(launchingAppId())); // FIXME: WebApp: qstr2stdstr
     setWindowProperty(QStringLiteral("title"),
         QString::fromStdString(getAppDescription()->title()));
     setWindowProperty(QStringLiteral("icon"),
@@ -297,15 +297,15 @@ void WebAppWayland::onStageDeactivated()
     LOG_INFO(MSGID_WEBAPP_STAGE_DEACITVATED, 3, PMLOGKS("APP_ID", qPrintable(appId())), PMLOGKS("INSTANCE_ID", qPrintable(instanceId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
 }
 
-void WebAppWayland::configureWindow(QString& type)
+void WebAppWayland::configureWindow(const std::string& type)
 {
     m_windowType = type;
     m_appWindow->setWebApp(this);
 
-    setWindowProperty(QStringLiteral("_WEBOS_WINDOW_TYPE"), type);
+    setWindowProperty(QStringLiteral("_WEBOS_WINDOW_TYPE"), QString::fromStdString(type)); // FIXME: WebApp: qstr2stdstr
+    setWindowProperty(QStringLiteral("launchingAppId"), QString::fromStdString(launchingAppId())); // FIXME: WebApp: qstr2stdstr
     setWindowProperty(QStringLiteral("appId"), appId());
     setWindowProperty(QStringLiteral("instanceId"), instanceId());
-    setWindowProperty(QStringLiteral("launchingAppId"), launchingAppId());
     setWindowProperty(QStringLiteral("title"), QString::fromStdString(getAppDescription()->title()));
     setWindowProperty(QStringLiteral("icon"), QString::fromStdString(getAppDescription()->icon()));
     setWindowProperty(QStringLiteral("subtitle"), QStringLiteral(""));

@@ -23,7 +23,8 @@ class ServiceSenderLuna : public ServiceSender {
 public:
     void postlistRunningApps(std::vector<ApplicationInfo>& apps) override;
     void postWebProcessCreated(const QString& appId, const QString& instanceId, uint32_t pid) override;
-    void serviceCall(const QString& url, const QString& payload, const QString& appId) override;
+    void serviceCall(const std::string& url, const std::string& payload,
+                     const std::string& appId) override;
     void closeApp(const std::string& id) override;
 };
 

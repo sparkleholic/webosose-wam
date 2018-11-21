@@ -32,7 +32,7 @@ class WebPageBlinkObserver;
 
 class WebPageBlink : public WebPageBase, public WebPageBlinkDelegate {
 public:
-    WebPageBlink(const QUrl& url, std::shared_ptr<ApplicationDescription> desc, const QString& launchParams);
+    WebPageBlink(const QUrl& url, std::shared_ptr<ApplicationDescription> desc, const std::tring& launchParams);
     ~WebPageBlink() override;
 
     void setObserver(WebPageBlinkObserver* observer);
@@ -58,9 +58,9 @@ public:
     void closeVkb() override;
     bool isInputMethodActive() const override;
     void keyboardVisibilityChanged(bool visible) override;
-    void handleDeviceInfoChanged(const QString& deviceInfo) override;
+    void handleDeviceInfoChanged(const std::string& deviceInfo) override;
     void evaluateJavaScript(const QString& jsCode) override;
-    void evaluateJavaScriptInAllFrames(const QString& jsCode, const char* method = "") override;
+    void evaluateJavaScriptInAllFrames(const std::string& jsCode, const char* method = "") override;
     void setForceActivateVtg(bool enabled) override;
     uint32_t getWebProcessProxyID() override;
     uint32_t getWebProcessPID() const override { return renderProcessPid(); }

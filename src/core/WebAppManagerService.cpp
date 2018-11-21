@@ -128,7 +128,7 @@ void WebAppManagerService::deleteStorageData(const std::string &identifier)
     WebAppManager::instance()->deleteStorageData(identifier);
 }
 
-void WebAppManagerService::killCustomPluginProcess(const QString &appBasePath)
+void WebAppManagerService::killCustomPluginProcess(const std::string& appBasePath)
 {
     WebAppManager::instance()->killCustomPluginProcess(appBasePath);
 }
@@ -173,7 +173,7 @@ void WebAppManagerService::notifyMemoryPressure(webos::WebViewBase::MemoryPressu
     WebAppManager::instance()->notifyMemoryPressure(level);
 }
 
-bool WebAppManagerService::isEnyoApp(const QString& appId)
+bool WebAppManagerService::isEnyoApp(const std::string& appId)
 {
     return WebAppManager::instance()->isEnyoApp(appId);
 }

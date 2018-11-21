@@ -29,8 +29,9 @@ void ServiceSenderLuna::postlistRunningApps(std::vector<ApplicationInfo> &apps)
     QJsonArray runningApps;
     for (auto it = apps.begin(); it != apps.end(); ++it) {
         QJsonObject app;
-        app["id"] = it->appId;
-        app["instanceid"] = it->instanceId;
+
+        app["id"] = QString::fromStdString(it->appId);
+        app["instanceid"] = QString::fromStdString(it->instanceId);
         app["webprocessid"] = QString::number(it->pid);
         runningApps.append(app);
     }
@@ -51,14 +52,15 @@ void ServiceSenderLuna::postWebProcessCreated(const QString& appId, const QStrin
     WebAppManagerServiceLuna::instance()->postSubscription("webProcessCreated", reply);
 }
 
-void ServiceSenderLuna::serviceCall(const QString& url, const QString& payload, const QString& appId)
+void ServiceSenderLuna::serviceCall(const std::string& url, const std::string& payload, const std::string& appId)
 {
     bool ret = WebAppManagerServiceLuna::instance()->call(
-        url.toLatin1().constData(),
-        QJsonDocument::fromJson(payload.toStdString().c_str()).object(),
-        appId.toLatin1().constData());
+        url.c_str(),
+        QJsonDocument::fromJson(payload.c_str()).object(),
+        appId.c_str());
     if (!ret) {
-        LOG_WARNING(MSGID_SERVICE_CALL_FAIL, 2, PMLOGKS("APP_ID", qPrintable(appId)), PMLOGKS("URL", qPrintable(url)), "ServiceSenderLuna::serviceCall; callPrivate() return false");
+        LOG_WARNING(MSGID_SERVICE_CALL_FAIL, 2, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("URL", url.c_str()),
+                    "ServiceSenderLuna::serviceCall; callPrivate() return false");
     }
 }
 

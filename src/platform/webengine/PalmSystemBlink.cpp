@@ -141,7 +141,7 @@ QString PalmSystemBlink::handleBrowserControlMessage(const QString& message, con
     } else if (message == "serviceCall") {
         if (m_app->page()->isClosing()) {
           LOG_INFO(MSGID_PALMSYSTEM, 3, PMLOGKS("APP_ID", qPrintable(m_app->appId())), PMLOGKS("INSTANCE_ID", qPrintable(m_app->instanceId())), PMLOGKFV("PID", "%d", m_app->page()->getWebProcessPID()), "webOSSystem.serviceCall(%s, %s)", qPrintable(params[0]), qPrintable(params[1]));
-          m_app->serviceCall(params[0], params[1], m_app->appId());
+          m_app->serviceCall(params[0].toStdString(), params[1].toStdString(), m_app->appId().toStdString());
         } else {
             LOG_WARNING(MSGID_SERVICE_CALL_FAIL, 3, PMLOGKS("APP_ID", qPrintable(m_app->appId())),
               PMLOGKS("INSTANCE_ID", qPrintable(m_app->instanceId())),

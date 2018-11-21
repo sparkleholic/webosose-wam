@@ -94,7 +94,7 @@ protected:
     QString getSystemLanguage();
     void setForceCloseApp(const QString& appId, const QString& instanceId);
     void deleteStorageData(const std::string& identifier);
-    void killCustomPluginProcess(const QString& appBasePath);
+    void killCustomPluginProcess(const std::string& appBasePath);
     void requestKillWebProcess(uint32_t pid);
     void updateNetworkStatus(const Json::Value& object);
     void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level);
@@ -105,7 +105,7 @@ protected:
     std::list<const WebAppBase*> runningApps(uint32_t pid);
     std::vector<ApplicationInfo> list(bool includeSystemApps = false);
 
-    bool isEnyoApp(const QString& apppId);
+    bool isEnyoApp(const std::string& apppId);
 };
 
 #endif // WEBAPPMANAGERSERVICE_H

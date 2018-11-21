@@ -291,8 +291,9 @@ QJsonObject WebAppManagerServiceLuna::listRunningApps(QJsonObject request, bool 
     QJsonArray runningApps;
     for (auto it = apps.begin(); it != apps.end(); ++it) {
         QJsonObject app;
-        app["id"] = it->appId;
-        app["instanceId"] = it->instanceId;
+
+        app["id"] = QString::fromStdString(it->appId);
+        app["instanceid"] = QString::fromStdString(it->instanceId);
         app["webprocessid"] = QString::number(it->pid);
         runningApps.append(app);
     }
@@ -539,7 +540,7 @@ void WebAppManagerServiceLuna::getAppStatusCallback(QJsonObject reply)
         bool isCustomPlugin = appObject["customPlugin"].toBool();
 
         if(isCustomPlugin) {
-            WebAppManagerService::killCustomPluginProcess(appBasePath);
+            WebAppManagerService::killCustomPluginProcess(appBasePath.toStdString());
         }
     }
 }
@@ -554,7 +555,7 @@ void WebAppManagerServiceLuna::getForegroundAppInfoCallback(QJsonObject reply)
         if(!reply.value("appId").isUndefined()) {
             QString appId = reply["appId"].toString();
             webos::Runtime::GetInstance()->SetIsForegroundAppEnyo(
-                WebAppManagerService::isEnyoApp(appId));
+                WebAppManagerService::isEnyoApp(appId.toStdString()));
         }
     }
 }
@@ -600,7 +601,6 @@ QJsonObject WebAppManagerServiceLuna::webProcessCreated(QJsonObject request, boo
         int pid = WebAppManagerService::getWebProcessId(appId, request["instanceId"].toString());
         reply["id"] = appId;
         reply["instanceId"] = request["instanceId"].toString();
-
         if (pid) {
             reply["webprocessid"] = pid;
             reply["returnValue"] = true;

@@ -46,7 +46,7 @@ WebPageBase::WebPageBase()
 {
 }
 
-WebPageBase::WebPageBase(const QUrl& url, std::shared_ptr<ApplicationDescription> desc, const QString& params)
+WebPageBase::WebPageBase(const QUrl& url, std::shared_ptr<ApplicationDescription> desc, const std::string& params)
     : m_appDesc(desc)
     , m_appId(QString::fromStdString(desc->id()))
     , m_instanceId(QJsonDocument::fromJson(params.toUtf8()).object().value("instanceId").toString())
@@ -57,7 +57,7 @@ WebPageBase::WebPageBase(const QUrl& url, std::shared_ptr<ApplicationDescription
     , m_didErrorPageLoadedFromNetErrorHelper(false)
     , m_enableBackgroundRun(false)
     , m_defaultUrl(url)
-    , m_launchParams(params)
+    , m_launchParams(QString::fromStdString(params)) // FIXME: WebPage: qstr2stdstr
     , m_loadErrorPolicy(QStringLiteral("default"))
     , m_cleaningResources(false)
     , m_isPreload(false)
@@ -288,7 +288,7 @@ void WebPageBase::cleanResourcesFinished()
 {
     WebAppManager::instance()->postRunningAppList();
     if (m_cleaningResources) {
-        WebAppManager::instance()->removeWebAppFromWebProcessInfoMap(appId());
+        WebAppManager::instance()->removeWebAppFromWebProcessInfoMap(appId().toStdString()); // FIXME: WebPage: qstr2stdstr
         delete this;
     }
 }
