@@ -28,6 +28,7 @@
 #include "NetworkStatusManager.h"
 #include "PlatformModuleFactory.h"
 #include "ServiceSender.h"
+#include "StringUtils.h"
 #include "WebAppBase.h"
 #include "WebAppFactoryManager.h"
 #include "WebAppManagerConfig.h"
