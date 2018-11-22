@@ -49,7 +49,7 @@ public:
     std::string m_launchingAppId;
     std::string m_appId;
     std::string m_instanceId;
-    QString m_url;
+    std::string m_url;
     std::shared_ptr<ApplicationDescription> m_appDesc;
 
 private:
@@ -151,7 +151,7 @@ std::string WebAppBase::instanceId() const
     return d->m_instanceId;
 }
 
-QString WebAppBase::url() const
+std::string WebAppBase::url() const
 {
     return d->m_url;
 }
@@ -219,13 +219,13 @@ WebPageBase* WebAppBase::detach(void)
     return p;
 }
 
-void WebAppBase::relaunch(const QString& args, const QString& launchingAppId)
+void WebAppBase::relaunch(const std::string& args, const std::string& launchingAppId)
 {
     LOG_INFO(MSGID_APP_RELAUNCH, 4,
              PMLOGKS("APP_ID", appId().c_str()),
              PMLOGKS("INSTANCE_ID", qPrintable(instanceId())),
              PMLOGKFV("PID", "%d", page()->getWebProcessPID()),
-             PMLOGKS("LAUNCHING_APP_ID", qPrintable(launchingAppId)), "");
+             PMLOGKS("LAUNCHING_APP_ID", launchingAppId.c_str()), "");
     if (getHiddenWindow()) {
         setHiddenWindow(false);
 
@@ -443,7 +443,7 @@ void WebAppBase::setPreferredLanguages(const std::string& language)
     if (!d->m_page)
         return;
     d->m_page->setPreferredLanguages(language);
-    d->m_page->sendLocaleChangeEvent(QString::fromStdString(language)); // FIXME: WebPage: qstr2stdstr
+    d->m_page->sendLocaleChangeEvent(language);
 }
 
 void WebAppBase::handleWebAppMessage(WebAppManager::WebAppMessageType type, const std::string& message)
@@ -510,9 +510,9 @@ void WebAppBase::dispatchUnload()
     page()->cleanResources();
 }
 
-void WebAppBase::onCursorVisibilityChanged(const QString& jsscript)
+void WebAppBase::onCursorVisibilityChanged(const std::string& jsscript)
 {
-    WebAppManager::instance()->sendEventToAllAppsAndAllFrames(jsscript.toStdString()); // FIXME: WebApp: qstr2stdstr
+    WebAppManager::instance()->sendEventToAllAppsAndAllFrames(jsscript);
 }
 
 void WebAppBase::serviceCall(const std::string& url, const std::string& payload, const std::string& appId)
