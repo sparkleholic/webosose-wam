@@ -622,7 +622,7 @@ bool WebAppWayland::hideWindow()
 
 void WebAppWayland::titleChanged()
 {
-    setWindowProperty("subtitle", page()->title().toStdString()); // FIXME: WebPage: qstr2stdstr
+    setWindowProperty("subtitle", page()->title());
 }
 
 void WebAppWayland::firstFrameVisuallyCommitted()

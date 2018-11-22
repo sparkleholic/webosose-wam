@@ -18,6 +18,7 @@
 #define WEBAPPMANAGERCONFIG_H
 
 #include <map>
+#include <string>
 
 #include <QString>
 #include <QVariant>
@@ -35,7 +36,7 @@ public:
     virtual bool isInspectorEnabled() const { return m_inspectorEnabled; }
     virtual bool isDevModeEnabled() const { return m_devModeEnabled; }
     virtual QString getErrorPageUrl() const { return m_errorPageUrl; }
-    virtual QString getTelluriumNubPath() const { return m_telluriumNubPath; }
+    virtual std::string getTelluriumNubPath() const { return m_telluriumNubPath; }
     virtual void postInitConfiguration();
     virtual bool isDynamicPluggableLoadEnabled() const { return m_dynamicPluggableLoadEnabled; }
     virtual bool isPostWebProcessCreatedDisabled() const { return m_postWebProcessCreatedDisabled; }
@@ -61,7 +62,7 @@ private:
     bool m_devModeEnabled;
     bool m_inspectorEnabled;
     QString m_errorPageUrl;
-    QString m_telluriumNubPath;
+    std::string m_telluriumNubPath;
     bool m_dynamicPluggableLoadEnabled;
     bool m_postWebProcessCreatedDisabled;
     bool m_checkLaunchTimeEnabled;
