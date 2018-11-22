@@ -123,8 +123,8 @@ public:
     bool cleaningResources() const { return m_cleaningResources; }
     bool doHostedWebAppRelaunch(const QString& launchParams);
     void sendRelaunchEvent();
-    void setAppId(const QString& appId) { m_appId = appId; }
-    const QString& appId() const { return m_appId; }
+    void setAppId(const std::string& appId) { m_appId = appId; }
+    const std::string& appId() const { return m_appId; }
     void setInstanceId(const QString& instanceId) { m_instanceId = instanceId; }
     const QString& instanceId() const { return m_instanceId; }
     ApplicationDescription* getAppDescription() { return m_appDesc.get(); }
@@ -179,7 +179,7 @@ protected:
     bool isAccessibilityEnabled() const;
 
     std::shared_ptr<ApplicationDescription> m_appDesc;
-    QString m_appId;
+    std::string m_appId;
     QString m_instanceId;
     bool m_suspendAtLoad;
     bool m_isClosing;
