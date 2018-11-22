@@ -20,8 +20,6 @@
 #include <sstream>
 #include <json/json.h>
 
-#include <QString>
-
 #include "ApplicationDescription.h"
 #include "LogManager.h"
 #include "WebAppWaylandWindow.h"
@@ -130,7 +128,7 @@ void WebAppWayland::init(int width, int height, int surface_id)
     m_appWindow->setWebApp(this);
 
     // set compositor window type
-    setWindowProperty("_WEBOS_WINDOW_TYPE", QString::fromStdString(m_windowType)); // FIXME: WebApp: qstr2stdstr
+    setWindowProperty("_WEBOS_WINDOW_TYPE", m_windowType);
     LOG_DEBUG("App created window [%s]", m_windowType.c_str());
 
     if (m_displayId != kUndefinedDisplayId) {
@@ -185,26 +183,18 @@ void WebAppWayland::attach(WebPageBase *page)
 {
     WebAppBase::attach(page);
 
-    setWindowProperty(QStringLiteral("appId"), QString::fromStdString(appId())); // FIXME: WebApp: qstr2stdstr
-    setWindowProperty(QStringLiteral("instanceId"), instanceId());
-    setWindowProperty(QStringLiteral("launchingAppId"), QString::fromStdString(launchingAppId())); // FIXME: WebApp: qstr2stdstr
-    setWindowProperty(QStringLiteral("title"),
-        QString::fromStdString(getAppDescription()->title()));
-    setWindowProperty(QStringLiteral("icon"),
-        QString::fromStdString(getAppDescription()->icon()));
-    setWindowProperty(QStringLiteral("subtitle"), QStringLiteral(""));
-    setWindowProperty(QStringLiteral("_WEBOS_WINDOW_CLASS"),
-        QVariant((int)getAppDescription()->windowClassValue()));
-    setWindowProperty(QStringLiteral("_WEBOS_ACCESS_POLICY_KEYS_BACK"),
-                      getAppDescription()->backHistoryAPIDisabled()
-                      ? QStringLiteral("true") : QStringLiteral("false"));
-    setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_EXIT",
-                      getAppDescription()->handleExitKey()
-                      ? QStringLiteral("true") : QStringLiteral("false"));
-    setKeyMask(webos::WebOSKeyMask::KEY_MASK_BACK,
-        getAppDescription()->backHistoryAPIDisabled());
-    setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT,
-        getAppDescription()->handleExitKey());
+    setWindowProperty("appId", appId());
+    setWindowProperty("instanceId", instanceId().toStdString());
+    setWindowProperty("launchingAppId", launchingAppId());
+    setWindowProperty("title", getAppDescription()->title());
+    setWindowProperty("icon", getAppDescription()->icon());
+    setWindowProperty("subtitle", "");
+    setWindowProperty("_WEBOS_WINDOW_CLASS", std::to_string((int)getAppDescription()->windowClassValue()));
+    setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_BACK", getAppDescription()->backHistoryAPIDisabled() ? "true" : "false");
+    setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_EXIT", getAppDescription()->handleExitKey() ? "true" : "false");
+
+    setKeyMask(webos::WebOSKeyMask::KEY_MASK_BACK, getAppDescription()->backHistoryAPIDisabled());
+    setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT, getAppDescription()->handleExitKey());
 
     if (getAppDescription()->widthOverride() && getAppDescription()->heightOverride() && !getAppDescription()->isTransparent()) {
         float scaleX = static_cast<float>(m_appWindow->DisplayWidth()) / getAppDescription()->widthOverride();
@@ -306,26 +296,19 @@ void WebAppWayland::configureWindow(const std::string& type)
     m_windowType = type;
     m_appWindow->setWebApp(this);
 
-    setWindowProperty(QStringLiteral("_WEBOS_WINDOW_TYPE"), QString::fromStdString(type)); // FIXME: WebApp: qstr2stdstr
-    setWindowProperty(QStringLiteral("launchingAppId"), QString::fromStdString(launchingAppId())); // FIXME: WebApp: qstr2stdstr
+    setWindowProperty("_WEBOS_WINDOW_TYPE", type);
+    setWindowProperty("launchingAppId", launchingAppId());
+    setWindowProperty("appId", appId());
+    setWindowProperty("instanceId", instanceId().toStdString());
+    setWindowProperty("title", getAppDescription()->title());
+    setWindowProperty("icon", getAppDescription()->icon());
+    setWindowProperty("subtitle", "");
+    setWindowProperty("_WEBOS_WINDOW_CLASS", std::to_string((int)getAppDescription()->windowClassValue()));
+    setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_BACK", getAppDescription()->backHistoryAPIDisabled() ? "true" : "false");
+    setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_EXIT", getAppDescription()->handleExitKey() ? "true" : "false");
 
-    setWindowProperty(QStringLiteral("appId"), QString::fromStdString(appId())); // FIXME: WebApp: qstr2stdstr
-    setWindowProperty(QStringLiteral("instanceId"), instanceId());
-
-    setWindowProperty(QStringLiteral("title"), QString::fromStdString(getAppDescription()->title()));
-    setWindowProperty(QStringLiteral("icon"), QString::fromStdString(getAppDescription()->icon()));
-    setWindowProperty(QStringLiteral("subtitle"), QStringLiteral(""));
-    setWindowProperty(QStringLiteral("_WEBOS_WINDOW_CLASS"), QVariant((int)getAppDescription()->windowClassValue()));
-    setWindowProperty(QStringLiteral("_WEBOS_ACCESS_POLICY_KEYS_BACK"),
-                      getAppDescription()->backHistoryAPIDisabled()
-                      ? QStringLiteral("true") : QStringLiteral("false"));
-    setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_EXIT",
-                      getAppDescription()->handleExitKey()
-                      ? QStringLiteral("true") : QStringLiteral("false"));
-    setKeyMask(webos::WebOSKeyMask::KEY_MASK_BACK,
-        getAppDescription()->backHistoryAPIDisabled());
-    setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT,
-        getAppDescription()->handleExitKey());
+    setKeyMask(webos::WebOSKeyMask::KEY_MASK_BACK, getAppDescription()->backHistoryAPIDisabled());
+    setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT, getAppDescription()->handleExitKey());
 
     ApplicationDescription* appDesc = getAppDescription();
     if (!appDesc->groupWindowDesc().empty())
@@ -398,7 +381,7 @@ void WebAppWayland::setInputRegion(const Json::Value& jsonDoc)
 }
 
 
-void WebAppWayland::setWindowProperty(const std::string& name, const QVariant& value)
+void WebAppWayland::setWindowProperty(const std::string& name, const std::string& value)
 {
     webos::WebOSKeyMask mask = static_cast<webos::WebOSKeyMask>(0);
     if (name == "_WEBOS_ACCESS_POLICY_KEYS_BACK")
@@ -406,9 +389,12 @@ void WebAppWayland::setWindowProperty(const std::string& name, const QVariant& v
     else if (name == "_WEBOS_ACCESS_POLICY_KEYS_EXIT")
         mask = webos::WebOSKeyMask::KEY_MASK_EXIT;
     // if mask is not set, not need to call setKeyMask
-    if (mask != static_cast<webos::WebOSKeyMask>(0))
-        setKeyMask(mask, value.toBool());
-    m_appWindow->SetWindowProperty(name, value.toString().toStdString());
+    if (mask != static_cast<webos::WebOSKeyMask>(0)) {
+        bool boolValue; // TODO: Maybe migrate to boost::lexical_cast<bool>()
+        std::istringstream(value) >> std::boolalpha >> boolValue;
+        setKeyMask(mask, boolValue);
+    }
+    m_appWindow->SetWindowProperty(name, value);
 }
 
 void WebAppWayland::platformBack()
@@ -636,7 +622,7 @@ bool WebAppWayland::hideWindow()
 
 void WebAppWayland::titleChanged()
 {
-    setWindowProperty("subtitle", page()->title());
+    setWindowProperty("subtitle", page()->title().toStdString()); // FIXME: WebPage: qstr2stdstr
 }
 
 void WebAppWayland::firstFrameVisuallyCommitted()
@@ -664,8 +650,8 @@ void WebAppWayland::navigationHistoryChanged()
         // if backHistoryAPIDisabled is true, no chance to change this value
         setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_BACK",
                           page()->canGoBack() ?
-                          QStringLiteral("true") : /* send next back key to WAM */
-                          QStringLiteral("false")); /* Do not send back key to WAM. LSM should handle it */
+                          "true" : /* send next back key to WAM */
+                          "false"); /* Do not send back key to WAM. LSM should handle it */
     }
 }
 
