@@ -15,8 +15,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
-#include <QtGlobal>
-#include <QString>
 
 #include <grp.h>
 #include <pwd.h>
@@ -29,36 +27,6 @@
 #elif defined(HAS_AGL_SERVICE)
 #include "WebRuntimeAGL.h"
 #endif
-
-namespace
-{
-    void qMessageHandler(const QtMsgType type, const QMessageLogContext &context,
-                         const QString &msg)
-    {
-        const char* function = context.function;
-        QByteArray utf8 = msg.toUtf8();
-        char* userMessage = utf8.data();
-        switch (type) {
-            case QtDebugMsg:
-                LOG_DEBUG("%s, %s", function, userMessage);
-                break;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
-            case QtInfoMsg:
-                LOG_INFO(MSGID_QINFO, 0, "%s, %s", function, userMessage);
-                break;
-#endif
-            case QtWarningMsg:
-                LOG_WARNING(MSGID_QWARNING, 0, "%s, %s", function, userMessage);
-                break;
-            case QtCriticalMsg:
-                LOG_ERROR(MSGID_QCRITICAL, 0, "%s, %s", function, userMessage);
-                break;
-            case QtFatalMsg:
-                LOG_CRITICAL(MSGID_QFATAL, 0, "%s, %s", function, userMessage);
-                break;
-        }
-    }
-}
 
 static void changeUserIDGroupID()
 {
@@ -91,9 +59,6 @@ static void changeUserIDGroupID()
 
 int main (int argc, const char** argv)
 {
-  // FIXME: Remove this when we don't use qDebug, qWarning any more.
-  qInstallMessageHandler(qMessageHandler);
-
   changeUserIDGroupID();
 
 #if defined(HAS_AGL_SERVICE)

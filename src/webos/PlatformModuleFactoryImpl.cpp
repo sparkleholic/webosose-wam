@@ -23,6 +23,7 @@
 #include "DeviceInfoImpl.h"
 #include "WebAppManagerConfig.h"
 #include "BlinkWebProcessManager.h"
+#include "WebAppManagerUtils.h"
 
 PlatformModuleFactoryImpl::PlatformModuleFactoryImpl()
 {

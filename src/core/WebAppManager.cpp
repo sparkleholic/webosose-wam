@@ -21,8 +21,6 @@
 #include <sstream>
 #include <unistd.h>
 
-#include <QString>
-
 #include "ApplicationDescription.h"
 #include "DeviceInfo.h"
 #include "JsonHelper.h"

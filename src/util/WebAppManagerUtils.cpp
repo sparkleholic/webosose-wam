@@ -16,11 +16,12 @@
 
 #include "WebAppManagerUtils.h"
 
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fstream>
 #include <grp.h>
 
 int WebAppManagerUtils::updateAndGetCpuIdle(bool updateOnly)
@@ -174,4 +175,10 @@ std::string WebAppManagerUtils::truncateURL(const std::string& url)
         return url;
     std::string res = url;
     return res.erase(URL_SIZE_LIMIT, url.size() - URL_SIZE_LIMIT);
+}
+
+std::string WebAppManagerUtils::getEnv(const char *name)
+{
+    const char *v = std::getenv(name);
+    return (v == NULL) ? std::string() : std::string(v);
 }

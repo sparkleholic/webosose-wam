@@ -61,12 +61,6 @@ static std::string getHostname(const std::string& url)
   return QUrl(QString::fromStdString(url)).host().toStdString();
 }
 
-static inline std::string getEnvVar(const char *name)
-{
-    const char *v = getenv("TELLURIUM_NUB_PATH");
-    return (v == NULL) ? std::string() : std::string(v);
-}
-
 class WebPageBlinkPrivate {
 public:
     WebPageBlinkPrivate(WebPageBlink * page)
@@ -136,7 +130,7 @@ void WebPageBlink::init()
     d->pageView->SetVisible(false);
     d->pageView->SetUserAgent(d->pageView->DefaultUserAgent() + " " + getWebAppManagerConfig()->getName());
 
-    std::string privileged_plugin_path = getEnvVar("PRIVILEGED_PLUGIN_PATH");
+    std::string privileged_plugin_path =  WebAppManagerUtils::getEnv("PRIVILEGED_PLUGIN_PATH"); 
     if (!privileged_plugin_path.empty()) {
         d->pageView->AddAvailablePluginDir(privileged_plugin_path);
     }
@@ -434,7 +428,7 @@ void WebPageBlink::suspendWebPageAll()
     if (m_isSuspended || m_enableBackgroundRun)
         return;
 
-    if (!(getEnvVar("WAM_KEEP_RTC_CONNECTIONS_ON_SUSPEND") == "1")) {
+    if (!(WebAppManagerUtils::getEnv("WAM_KEEP_RTC_CONNECTIONS_ON_SUSPEND") == "1")) {
         // On sending applications to background, disconnect RTC
         d->pageView->DropAllPeerConnections(webos::DROP_PEER_CONNECTION_REASON_PAGE_HIDDEN);
     }
@@ -684,7 +678,6 @@ void WebPageBlink::loadFinished(const std::string& url)
             PMLOGKS("INSTANCE_ID", qPrintable(instanceId())),
             PMLOGKFV("PID", "%d", getWebProcessPID()),
             "cleaningResources():true; (should be about:blank) emit 'didDispatchUnload'");
-        // TODO: Remove QSignal
         FOR_EACH_OBSERVER(WebPageObserver, m_observers, didDispatchUnload());
         return;
     }
