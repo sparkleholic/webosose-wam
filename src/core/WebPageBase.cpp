@@ -17,9 +17,7 @@
 #include <memory>
 
 #include <sstream>
-
-#include <QDir>
-#include <QFileInfo>
+#include <boost/filesystem.hpp>
 
 #include "ApplicationDescription.h"
 #include "JsonHelper.h"
@@ -33,6 +31,8 @@
 #define CONSOLE_DEBUG(AAA) evaluateJavaScript("console.debug('" + AAA + "');")
 
 const char kIdentifierForNetErrorPage[] = "com.webos.settingsservice.client";
+
+namespace fs = boost::filesystem;
 
 WebPageBase::WebPageBase()
     : m_appDesc(nullptr)
@@ -48,7 +48,7 @@ WebPageBase::WebPageBase()
 {
 }
 
-WebPageBase::WebPageBase(const QUrl& url, std::shared_ptr<ApplicationDescription> desc, const std::string& params)
+WebPageBase::WebPageBase(const Url& url, std::shared_ptr<ApplicationDescription> desc, const std::string& params)
     : m_appDesc(desc)
     , m_appId(desc->id())
     , m_instanceId(QJsonDocument::fromJson(params.toUtf8()).object().value("instanceId").toString())
@@ -263,6 +263,7 @@ void WebPageBase::handleLoadStarted()
 
 void WebPageBase::handleLoadFinished()
 {
+
     LOG_INFO(MSGID_WAM_DEBUG, 3,
 	PMLOGKS("APP_ID", appId().c_str()),
         PMLOGKS("INSTANCE_ID", qPrintable(instanceId())),
@@ -374,12 +375,11 @@ bool WebPageBase::hasLoadErrorPolicy(bool isHttpResponseError, int errorCode)
     return false;
 }
 
-// FIXME: WebPage: qurl-less
-void WebPageBase::applyPolicyForUrlResponse(bool isMainFrame, const std::string& url, int status_code)
+void WebPageBase::applyPolicyForUrlResponse(bool isMainFrame, const std::string& urlStr, int status_code)
 {
-    QUrl qUrl(QString::fromStdString(url));
+    Url url(urlStr);
     static const int s_httpErrorStatusCode = 400;
-    if (qUrl.scheme() != "file" &&  status_code >= s_httpErrorStatusCode) {
+    if (url.scheme() != "file" &&  status_code >= s_httpErrorStatusCode) {
         if(!hasLoadErrorPolicy(true, status_code) && isMainFrame) {
             // If app does not have policy for load error and
             // this error response is from main frame document
@@ -447,7 +447,6 @@ std::string WebPageBase::defaultFont()
     return defaultFont;
 }
 
-// FIXME: WebPage: qurl-less
 void WebPageBase::updateIsLoadErrorPageFinish()
 {
     // ex)
@@ -458,29 +457,35 @@ void WebPageBase::updateIsLoadErrorPageFinish()
 
     if (!url().isLocalFile()) return;
 
-    QString urlString = url().toString();
-    QString urlFileName = url().fileName();
-    QString errorPageFileName = QUrl(QString::fromStdString(getWebAppManagerConfig()->getErrorPageUrl())).fileName();
-    QString errorPageDirPath = QString::fromStdString(getWebAppManagerConfig()->getErrorPageUrl()).remove(errorPageFileName);
-    if (urlString.startsWith(errorPageDirPath) && !urlFileName.compare(errorPageFileName)) {
-        LOG_DEBUG("[%s] This is WAM ErrorPage; URL: %s ", appId().c_str(), qPrintable(urlString));
+    fs::path urlPath(url().toLocalFile());
+    fs::path urlFileName = urlPath.filename();
+    fs::path urlDirPath = urlPath.parent_path();
+
+    fs::path errPath(Url(getWebAppManagerConfig()->getErrorPageUrl()).toLocalFile());
+    fs::path errFileName = errPath.filename();
+    fs::path errDirPath = errPath.parent_path();
+
+    if ((urlDirPath.string().find(errDirPath.string()) == 0) // urlDirPath starts with errDirPath
+            && urlFileName == errFileName) {
+        LOG_DEBUG("[%s] This is WAM ErrorPage; URL: %s ", appId().c_str(), url().toString().c_str());
         m_isLoadErrorPageFinish = true;
     }
 }
 
-// FIXME: WebPage: qfile-less
 void WebPageBase::setCustomUserScript()
 {
     // 1. check app folder has userScripts
     // 2. check userscript.js there is, appfolder/webOSUserScripts/*.js
-    QString userScriptFilePath = QDir(QString::fromStdString(m_appDesc->folderPath()))
-        .filePath(QString::fromStdString(getWebAppManagerConfig()->getUserScriptPath()));
+    auto userScriptFilePath = fs::path(m_appDesc->folderPath()) / getWebAppManagerConfig()->getUserScriptPath();
 
-    if(!QFileInfo(userScriptFilePath).isReadable())
+    if(!fs::exists(userScriptFilePath) || !fs::is_regular_file(fs::canonical(userScriptFilePath))) {
+        LOG_DEBUG("WebPageBase: Couldn't set '%s' as user script cause it does not exist/is a regular file.",
+                  userScriptFilePath.string().c_str());
         return;
+    }
 
     LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", qPrintable(instanceId())), PMLOGKFV("PID", "%d", getWebProcessPID()), "User Scripts exists : %s", qPrintable(userScriptFilePath));
-    addUserScriptUrl(QUrl::fromLocalFile(userScriptFilePath));
+    addUserScriptUrl(Url::fromLocalFile(userScriptFilePath.string()));
 }
 
 void WebPageBase::addObserver(WebPageObserver* observer)

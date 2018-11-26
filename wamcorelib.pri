@@ -29,6 +29,7 @@ SOURCES += \
         PlugInService.cpp \
         StringUtils.cpp \
         Timer.cpp \
+        Url.cpp \
         WebAppBase.cpp \
         WebAppFactoryManager.cpp \
         WebAppManager.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
         ServiceSender.h \
         StringUtils.h \
         Timer.h \
+        Url.h \
         WebAppBase.h \
         WebAppFactoryInterface.h \
         WebAppFactoryManager.h \

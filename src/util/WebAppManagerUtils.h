@@ -26,6 +26,7 @@ public:
     static bool setGroups();
     static std::string truncateURL(const std::string& url);
     static std::string getEnv(const char *name);
+    static void readFileContent(const std::string &path, std::string &out);
 
 private:
     static long percentages(int cnt, int* out, long* now, long* old, long* diffs);
