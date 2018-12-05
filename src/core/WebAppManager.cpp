@@ -616,7 +616,10 @@ void WebAppManager::killCustomPluginProcess(const QString &basePath)
 std::string WebAppManager::launch(const std::string& appDescString, const std::string& params,
         const std::string& launchingAppId, int& errCode, std::string& errMsg)
 {
+    LOG_DEBUG("Begin");
     std::shared_ptr<ApplicationDescription> desc(ApplicationDescription::fromJsonString(appDescString.c_str()));
+    LOG_DEBUG("parse app desc: Done");
+
     if (!desc)
         return std::string();
 
@@ -632,16 +635,20 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
 
     std::string instanceId = jsonObject.value("instanceId").toString().toStdString();
 
+    LOG_DEBUG("windowType=[%s] Done", winType.toStdString().c_str());
+
     // Check if app is already running
     if (isRunningApp(instanceId)) {
         onRelaunchApp(instanceId, desc->id().c_str(), params.c_str(), launchingAppId.c_str());
     } else {
        // Run as a normal app
+        LOG_DEBUG("normal app url=[%s] instanceId=[%s]", url.c_str(), instanceId.c_str());
         if (!onLaunchUrl(url, winType, desc, instanceId, params, launchingAppId, errCode, errMsg)) {
             return std::string();
         }
     }
 
+    LOG_DEBUG("Done.");
     return instanceId;
 }
 
