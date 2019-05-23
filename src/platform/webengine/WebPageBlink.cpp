@@ -349,7 +349,7 @@ void WebPageBlink::loadErrorPage(int errorCode)
             m_isLoadErrorPageStart = true;
             errorUrl = Url::fromLocalFile(errPagePath.string());
             // set query items for error code and hostname to URL
-            std::map<std::string, std::string> query{{"errorCode", errCode}, {"hosname", m_loadFailedHostname}};
+            std::unordered_map<std::string, std::string> query{{"errorCode", errCode}, {"hosname", m_loadFailedHostname}};
             errorUrl.setQuery(query);
 	    LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", qPrintable(instanceId())), PMLOGKFV("PID", "%d", getWebProcessPID()), "LoadErrorPage : %s", errorUrl.toString().c_str());
             d->pageView->LoadUrl(errorUrl.toString());

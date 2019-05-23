@@ -19,7 +19,7 @@
 
 #include <list>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -178,12 +178,12 @@ private:
     typedef std::list<WebPageBase*> PageList;
 
     bool isRunningApp(const std::string& id);
-    std::map<std::string, WebAppBase*> m_closingAppList;
+    std::unordered_map<std::string, WebAppBase*> m_closingAppList;
 
     // Mappings
-    std::map<std::string, WebPageBase*> m_shellPageMap;
+    std::unordered_map<std::string, WebPageBase*> m_shellPageMap;
     AppList m_appList;
-    std::multimap<std::string, WebPageBase*> m_appPageMap;
+    std::unordered_multimap<std::string, WebPageBase*> m_appPageMap;
 
     PageList m_pagesToDeleteList;
     bool m_deletingPages;
@@ -197,12 +197,12 @@ private:
     std::unique_ptr<WebAppManagerConfig> m_webAppManagerConfig;
     std::unique_ptr<NetworkStatusManager> m_networkStatusManager;
 
-    std::map<std::string, int> m_lastCrashedAppIds;
+    std::unordered_map<std::string, int> m_lastCrashedAppIds;
 
     int m_suspendDelay;
     int m_maxCustomSuspendDelay;
 
-    std::map<std::string, std::string> m_appVersion;
+    std::unordered_map<std::string, std::string> m_appVersion;
 
     bool m_isAccessibilityEnabled;
 };
