@@ -34,7 +34,7 @@ CONFIG += link_pkgconfig
 ################################################################################
 # Decide MACHINE_NAME and PLATFORM
 
-MACHINE_NAME = "minnowboard"
+MACHINE_NAME = $$(MACHINE)
 
 isEmpty(PLATFORM) {
     error("PLATFORM wasn't set")
