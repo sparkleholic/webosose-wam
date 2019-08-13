@@ -1,7 +1,9 @@
 #include "WebAppManagerServiceAGL.h"
 
+#include <errno.h>
 #include <sys/file.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <unistd.h>
 
@@ -61,6 +63,22 @@ public:
         releaseLock(fd);
         return true;
       }
+    }
+    return false;
+  }
+
+  bool isLocked() {
+    struct stat buffer;
+    int result;
+    result = stat(lock_file_.c_str(), &buffer);
+    if (result == 0) {
+      // file exists
+      return true;
+    }
+    else if (errno == EACCES) {
+      // file cannot be accessed
+      // it was created by WAM service with a different SMACK label
+      return true;
     }
     return false;
   }
@@ -222,7 +240,7 @@ bool WebAppManagerServiceAGL::initializeAsHostClient() {
 
 bool WebAppManagerServiceAGL::isHostServiceRunning()
 {
-    return !lock_file_->tryAcquireLock();
+    return lock_file_->isLocked();
 }
 
 void WebAppManagerServiceAGL::launchOnHost(int argc, const char **argv)
