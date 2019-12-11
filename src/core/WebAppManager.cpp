@@ -388,8 +388,6 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
             app->dispatchUnload();
         }
     }
-
-    deleteWebViewProfile(app->appId());
 }
 
 bool WebAppManager::closeAllApps(uint32_t pid)
@@ -840,15 +838,4 @@ QString WebAppManager::identifierForSecurityOrigin(const QString& identifier)
     return QString("%1%2").arg(lowcase_identifier).arg(webos::WebViewBase::kSecurityOriginPostfix.c_str());
 }
 
-void WebAppManager::buildWebViewProfile(const std::string& app_id, const std::string& proxy_host, const std::string& proxy_port)
-{
-    if (m_webProcessManager)
-        m_webProcessManager->buildWebViewProfile(app_id, proxy_host, proxy_port);
-}
-
-void WebAppManager::deleteWebViewProfile(const std::string& app_id)
-{
-    if (m_webProcessManager)
-        m_webProcessManager->deleteWebViewProfile(app_id);
-}
 

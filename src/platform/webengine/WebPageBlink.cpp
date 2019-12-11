@@ -29,7 +29,6 @@
 #include "ApplicationDescription.h"
 #include "BlinkWebProcessManager.h"
 #include "BlinkWebView.h"
-#include "BlinkWebViewProfileHelper.h"
 #include "LogManager.h"
 #include "PalmSystemBlink.h"
 #include "StringUtils.h"
@@ -38,8 +37,6 @@
 #include "WebAppManagerUtils.h"
 #include "WebPageObserver.h"
 #include "WebPageBlinkObserver.h"
-
-#include "webos/webview_profile.h"
 
 #define DBG(fmt, ...)                           \
     do {                                        \
@@ -108,11 +105,6 @@ void WebPageBlink::init()
 {
     d->pageView = createPageView();
     d->pageView->setDelegate(this);
-
-    webos::WebViewProfile* profile = BlinkWebViewProfileHelper::instance()->getProfile(m_appDesc->id());
-    if (profile) {
-        DBG("### Setting profile for page %s\n", m_appDesc->id().c_str());
-        d->pageView->SetProfile(profile->GetProfileDelegate());
 
     d->pageView->Initialize(m_appDesc->id() + std::to_string(m_appDesc->getDisplayAffinity()),
                             m_appDesc->folderPath(),
