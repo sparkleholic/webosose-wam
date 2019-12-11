@@ -34,7 +34,7 @@ public:
     uint32_t getInitialWebViewProxyID() const override;
     void clearBrowsingData(const int removeBrowsingDataMask) override;
     int maskForBrowsingDataType(const char* type) override;
-    void buildWebViewProfile(const std::string& app_id, const std::string& proxy_host, const std::string& proxy_port) override;
+    void buildWebViewProfile(const std::string& app_id) override;
     void deleteWebViewProfile(const std::string& app_id) override;
 };
 

@@ -48,7 +48,7 @@ public:
     static void clearDefaultBrowsingData(const int removeBrowsingDataMask);
     static int maskForBrowsingDataType(const char* key);
     webos::WebViewProfile* getProfile(const std::string& app_id);
-    void buildProfile(const std::string& app_id, const std::string& proxy_host, const std::string& proxy_port);
+    void buildProfile(const std::string& app_id);
     void deleteProfile(const std::string& app_id);
 
 private:

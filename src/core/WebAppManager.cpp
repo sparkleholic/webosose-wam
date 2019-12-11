@@ -1089,10 +1089,10 @@ int WebAppManager::maskForBrowsingDataType(const char* type)
     return m_webProcessManager->maskForBrowsingDataType(type);
 }
 
-void WebAppManager::buildWebViewProfile(const std::string& app_id, const std::string& proxy_host, const std::string& proxy_port)
+void WebAppManager::buildWebViewProfile(const std::string& app_id)
 {
     if (m_webProcessManager)
-        m_webProcessManager->buildWebViewProfile(app_id, proxy_host, proxy_port);
+        m_webProcessManager->buildWebViewProfile(app_id);
 }
 
 void WebAppManager::deleteWebViewProfile(const std::string& app_id)
