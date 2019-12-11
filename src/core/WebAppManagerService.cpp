@@ -226,8 +226,3 @@ int WebAppManagerService::maskForBrowsingDataType(const char* type)
 {
     return WebAppManager::instance()->maskForBrowsingDataType(type);
 }
-
-void WebAppManagerService::buildWebViewProfile(const std::string& app_id)
-{
-    WebAppManager::instance()->buildWebViewProfile(app_id);
-}
