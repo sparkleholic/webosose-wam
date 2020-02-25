@@ -73,7 +73,7 @@ Json::Value BlinkWebProcessManager::getWebProcessProfiling()
 
     reply["WebProcesses"] = processArray;
     reply["returnValue"] = true;
-    return std::move(reply);
+    return reply;
 }
 
 void BlinkWebProcessManager::deleteStorageData(const std::string& identifier)

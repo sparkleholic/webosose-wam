@@ -54,7 +54,7 @@ Json::Value WebAppManagerService::onLogControl(const std::string& keys, const st
     reply["mouseMove"] = LogManager::getDebugMouseMoveEnabled();
     reply["returnValue"] = true;
 
-    return std::move(reply);
+    return reply;
 }
 
 bool WebAppManagerService::onCloseAllApps(uint32_t pid)
