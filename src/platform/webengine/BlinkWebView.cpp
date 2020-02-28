@@ -131,6 +131,11 @@ void BlinkWebView::DidSwapCompositorFrame()
         m_delegate->didSwapCompositorFrame();
 }
 
+void BlinkWebView::DidErrorPageLoadedFromNetErrorHelper()
+{
+    LOG_DEBUG("NOT IMPLEMENTED");
+}
+
 void BlinkWebView::DidFirstFrameFocused()
 {
     if (!m_delegate)
@@ -170,6 +175,11 @@ void BlinkWebView::LoadFailed(const std::string& url, int errCode, const std::st
         return;
 
     m_delegate->loadFailed(url, errCode, errDesc);
+}
+
+void BlinkWebView::LoadAborted(const std::string& url)
+{
+    LOG_DEBUG("NOT IMPLEMENTED");
 }
 
 void BlinkWebView::LoadStopped(const std::string& url)

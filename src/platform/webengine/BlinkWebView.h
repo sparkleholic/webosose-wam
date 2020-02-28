@@ -52,6 +52,7 @@ public:
     void LoadStarted() override;
     void LoadFinished(const std::string& url) override;
     void LoadFailed(const std::string& url, int errCode, const std::string& errDesc) override;
+    void LoadAborted(const std::string& url) override;
     void LoadStopped(const std::string& url) override;
     void DocumentLoadFinished() override;
     void RenderProcessCreated(int pid) override;
@@ -60,6 +61,7 @@ public:
     void DidClearWindowObject() {}
     virtual void DidDropAllPeerConnections(webos::DropPeerConnectionReason reason);
     void DidSwapCompositorFrame();
+    void DidErrorPageLoadedFromNetErrorHelper() override;
     virtual bool AllowMouseOnOffEvent() const;
     void HandleBrowserControlCommand(const std::string& command, const std::vector<std::string>& arguments) override;
     void HandleBrowserControlFunction(const std::string& command, const std::vector<std::string>& arguments, std::string* result) override;
