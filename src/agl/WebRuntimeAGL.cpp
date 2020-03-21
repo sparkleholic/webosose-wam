@@ -58,6 +58,41 @@ static bool isBrowserProcess(const std::vector<std::string>& args) {
   return true;
 }
 
+static enum agl_shell_surface_type
+get_surface_type(const std::vector<std::string>& args)
+{
+	for (size_t i = 0; i < args.size(); i++) {
+		if (args[i].find("--surface-role=") != std::string::npos) {
+			if (args[i].find("background") != std::string::npos)
+				return AGL_SHELL_TYPE_BACKGROUND;
+
+			if (args[i].find("panel") != std::string::npos)
+				return AGL_SHELL_TYPE_PANEL;
+		}
+	}
+
+	return AGL_SHELL_TYPE_NOT_FOUND;
+}
+
+static enum agl_shell_panel_type
+get_surface_panel_type(const std::vector<std::string> &args)
+{
+	for (size_t i = 0; i < args.size(); i++) {
+		if (args[i].find("--panel-type=") != std::string::npos) {
+			if (args[i].find("top") != std::string::npos)
+				return AGL_SHELL_PANEL_TOP;
+			if (args[i].find("bottom") != std::string::npos)
+				return AGL_SHELL_PANEL_BOTTOM;
+			if (args[i].find("left") != std::string::npos)
+				return AGL_SHELL_PANEL_LEFT;
+			if (args[i].find("right") != std::string::npos)
+				return AGL_SHELL_PANEL_RIGHT;
+		}
+	}
+
+	return AGL_SHELL_PANEL_NOT_FOUND;
+}
+
 static bool isSharedBrowserProcess(const std::vector<std::string>& args) {
   // if 'http://' param is not present then assume shared browser process
   for (size_t i=0; i < args.size(); i++) {
@@ -175,6 +210,16 @@ int WebAppLauncherRuntime::run(int argc, const char** argv) {
   m_id = getAppId(args);
   m_url = getAppUrl(args);
   m_role = "WebApp";
+
+  enum agl_shell_panel_type panel_type;
+  enum agl_shell_surface_type surface_type = get_surface_type(args);
+
+  if (surface_type == AGL_SHELL_TYPE_PANEL) {
+	panel_type = get_surface_panel_type(args);
+	LOG_DEBUG("Got surface_type panel type %d\n", panel_type);
+  } else if (surface_type == AGL_SHELL_TYPE_BACKGROUND) {
+	LOG_DEBUG("Got surface_type background\n");
+  }
 
   if(isWaitHostService) {
     while(!WebAppManagerServiceAGL::instance()->isHostServiceRunning()) {
