@@ -269,7 +269,11 @@ bool WebAppLauncherRuntime::init() {
       }
     }
 
-    auto path = std::string(getenv("AFM_APP_INSTALL_DIR"));
+    std::string path = std::string(getenv("AFM_APP_INSTALL_DIR"));
+    if (path.empty()) {
+	    LOG_DEBUG("Please set AFM_APP_INSTALL_DIR");
+	    return false;
+    }
     path = path + "/" + WEBAPP_CONFIG;
 
     // Parse config file of runxdg
