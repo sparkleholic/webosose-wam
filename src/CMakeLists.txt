@@ -29,7 +29,12 @@ endif()
 
 if(EXISTS ${CHROMIUM_SRC_DIR})
     set(CHROMIUM_INCLUDE_DIRS ${CHROMIUM_SRC_DIR})
-    set(CHROMIUM_LDFLAGS -lcbe)
+	if (EXISTS $ENV{CHROMIUM_CBE})
+		message(STATUS "Using CBE link directory: $ENV{CHROMIUM_CBE}")
+		set(CBE_LINK_DIR -L$ENV{CHROMIUM_CBE})
+	endif()
+
+	set(CHROMIUM_LDFLAGS -lcbe)
 else()
     message(FATAL_ERROR "Invalid Chromium source dir: ${CHROMIUM_SRC_DIR}")
 endif()
@@ -150,6 +155,7 @@ set(WAM_CORE_LIBRARIES
     Boost::filesystem
     ${GLIB_LDFLAGS}
     ${CHROMIUM_LDFLAGS}
+    ${CBE_LINK_DIR}
 )
 
 if(IS_WEBOS)
@@ -233,6 +239,7 @@ set(WAM_LIB_LIBRARIES
     ${CHROMIUM_LDFLAGS}
     ${JSONCPP_LDFLAGS}
     ${LIBXML_LDFLAGS}
+    ${CBE_LINK_DIR}
     Boost::filesystem
     wamcorelib
 )
@@ -300,6 +307,7 @@ set(WAM_EXE_INCLUDE_DIRS
 )
 set(WAM_EXE_LIBRARIES
     ${CHROMIUM_LDFLAGS}
+    ${CBE_LINK_DIR}
     Boost::filesystem
     wamcorelib
     wamlib
