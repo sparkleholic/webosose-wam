@@ -8,6 +8,26 @@
 
 #include "WebRuntime.h"
 
+enum agl_shell_surface_type {
+	AGL_SHELL_TYPE_NOT_FOUND 	= -1,
+	AGL_SHELL_TYPE_BACKGROUND 	= 0,
+	AGL_SHELL_TYPE_PANEL		= 1
+};
+
+
+enum agl_shell_panel_type {
+	AGL_SHELL_PANEL_NOT_FOUND	= -1,
+	AGL_SHELL_PANEL_TOP,
+	AGL_SHELL_PANEL_BOTTOM,
+	AGL_SHELL_PANEL_LEFT,
+	AGL_SHELL_PANEL_RIGHT,
+};
+
+struct agl_shell_surface {
+	enum agl_shell_surface_type surface_type;
+	enum agl_shell_panel_type panel_type;
+};
+
 class Launcher {
 public:
   virtual void register_surfpid(pid_t app_pid, pid_t surf_pid);
@@ -50,6 +70,9 @@ private:
   std::string m_url;
   std::string m_name;
   std::string m_host;
+
+  enum agl_shell_surface_type surface_type;
+  enum agl_shell_panel_type panel_type;	/* only of surface_type is panel */
 
   int m_port;
   std::string m_token;
