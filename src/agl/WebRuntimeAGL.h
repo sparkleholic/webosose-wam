@@ -6,27 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <ilm/ilm_control.h>
-
 #include "WebRuntime.h"
-
-class LibHomeScreen;
-class LibWindowmanager;
-
-class ILMControl
-{
-  public:
-    ILMControl(notificationFunc callback, void *user_data) {
-        ilm_init();
-        ilm_registerNotification(callback, user_data);
-    }
-
-    ~ILMControl(void) {
-        ilm_unregisterNotification();
-        ilm_destroy();
-        fprintf(stderr, "ilm_destory().\r\n");
-    }
-};
 
 class Launcher {
 public:
@@ -56,13 +36,6 @@ class WebAppLauncherRuntime  : public WebRuntime {
 public:
   int run(int argc, const char** argv) override;
 
-  void notify_ivi_control_cb(ilmObjectType object, t_ilm_uint id,
-                               t_ilm_bool created);
-  static void notify_ivi_control_cb_static (ilmObjectType object,
-                                              t_ilm_uint id,
-                                              t_ilm_bool created,
-                                              void *user_data);
-
 private:
 
   bool init();
@@ -83,12 +56,7 @@ private:
 
   Launcher *m_launcher;
 
-  LibWindowmanager *m_wm = nullptr;
-  LibHomeScreen *m_hs = nullptr;
-  ILMControl *m_ic = nullptr;
-
   std::unordered_map<int, int> m_surfaces;  // pair of <afm:rid, ivi:id>
-
   bool m_pending_create = false;
 };
 
