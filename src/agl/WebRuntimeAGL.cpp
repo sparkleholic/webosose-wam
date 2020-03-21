@@ -7,9 +7,6 @@
 #include <glib.h>
 #include <libxml/parser.h>
 
-#include <libhomescreen.hpp>
-#include <libwindowmanager.h>
-
 #include <webos/app/webos_main.h>
 
 #include "LogManager.h"
@@ -23,6 +20,14 @@
 
 volatile sig_atomic_t e_flag = 1;
 
+/*
+ *   std::vector<const char*> data;
+ *   data.push_back(kDeactivateEvent);
+ *   data.push_back(this->m_id.c_str());
+ *   WebAppManagerServiceAGL::instance()->sendEvent(data.size(), data.data());
+ *
+ *   used to send data
+ */
 
 static std::string getAppId(const std::vector<std::string>& args) {
   const char *afm_id = getenv("AFM_ID");
@@ -283,102 +288,11 @@ bool WebAppLauncherRuntime::init() {
             m_id.c_str(), m_name.c_str(), m_role.c_str(), m_url.c_str(),
             m_host.c_str(), m_port, m_token.c_str());
 
-    // Setup HomeScreen/WindowManager API
-    if (!init_wm()) {
-      LOG_DEBUG("cannot setup wm API");
-      return false;
-    }
-
-    if (!init_hs()) {
-      LOG_DEBUG("cannot setup hs API");
-      return false;
-    }
-
-    // Setup ilmController API
-    m_ic = new ILMControl(notify_ivi_control_cb_static, this);
-
     return true;
   } else {
     LOG_DEBUG("Malformed url.");
     return false;
   }
-}
-
-bool WebAppLauncherRuntime::init_wm() {
-  m_wm = new LibWindowmanager();
-  if (m_wm->init(m_host.c_str(), m_port, m_token.c_str())) {
-    LOG_DEBUG("cannot initialize windowmanager");
-    return false;
-  }
-
-  std::function< void(json_object*) > h_active = [](json_object* object) {
-    LOG_DEBUG("Got Event_Active");
-  };
-
-  std::function< void(json_object*) > h_inactive = [](json_object* object) {
-    LOG_DEBUG("Got Event_Inactive");
-  };
-
-  std::function< void(json_object*) > h_visible = [this](json_object* object) {
-    LOG_DEBUG("Got Event_Visible");
-
-    std::vector<const char*> data;
-    data.push_back(kActivateEvent);
-    data.push_back(this->m_id.c_str());
-
-    WebAppManagerServiceAGL::instance()->sendEvent(data.size(), data.data());
-  };
-
-  std::function< void(json_object*) > h_invisible = [this](json_object* object) {
-    LOG_DEBUG("Got Event_Invisible");
-
-    std::vector<const char*> data;
-    data.push_back(kDeactivateEvent);
-    data.push_back(this->m_id.c_str());
-
-    WebAppManagerServiceAGL::instance()->sendEvent(data.size(), data.data());
-  };
-
-  std::function< void(json_object*) > h_syncdraw =
-      [this](json_object* object) {
-    LOG_DEBUG("Got Event_SyncDraw");
-    this->m_wm->endDraw(this->m_role.c_str());
-  };
-
-  std::function< void(json_object*) > h_flushdraw= [](json_object* object) {
-    LOG_DEBUG("Got Event_FlushDraw");
-  };
-
-  m_wm->set_event_handler(LibWindowmanager::Event_Active, h_active);
-  m_wm->set_event_handler(LibWindowmanager::Event_Inactive, h_inactive);
-  m_wm->set_event_handler(LibWindowmanager::Event_Visible, h_visible);
-  m_wm->set_event_handler(LibWindowmanager::Event_Invisible, h_invisible);
-  m_wm->set_event_handler(LibWindowmanager::Event_SyncDraw, h_syncdraw);
-  m_wm->set_event_handler(LibWindowmanager::Event_FlushDraw, h_flushdraw);
-
-  return true;
-}
-
-bool WebAppLauncherRuntime::init_hs() {
-  m_hs = new LibHomeScreen();
-  if (m_hs->init(m_host.c_str(), m_port, m_token.c_str())) {
-    LOG_DEBUG("cannot initialize homescreen");
-    return false;
-  }
-
-  std::function< void(json_object*) > handler = [this] (json_object* object) {
-    LOG_DEBUG("Activesurface %s ", this->m_role.c_str());
-    this->m_wm->activateWindow(this->m_role.c_str(), "normal.full");
-  };
-  m_hs->set_event_handler(LibHomeScreen::Event_ShowWindow, handler);
-
-  std::function< void(json_object*) > h_default= [](json_object* object) {
-    const char *j_str = json_object_to_json_string(object);
-    LOG_DEBUG("Got event [%s]", j_str);
-  };
-  m_hs->set_event_handler(LibHomeScreen::Event_OnScreenMessage, h_default);
-
-  return true;
 }
 
 int WebAppLauncherRuntime::parse_config (const char *path_to_config)
@@ -430,73 +344,6 @@ int WebAppLauncherRuntime::parse_config (const char *path_to_config)
 
   return 0;
 }
-
-void WebAppLauncherRuntime::setup_surface (int id)
-{
-  std::string sid = std::to_string(id);
-
-  // This surface is mine, register pair app_name and ivi id.
-  LOG_DEBUG("requestSurfaceXDG(%s,%d)", m_role.c_str(), id);
-  m_wm->requestSurfaceXDG(this->m_role.c_str(), id);
-
-  if (m_pending_create) {
-    // Recovering 1st time tap_shortcut is dropped because
-    // the application has not been run yet (1st time launch)
-    m_pending_create = false;
-    m_wm->activateWindow(this->m_role.c_str(), "normal.full");
-  }
-}
-
-void WebAppLauncherRuntime::notify_ivi_control_cb (ilmObjectType object, t_ilm_uint id,
-                                    t_ilm_bool created)
-{
-  if (object == ILM_SURFACE) {
-    // This call is broadcasted and all the launchers receive this call with the same id,
-    // but we cannot rely on surf_pid when calling find_surfpid_by_rid, because all the
-    // created surfaces are created by WebAppMgr, which has only one pid. This results
-    // in a wrong launcher requesting surfaces, which may lead to a sitatution, when app just
-    // creashes. Thus, let's temporarely use an assumption that each launcher has only one
-    // surface.
-    if (!m_launcher->m_pid_map.empty()) {
-      LOG_DEBUG("This launcher has already had a surface");
-      return;
-    }
-
-    struct ilmSurfaceProperties surf_props;
-
-    ilm_getPropertiesOfSurface(id, &surf_props);
-    pid_t surf_pid = surf_props.creatorPid;
-
-    if (!created) {
-      LOG_DEBUG("ivi surface (id=%d, surf_pid=%d) [m_rid:%d] destroyed.", id, surf_pid, m_launcher->m_rid);
-      m_launcher->unregister_surfpid(id, surf_pid);
-      m_surfaces.erase(surf_pid);
-      return;
-    }
-
-    LOG_DEBUG("ivi surface (id=%d, surf_pid=%d) [m_rid:%d] is created.", id, surf_pid, m_launcher->m_rid);
-
-    m_launcher->register_surfpid(id, surf_pid);
-    if (m_launcher->m_rid &&
-        surf_pid == m_launcher->find_surfpid_by_rid(m_launcher->m_rid)) {
-      setup_surface(id);
-    }
-    m_surfaces[surf_pid] = id;
-  } else if (object == ILM_LAYER) {
-    if (created)
-      LOG_DEBUG("ivi layer: %d created.", id);
-    else
-      LOG_DEBUG("ivi layer: %d destroyed.", id);
-  }
-}
-
-void WebAppLauncherRuntime::notify_ivi_control_cb_static (ilmObjectType object, t_ilm_uint id,
-                                           t_ilm_bool created, void *user_data)
-{
-  WebAppLauncherRuntime *wam = static_cast<WebAppLauncherRuntime*>(user_data);
-  wam->notify_ivi_control_cb(object, id, created);
-}
-
 
 int SharedBrowserProcessRuntime::run(int argc, const char** argv) {
   if (WebAppManagerServiceAGL::instance()->initializeAsHostService()) {
