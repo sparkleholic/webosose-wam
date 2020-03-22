@@ -178,7 +178,8 @@ public:
 
       if (std::string(res[0]) == kStartApp) {
         WebAppManagerServiceAGL::instance()->setStartupApplication(
-          std::string(res[1]), std::string(res[2]), atoi(res[3]));
+          std::string(res[1]), std::string(res[2]), atoi(res[3]),
+	  atoi(res[4]), atoi(res[5]));
 
         WebAppManagerServiceAGL::instance()->triggerStartupApp();
       } else {
@@ -238,11 +239,14 @@ void WebAppManagerServiceAGL::sendEvent(int argc, const char **argv)
 
 void WebAppManagerServiceAGL::setStartupApplication(
     const std::string& startup_app_id,
-    const std::string& startup_app_uri, int startup_app_surface_id)
+    const std::string& startup_app_uri, int startup_app_surface_id,
+    int _surface_role, int _panel_type)
 {
-    startup_app_id_ = startup_app_id;
-    startup_app_uri_ = startup_app_uri;
-    startup_app_surface_id_ = startup_app_surface_id;
+	startup_app_id_ = startup_app_id;
+	startup_app_uri_ = startup_app_uri;
+	startup_app_surface_id_ = startup_app_surface_id;
+	surface_role = _surface_role;
+	panel_type = _panel_type;
 }
 
 void WebAppManagerServiceAGL::setAppIdForEventTarget(const std::string& app_id) {
@@ -389,6 +393,8 @@ void WebAppManagerServiceAGL::launchStartupAppFromURL()
     //obj["icon"] = (const char*)icon;
     //obj["folderPath"] = startup_app_.c_str();
     obj["surfaceId"] = startup_app_surface_id_;
+    obj["surface_role"] = surface_role;
+    obj["panel_type"] = panel_type;
 
     std::string appDesc;
     dumpJsonToString(obj, appDesc);

@@ -159,7 +159,7 @@ pid_t Launcher::find_surfpid_by_rid(pid_t app_pid)
 
 int SingleBrowserProcessWebAppLauncher::launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type) {
   m_rid = (int)getpid();
-  WebAppManagerServiceAGL::instance()->setStartupApplication(id, uri, m_rid);
+  WebAppManagerServiceAGL::instance()->setStartupApplication(id, uri, m_rid, AGL_SHELL_TYPE_NOT_FOUND, AGL_SHELL_PANEL_NOT_FOUND);
   return m_rid;
 }
 
