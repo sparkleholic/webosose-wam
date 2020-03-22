@@ -157,7 +157,7 @@ pid_t Launcher::find_surfpid_by_rid(pid_t app_pid)
   return -1;
 }
 
-int SingleBrowserProcessWebAppLauncher::launch(const std::string& id, const std::string& uri) {
+int SingleBrowserProcessWebAppLauncher::launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type) {
   m_rid = (int)getpid();
   WebAppManagerServiceAGL::instance()->setStartupApplication(id, uri, m_rid);
   return m_rid;
@@ -169,22 +169,30 @@ int SingleBrowserProcessWebAppLauncher::loop(int argc, const char** argv, volati
   return webOSMain.Run(argc, argv);
 }
 
-int SharedBrowserProcessWebAppLauncher::launch(const std::string& id, const std::string& uri) {
-  if (!WebAppManagerServiceAGL::instance()->initializeAsHostClient()) {
-    LOG_DEBUG("Failed to initialize as host client");
-    return -1;
-  }
+int
+SharedBrowserProcessWebAppLauncher::launch(const std::string& id,
+					   const std::string& uri,
+					   const std::string& surface_role,
+					   const std::string& panel_type)
+{
+	if (!WebAppManagerServiceAGL::instance()->initializeAsHostClient()) {
+		LOG_DEBUG("Failed to initialize as host client");
+		return -1;
+	}
 
-  m_rid = (int)getpid();
-  std::string m_rid_s = std::to_string(m_rid);
-  std::vector<const char*> data;
-  data.push_back(kStartApp);
-  data.push_back(id.c_str());
-  data.push_back(uri.c_str());
-  data.push_back(m_rid_s.c_str());
+	m_rid = (int)getpid();
+	std::string m_rid_s = std::to_string(m_rid);
 
-  WebAppManagerServiceAGL::instance()->launchOnHost(data.size(), data.data());
-  return m_rid;
+	std::vector<const char*> data;
+	data.push_back(kStartApp);
+	data.push_back(id.c_str());
+	data.push_back(uri.c_str());
+	data.push_back(m_rid_s.c_str());
+	data.push_back(surface_role.c_str());
+	data.push_back(panel_type.c_str());
+
+	WebAppManagerServiceAGL::instance()->launchOnHost(data.size(), data.data());
+	return m_rid;
 }
 
 int SharedBrowserProcessWebAppLauncher::loop(int argc, const char** argv, volatile sig_atomic_t& e_flag) {
@@ -221,6 +229,9 @@ int WebAppLauncherRuntime::run(int argc, const char** argv) {
 	LOG_DEBUG("Got surface_type background\n");
   }
 
+  std::string surface_role_str = std::to_string(surface_type);
+  std::string panel_type_str = std::to_string(panel_type);
+
   if(isWaitHostService) {
     while(!WebAppManagerServiceAGL::instance()->isHostServiceRunning()) {
       LOG_DEBUG("WebAppLauncherRuntime::run - waiting for host service");
@@ -242,7 +253,7 @@ int WebAppLauncherRuntime::run(int argc, const char** argv) {
     return -1;
 
   /* Launch WAM application */
-  m_launcher->m_rid = m_launcher->launch(m_id, m_url);
+  m_launcher->m_rid = m_launcher->launch(m_id, m_url, surface_role_str, panel_type_str);
 
   if (m_launcher->m_rid < 0) {
     LOG_DEBUG("cannot launch WAM app (%s)", m_id.c_str());
