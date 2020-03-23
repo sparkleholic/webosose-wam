@@ -86,6 +86,8 @@ public:
     static void onCursorVisibilityChanged(const std::string& jsscript);
     virtual bool hideWindow() = 0;
 
+    virtual void sendAglReady() = 0;
+
     bool getCrashState();
     void setCrashState(bool state);
     bool getHiddenWindow();

@@ -781,3 +781,8 @@ void WebAppWayland::setUseVirtualKeyboard(const bool enable)
 {
     m_appWindow->SetUseVirtualKeyboard(enable);
 }
+
+void WebAppWayland::sendAglReady(void)
+{
+	m_appWindow->SetAglReady();
+}

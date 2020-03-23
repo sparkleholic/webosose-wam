@@ -114,6 +114,8 @@ public:
     void keyboardVisibilityChanged(bool visible, int height) override;
     void doClose() override;
 
+    void sendAglReady() override;
+
     // WebAppWayland
     virtual bool isKeyboardVisible() override;
     virtual void setKeyMask(webos::WebOSKeyMask keyMask, bool value);

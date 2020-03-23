@@ -313,6 +313,10 @@ WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, const std::string
     page->load();
     webPageAdded(page);
 
+    /* if the surface role is a background send ready to display them */
+    if (appDesc->surfaceRole() == 0)
+	    app->sendAglReady();
+
     m_appList.push_back(app);
 
     if (m_appVersion.find(appDesc->id()) != m_appVersion.end()) {
