@@ -45,7 +45,7 @@ static std::string truncateURL(const std::string& url)
     return res.str();
 }
 
-WebAppWayland::WebAppWayland(const std::string& type, int surface_id, int width, int height)
+WebAppWayland::WebAppWayland(const std::string& type, int surface_id, int width, int height, int surface_role, int panel_type)
     : WebAppBase()
     , m_appWindow(0)
     , m_windowType(type)
@@ -55,10 +55,10 @@ WebAppWayland::WebAppWayland(const std::string& type, int surface_id, int width,
     , m_vkbHeight(0)
     , m_lostFocusBySetWindowProperty(false)
 {
-    init(width, height, surface_id);
+    init(width, height, surface_id, surface_role, panel_type);
 }
 
-WebAppWayland::WebAppWayland(const std::string& type, WebAppWaylandWindow* window, int width, int height)
+WebAppWayland::WebAppWayland(const std::string& type, WebAppWaylandWindow* window, int width, int height, int surface_role, int panel_type)
     : WebAppBase()
     , m_appWindow(window)
     , m_windowType(type)
@@ -68,7 +68,7 @@ WebAppWayland::WebAppWayland(const std::string& type, WebAppWaylandWindow* windo
     , m_vkbHeight(0)
     , m_lostFocusBySetWindowProperty(false)
 {
-    init(width, height, 0);
+    init(width, height, 0, surface_role, panel_type);
 }
 
 WebAppWayland::~WebAppWayland()
@@ -76,11 +76,18 @@ WebAppWayland::~WebAppWayland()
     delete m_appWindow;
 }
 
-void WebAppWayland::init(int width, int height, int surface_id)
+void WebAppWayland::init(int width, int height, int surface_id,
+			 int surface_role, int panel_type)
 {
     if (!m_appWindow)
         m_appWindow = WebAppWaylandWindow::take(surface_id);
     m_appWindow->SetWindowSurfaceId(surface_id);
+
+    if (surface_role == AGL_SHELL_TYPE_BACKGROUND)
+	    m_appWindow->SetAglBackground();
+    else if (surface_role == AGL_SHELL_TYPE_PANEL)
+	    m_appWindow->SetAglPanel(panel_type);
+
     if (!(width && height)) {
         setUiSize(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
         m_appWindow->InitWindow(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
