@@ -179,7 +179,7 @@ public:
       if (std::string(res[0]) == kStartApp) {
         WebAppManagerServiceAGL::instance()->setStartupApplication(
           std::string(res[1]), std::string(res[2]), atoi(res[3]),
-	  atoi(res[4]), atoi(res[5]));
+	  atoi(res[4]), atoi(res[5]), atoi(res[6]), atoi(res[7]));
 
         WebAppManagerServiceAGL::instance()->triggerStartupApp();
       } else {
@@ -240,13 +240,16 @@ void WebAppManagerServiceAGL::sendEvent(int argc, const char **argv)
 void WebAppManagerServiceAGL::setStartupApplication(
     const std::string& startup_app_id,
     const std::string& startup_app_uri, int startup_app_surface_id,
-    int _surface_role, int _panel_type)
+    int _surface_role, int _panel_type, int _width, int _height)
 {
 	startup_app_id_ = startup_app_id;
 	startup_app_uri_ = startup_app_uri;
 	startup_app_surface_id_ = startup_app_surface_id;
 	surface_role = _surface_role;
 	panel_type = _panel_type;
+
+	width = _width;
+	height = _height;
 }
 
 void WebAppManagerServiceAGL::setAppIdForEventTarget(const std::string& app_id) {
@@ -395,6 +398,9 @@ void WebAppManagerServiceAGL::launchStartupAppFromURL()
     obj["surfaceId"] = startup_app_surface_id_;
     obj["surface_role"] = surface_role;
     obj["panel_type"] = panel_type;
+
+    obj["widthOverride"] = width;
+    obj["heightOverride"] = height;
 
     std::string appDesc;
     dumpJsonToString(obj, appDesc);

@@ -25,7 +25,7 @@ public:
 
     void setStartupApplication(const std::string& startup_app_id,
         const std::string& startup_app_uri, int startup_app_surface_id,
-	int _surface_role, int _panel_type);
+	int _surface_role, int _panel_type, int _width, int _height);
     void setAppIdForEventTarget(const std::string& app_id);
 
     void launchOnHost(int argc, const char **argv);
@@ -65,6 +65,8 @@ private:
     std::string startup_app_uri_;
     int surface_role;
     int panel_type;
+    int width;
+    int height;
 
     int startup_app_surface_id_;
     OneShotTimer<WebAppManagerServiceAGL> startup_app_timer_;
