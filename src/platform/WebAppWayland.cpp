@@ -123,14 +123,15 @@ void WebAppWayland::init(int width, int height, int surface_id,
     else if (surface_role == AGL_SHELL_TYPE_PANEL)
 	    m_appWindow->SetAglPanel(panel_type);
 
-    if (!(width && height)) {
-        setUiSize(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
-        m_appWindow->InitWindow(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
-    }
-    else {
-        setUiSize(width, height);
-        m_appWindow->InitWindow(width, height);
-    }
+    LOG_DEBUG("Width %d, Height %d\n", width, height);
+
+    if (width == 0)
+	    width = m_appWindow->DisplayWidth();
+    if (height == 0)
+	    height = m_appWindow->DisplayHeight();
+
+    setUiSize(width, height);
+    m_appWindow->InitWindow(width, height);
 
     webos::WebAppWindowBase::LocationHint locationHint = getLocationHintFromString(m_locationHint);
     if (locationHint != webos::WebAppWindowBase::LocationHint::kUnknown) {
