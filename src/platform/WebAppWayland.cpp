@@ -726,3 +726,7 @@ void WebAppWayland::keyboardVisibilityChanged(bool visible, int height) {
     moveInputRegion(height);
 }
 
+void WebAppWayland::sendAglReady(void)
+{
+	m_appWindow->SetAglReady();
+}

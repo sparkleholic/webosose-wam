@@ -83,6 +83,8 @@ public:
     virtual bool isKeyboardVisible() { return false; }
     static void onCursorVisibilityChanged(const std::string& jsscript);
 
+    virtual void sendAglReady() = 0;
+
     bool getCrashState();
     void setCrashState(bool state);
     bool getHiddenWindow();
