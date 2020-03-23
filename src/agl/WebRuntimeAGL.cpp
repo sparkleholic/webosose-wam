@@ -157,10 +157,18 @@ pid_t Launcher::find_surfpid_by_rid(pid_t app_pid)
   return -1;
 }
 
-int SingleBrowserProcessWebAppLauncher::launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type) {
-  m_rid = (int)getpid();
-  WebAppManagerServiceAGL::instance()->setStartupApplication(id, uri, m_rid, AGL_SHELL_TYPE_NOT_FOUND, AGL_SHELL_PANEL_NOT_FOUND, 0, 0);
-  return m_rid;
+int
+SingleBrowserProcessWebAppLauncher::launch(const std::string& id,
+					   const std::string& uri,
+					   const std::string& surface_role,
+					   const std::string& panel_type,
+					   const std::string& width,
+					   const std::string& height)
+{
+	m_rid = (int) getpid();
+
+	WebAppManagerServiceAGL::instance()->setStartupApplication(id, uri, m_rid, AGL_SHELL_TYPE_NOT_FOUND, AGL_SHELL_PANEL_NOT_FOUND, 0, 0);
+	return m_rid;
 }
 
 int SingleBrowserProcessWebAppLauncher::loop(int argc, const char** argv, volatile sig_atomic_t& e_flag) {
@@ -173,7 +181,9 @@ int
 SharedBrowserProcessWebAppLauncher::launch(const std::string& id,
 					   const std::string& uri,
 					   const std::string& surface_role,
-					   const std::string& panel_type)
+					   const std::string& panel_type,
+					   const std::string& width,
+					   const std::string& height)
 {
 	if (!WebAppManagerServiceAGL::instance()->initializeAsHostClient()) {
 		LOG_DEBUG("Failed to initialize as host client");
@@ -190,6 +200,9 @@ SharedBrowserProcessWebAppLauncher::launch(const std::string& id,
 	data.push_back(m_rid_s.c_str());
 	data.push_back(surface_role.c_str());
 	data.push_back(panel_type.c_str());
+
+	data.push_back(width.c_str());
+	data.push_back(height.c_str());
 
 	WebAppManagerServiceAGL::instance()->launchOnHost(data.size(), data.data());
 	return m_rid;
@@ -253,7 +266,7 @@ int WebAppLauncherRuntime::run(int argc, const char** argv) {
     return -1;
 
   /* Launch WAM application */
-  m_launcher->m_rid = m_launcher->launch(m_id, m_url, surface_role_str, panel_type_str);
+  m_launcher->m_rid = m_launcher->launch(m_id, m_url, surface_role_str, panel_type_str, m_width, m_height);
 
   if (m_launcher->m_rid < 0) {
     LOG_DEBUG("cannot launch WAM app (%s)", m_id.c_str());
@@ -368,6 +381,9 @@ int WebAppLauncherRuntime::parse_config (const char *path_to_config)
   xmlChar *author = nullptr;
   xmlChar *icon = nullptr;
 
+  xmlChar *width = nullptr;
+  xmlChar *height = nullptr;
+
   id = xmlGetProp(root, (const xmlChar*)"id");
   version = xmlGetProp(root, (const xmlChar*)"version");
   for (xmlNode *node = root->children; node; node = node->next) {
@@ -381,6 +397,11 @@ int WebAppLauncherRuntime::parse_config (const char *path_to_config)
       description = xmlNodeListGetString(doc, node->xmlChildrenNode, 1);
     if (!xmlStrcmp(node->name, (const xmlChar*)"author"))
       author = xmlNodeListGetString(doc, node->xmlChildrenNode, 1);
+
+    if (!xmlStrcmp(node->name, (const xmlChar*) "window")) {
+      width = xmlGetProp(node, (const xmlChar*) "width");
+      height = xmlGetProp(node, (const xmlChar*) "height");
+    }
   }
   fprintf(stdout, "...parse_config...\n");
   LOG_DEBUG("id: %s", id);
@@ -392,6 +413,15 @@ int WebAppLauncherRuntime::parse_config (const char *path_to_config)
   LOG_DEBUG("icon: %s", icon);
 
   m_name = std::string((const char*)name);
+  if (width)
+	  m_width = std::string((const char *) width);
+  else
+	  m_width = std::string("0");
+
+  if (height)
+	  m_height = std::string((const char *) height);
+  else
+	  m_height = std::string("0");
 
   xmlFree(id);
   xmlFree(version);

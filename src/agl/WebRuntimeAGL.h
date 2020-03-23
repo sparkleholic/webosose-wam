@@ -33,7 +33,7 @@ public:
   virtual void register_surfpid(pid_t app_pid, pid_t surf_pid);
   virtual void unregister_surfpid(pid_t app_pid, pid_t surf_pid);
   virtual pid_t find_surfpid_by_rid(pid_t app_pid);
-  virtual int launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type) = 0;
+  virtual int launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type, const std::string& width, const std::string& height) = 0;
   virtual int loop(int argc, const char** argv, volatile sig_atomic_t& e_flag) = 0;
 
   int m_rid = 0;
@@ -42,13 +42,13 @@ public:
 
 class SharedBrowserProcessWebAppLauncher : public Launcher {
 public:
-  int launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type) override;
+  int launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type, const std::string& width, const std::string& height) override;
   int loop(int argc, const char** argv, volatile sig_atomic_t& e_flag) override;
 };
 
 class SingleBrowserProcessWebAppLauncher : public Launcher {
 public:
-  int launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type) override;
+  int launch(const std::string& id, const std::string& uri, const std::string& surface_role, const std::string& panel_type, const std::string& width, const std::string& height) override;
   int loop(int argc, const char** argv, volatile sig_atomic_t& e_flag) override;
 };
 
@@ -70,6 +70,8 @@ private:
   std::string m_url;
   std::string m_name;
   std::string m_host;
+  std::string m_width;
+  std::string m_height;
 
   enum agl_shell_surface_type surface_type;
   enum agl_shell_panel_type panel_type;	/* only of surface_type is panel */
