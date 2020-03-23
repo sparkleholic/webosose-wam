@@ -150,6 +150,9 @@ public:
     bool useUnlimitedMediaPolicy() const { return m_useUnlimitedMediaPolicy; }
     const std::string& locationHint() const { return m_locationHint; }
 
+    int surfaceRole() const { return m_surface_role; }
+    int panelType() const { return m_panel_type; }
+
     struct WindowOwnerInfo {
         WindowOwnerInfo()
             : allowAnonymous(false)
@@ -234,6 +237,9 @@ private:
     int m_customSuspendDOMTime;
     std::string m_mediaPreferences;
     int m_surfaceId;
+
+    int m_surface_role;
+    int m_panel_type;
 };
 
 #endif /* APPLICATIONDESCRIPTION_H */

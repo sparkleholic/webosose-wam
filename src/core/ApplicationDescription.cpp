@@ -147,6 +147,8 @@ std::unique_ptr<ApplicationDescription> ApplicationDescription::fromJsonString(c
     auto appDesc = std::unique_ptr<ApplicationDescription>(new ApplicationDescription());
 
     appDesc->m_surfaceId = jsonObj["surfaceId"].asInt();
+    appDesc->m_surface_role = jsonObj["surface_role"].asInt();
+    appDesc->m_panel_type = jsonObj["panel_type"].asInt();
     appDesc->m_transparency = jsonObj["transparent"].asBool();
     appDesc->m_trustLevel = jsonObj["trustLevel"].asString();
     appDesc->m_subType = jsonObj["subType"].asString();
