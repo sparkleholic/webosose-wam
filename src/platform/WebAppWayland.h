@@ -27,6 +27,20 @@
 #include "webos/common/webos_event.h"
 #include "webos/webos_platform.h"
 
+enum agl_shell_surface_type {
+	AGL_SHELL_TYPE_NOT_FOUND 	= -1,
+	AGL_SHELL_TYPE_BACKGROUND 	= 0,
+	AGL_SHELL_TYPE_PANEL		= 1
+};
+
+enum agl_shell_panel_type {
+	AGL_SHELL_PANEL_NOT_FOUND	= -1,
+	AGL_SHELL_PANEL_TOP,
+	AGL_SHELL_PANEL_BOTTOM,
+	AGL_SHELL_PANEL_LEFT,
+	AGL_SHELL_PANEL_RIGHT,
+};
+
 namespace Json {
 class Value;
 }
@@ -57,17 +71,20 @@ public:
 		  int surface_id,
                   int width = 0, int height = 0,
                   int displayId = kUndefinedDisplayId,
-                  const std::string& location_hint = "");
+                  const std::string& location_hint = "",
+		  int surface_role = -1,
+		  int panel_type = -1);
     WebAppWayland(const std::string& type, WebAppWaylandWindow* window,
                   int width = 0, int height = 0,
                   int displayId = kUndefinedDisplayId,
-                  const std::string& location_hint = "");
+                  const std::string& location_hint = "",
+		  int surface_role = -1,
+		  int panel_type = -1);
 
     ~WebAppWayland() override;
 
     // WebAppBase
-
-    void init(int width, int height, int surface_id) override;
+    void init(int width, int height, int surface_id, int surface_role, int panel_type) override;
     void attach(WebPageBase*) override;
     WebPageBase* detach() override;
     void suspendAppRendering() override;

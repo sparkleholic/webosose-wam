@@ -44,7 +44,7 @@ public:
     WebAppBase();
     ~WebAppBase() override;
 
-    virtual void init(int width, int height, int surface_id) = 0;
+    virtual void init(int width, int height, int surface_id, int surface_role, int panel_type) = 0;
     virtual void attach(WebPageBase*);
     virtual WebPageBase* detach();
     virtual void suspendAppRendering() = 0;
