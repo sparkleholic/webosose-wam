@@ -155,6 +155,9 @@ public:
     bool disallowScrollingInMainFrame() const { return m_disallowScrollingInMainFrame; }
     int delayMsForLaunchOptimization() const { return m_delayMsForLanchOptimization; }
 
+    int surfaceRole() const { return m_surface_role; }
+    int panelType() const { return m_panel_type; }
+
     struct WindowOwnerInfo {
         WindowOwnerInfo()
             : allowAnonymous(false)
@@ -230,6 +233,9 @@ private:
     bool m_disallowScrollingInMainFrame;
     int m_delayMsForLanchOptimization;
     int m_surfaceId;
+
+    int m_surface_role;
+    int m_panel_type;
 };
 
 #endif /* APPLICATIONDESCRIPTION_H */
