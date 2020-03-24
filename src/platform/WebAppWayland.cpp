@@ -790,5 +790,6 @@ void WebAppWayland::sendAglReady(void)
 
 void WebAppWayland::sendAglActivate(const char *app_id)
 {
-	//m_appWindow->SetAglActivate(app_id);
+	LOG_DEBUG("In WebAppWayland::sendAglActivate with app_id %s", app_id);
+	m_appWindow->SetAglActivateApp(app_id);
 }

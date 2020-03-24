@@ -475,6 +475,8 @@ void WebAppManagerServiceAGL::onActivateEvent() {
   if (web_app) {
     web_app->onStageActivated();
     web_app->sendAglActivate(app_id_event_target_.c_str());
+  } else {
+	  LOG_DEBUG("Not found app=%s running", app_id_event_target_.c_str());
   }
   app_id_event_target_.clear();
 }
