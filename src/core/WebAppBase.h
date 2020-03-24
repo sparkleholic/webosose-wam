@@ -87,6 +87,7 @@ public:
     virtual bool hideWindow() = 0;
 
     virtual void sendAglReady() = 0;
+    virtual void sendAglActivate(const char *app_id) = 0;
 
     bool getCrashState();
     void setCrashState(bool state);
