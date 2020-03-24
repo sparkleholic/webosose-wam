@@ -58,6 +58,17 @@ static bool isBrowserProcess(const std::vector<std::string>& args) {
   return true;
 }
 
+static std::string
+is_activate_app(const std::vector<std::string>& args)
+{
+	for (size_t i = 0; i < args.size(); i++) {
+		if (args[i].find("--activate-app=") != std::string::npos) {
+			return args[i];
+		}
+	}
+	return std::string();
+}
+
 static enum agl_shell_surface_type
 get_surface_type(const std::vector<std::string>& args)
 {
@@ -225,9 +236,49 @@ int SharedBrowserProcessWebAppLauncher::loop(int argc, const char** argv, volati
   return 0;
 }
 
+
+static void
+agl_shell_activate_app(std::string &app_id)
+{
+	if (!WebAppManagerServiceAGL::instance()->initializeAsHostClient()) {
+		LOG_DEBUG("Failed to initialize as host client");
+		return;
+	}
+
+	std::vector<const char*> data;
+
+	data.push_back(kActivateEvent);
+	data.push_back(app_id.c_str());
+
+	WebAppManagerServiceAGL::instance()->sendEvent(data.size(), data.data());
+}
+
 int WebAppLauncherRuntime::run(int argc, const char** argv) {
   std::vector<std::string> args(argv + 1, argv + argc);
   bool isWaitHostService = isWaitForHostService(args);
+  std::string app_id = is_activate_app(args);
+
+  if(isWaitHostService) {
+    while(!WebAppManagerServiceAGL::instance()->isHostServiceRunning()) {
+      LOG_DEBUG("WebAppLauncherRuntime::run - waiting for host service");
+      sleep(1);
+    }
+  }
+
+  if(isWaitHostService || WebAppManagerServiceAGL::instance()->isHostServiceRunning()) {
+    LOG_DEBUG("WebAppLauncherRuntime::run - creating SharedBrowserProcessWebAppLauncher");
+    m_launcher = new SharedBrowserProcessWebAppLauncher();
+  } else {
+    LOG_DEBUG("WebAppLauncherRuntime::run - creating SingleBrowserProcessWebAppLauncher");
+    m_launcher = new SingleBrowserProcessWebAppLauncher();
+  }
+
+  if (!app_id.empty()) {
+	  app_id.erase(0, 15);
+	  agl_shell_activate_app(app_id);
+	  return m_launcher->loop(argc, argv, e_flag);
+  }
+
   m_id = getAppId(args);
   m_url = getAppUrl(args);
   m_role = "WebApp";
@@ -244,21 +295,6 @@ int WebAppLauncherRuntime::run(int argc, const char** argv) {
 
   std::string surface_role_str = std::to_string(surface_type);
   std::string panel_type_str = std::to_string(panel_type);
-
-  if(isWaitHostService) {
-    while(!WebAppManagerServiceAGL::instance()->isHostServiceRunning()) {
-      LOG_DEBUG("WebAppLauncherRuntime::run - waiting for host service");
-      sleep(1);
-    }
-  }
-
-  if(isWaitHostService || WebAppManagerServiceAGL::instance()->isHostServiceRunning()) {
-    LOG_DEBUG("WebAppLauncherRuntime::run - creating SharedBrowserProcessWebAppLauncher");
-    m_launcher = new SharedBrowserProcessWebAppLauncher();
-  } else {
-    LOG_DEBUG("WebAppLauncherRuntime::run - creating SingleBrowserProcessWebAppLauncher");
-    m_launcher = new SingleBrowserProcessWebAppLauncher();
-  }
 
   setup_signals();
 
