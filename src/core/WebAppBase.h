@@ -84,6 +84,7 @@ public:
     static void onCursorVisibilityChanged(const std::string& jsscript);
 
     virtual void sendAglReady() = 0;
+    virtual void sendAglActivate(const char *app_id) = 0;
 
     bool getCrashState();
     void setCrashState(bool state);

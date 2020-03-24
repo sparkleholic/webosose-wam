@@ -731,3 +731,8 @@ void WebAppWayland::sendAglReady(void)
 {
 	m_appWindow->SetAglReady();
 }
+
+void WebAppWayland::sendAglActivate(const char *app_id)
+{
+	//m_appWindow->SetAglActivate(app_id);
+}

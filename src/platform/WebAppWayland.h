@@ -102,6 +102,7 @@ public:
     void doClose() override;
 
     void sendAglReady() override;
+    void sendAglActivate(const char *app_id) override;
 
     // WebAppWayland
     virtual bool isKeyboardVisible() override;

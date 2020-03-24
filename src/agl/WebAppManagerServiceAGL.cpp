@@ -472,8 +472,10 @@ Json::Value WebAppManagerServiceAGL::webProcessCreated(const Json::Value &reques
 void WebAppManagerServiceAGL::onActivateEvent() {
   LOG_DEBUG("Activate app=%s", app_id_event_target_.c_str());
   WebAppBase* web_app = WebAppManager::instance()->findAppById(app_id_event_target_);
-  if (web_app)
+  if (web_app) {
     web_app->onStageActivated();
+    web_app->sendAglActivate(app_id_event_target_.c_str());
+  }
   app_id_event_target_.clear();
 }
 
