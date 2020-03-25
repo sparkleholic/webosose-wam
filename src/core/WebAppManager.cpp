@@ -302,7 +302,9 @@ WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, const std::string
       page->setEnableBackgroundRun(appDesc->isEnableBackgroundRun());
 
     app->setAppDescription(appDesc);
-    app->setAglAppId(appDesc->id().c_str());
+    if (!app->isAglRoleType())
+	    app->setAglAppId(appDesc->id().c_str());
+
     app->setAppProperties(args);
     app->setInstanceId(instanceId);
     app->setLaunchingAppId(launchingAppId);

@@ -83,6 +83,8 @@ public:
 
     ~WebAppWayland() override;
 
+    bool isAglRoleType();
+
     // WebAppBase
     void init(int width, int height, int surface_id, int surface_role, int panel_type) override;
     void attach(WebPageBase*) override;
@@ -168,6 +170,7 @@ private:
     WebAppWaylandWindow* m_appWindow;
     std::string m_windowType;
     int m_lastSwappedTime;
+    int m_surface_role;
 
     std::vector<gfx::Rect> m_inputRegion;
     bool m_enableInputRegion;
