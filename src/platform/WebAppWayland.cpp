@@ -76,6 +76,13 @@ WebAppWayland::~WebAppWayland()
     delete m_appWindow;
 }
 
+bool
+WebAppWayland::isAglRoleType(void)
+{
+	return (m_surface_role == AGL_SHELL_TYPE_BACKGROUND) ||
+		(m_surface_role == AGL_SHELL_TYPE_PANEL);
+}
+
 void WebAppWayland::init(int width, int height, int surface_id,
 			 int surface_role, int panel_type)
 {
@@ -83,10 +90,15 @@ void WebAppWayland::init(int width, int height, int surface_id,
         m_appWindow = WebAppWaylandWindow::take(surface_id);
     m_appWindow->SetWindowSurfaceId(surface_id);
 
-    if (surface_role == AGL_SHELL_TYPE_BACKGROUND)
+    if (surface_role == AGL_SHELL_TYPE_BACKGROUND) {
 	    m_appWindow->SetAglBackground();
-    else if (surface_role == AGL_SHELL_TYPE_PANEL)
+	    m_surface_role = AGL_SHELL_TYPE_BACKGROUND;
+    } else if (surface_role == AGL_SHELL_TYPE_PANEL) {
 	    m_appWindow->SetAglPanel(panel_type);
+	    m_surface_role = AGL_SHELL_TYPE_PANEL;
+    } else {
+	    m_surface_role = AGL_SHELL_TYPE_NOT_FOUND;
+    }
 
     LOG_DEBUG("Width %d, Height %d\n", width, height);
 

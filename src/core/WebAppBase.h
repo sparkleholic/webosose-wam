@@ -86,6 +86,7 @@ public:
     virtual void sendAglReady() = 0;
     virtual void sendAglActivate(const char *app_id) = 0;
     virtual void setAglAppId(const char *app_id) = 0;
+    virtual bool isAglRoleType(void) = 0;
 
     bool getCrashState();
     void setCrashState(bool state);
