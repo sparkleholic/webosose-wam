@@ -788,6 +788,11 @@ void WebAppWayland::sendAglReady(void)
 	m_appWindow->SetAglReady();
 }
 
+void WebAppWayland::setAglAppId(const char *app_id)
+{
+	m_appWindow->SetAglAppId(app_id);
+}
+
 void WebAppWayland::sendAglActivate(const char *app_id)
 {
 	LOG_DEBUG("In WebAppWayland::sendAglActivate with app_id %s", app_id);
