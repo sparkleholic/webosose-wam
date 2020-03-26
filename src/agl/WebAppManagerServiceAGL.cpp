@@ -285,10 +285,10 @@ void WebAppManagerServiceAGL::triggerStartupApp()
     LOG_DEBUG("Triggering app start: %s", startup_app_uri_.c_str());
     if (!startup_app_uri_.empty()) {
       if (startup_app_uri_.find("http://") == 0) {
-        startup_app_timer_.start(1000, this,
+        startup_app_timer_.start(10, this,
               &WebAppManagerServiceAGL::launchStartupAppFromURL);
       } else {
-        startup_app_timer_.start(1000, this,
+        startup_app_timer_.start(10, this,
               &WebAppManagerServiceAGL::launchStartupAppFromConfig);
       }
     }
@@ -299,10 +299,10 @@ void WebAppManagerServiceAGL::triggetEventForApp(const std::string& action) {
     return;
 
   if (action == kActivateEvent) {
-     startup_app_timer_.start(1000, this,
+     startup_app_timer_.start(10, this,
            &WebAppManagerServiceAGL::onActivateEvent);
   } else if (action == kDeactivateEvent) {
-     startup_app_timer_.start(1000, this,
+     startup_app_timer_.start(10, this,
            &WebAppManagerServiceAGL::onDeactivateEvent);
   } else if (action == kKilledApp) {
     startup_app_timer_.start(1000, this,
