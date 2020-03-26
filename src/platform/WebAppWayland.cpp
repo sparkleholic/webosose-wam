@@ -305,6 +305,7 @@ void WebAppWayland::onStageActivated()
         m_appWindow->show();
 
     LOG_INFO(MSGID_WEBAPP_STAGE_ACITVATED, 3, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", qPrintable(instanceId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
+    LOG_DEBUG("APP_ID: %s, %d\n", appId().c_str(), page()->getWebProcessPID());
     executingStageActivated = false;
 }
 
@@ -316,6 +317,7 @@ void WebAppWayland::onStageDeactivated()
     page()->suspendWebPageAll();
 
     LOG_INFO(MSGID_WEBAPP_STAGE_DEACITVATED, 3, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", qPrintable(instanceId())), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
+    LOG_DEBUG("APP_ID: %s, %d\n", appId().c_str(), page()->getWebProcessPID());
 }
 
 void WebAppWayland::configureWindow(const std::string& type)
