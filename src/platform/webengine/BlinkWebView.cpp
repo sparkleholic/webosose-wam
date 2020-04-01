@@ -20,8 +20,8 @@
 #include "LogManager.h"
 
 BlinkWebView::BlinkWebView(bool doInitialize)
-    : WebViewBase::WebViewBase()
-    , m_delegate(NULL)
+    : /*WebViewBase::WebViewBase()
+    , */m_delegate(NULL)
     , m_progress(0)
     , m_userScriptExecuted(false)
 {
@@ -42,8 +42,8 @@ void BlinkWebView::executeUserScripts()
     if (m_userScriptExecuted)
         return;
 
-    for (std::vector<std::string>::const_iterator it = m_userScripts.begin(); it != m_userScripts.end(); ++it)
-        RunJavaScript(*it);
+//    for (std::vector<std::string>::const_iterator it = m_userScripts.begin(); it != m_userScripts.end(); ++it)
+//        RunJavaScript(*it);
 
     m_userScriptExecuted = true;
 }
@@ -52,7 +52,7 @@ void BlinkWebView::setDelegate(WebPageBlinkDelegate* delegate)
 {
     m_delegate = delegate;
 }
-
+/*
 void BlinkWebView::HandleBrowserControlCommand(const std::string& command, const std::vector<std::string>& arguments)
 {
     if (m_delegate) {
@@ -230,3 +230,4 @@ bool BlinkWebView::AllowMouseOnOffEvent() const
     return m_delegate->allowMouseOnOffEvent();
 }
 
+*/

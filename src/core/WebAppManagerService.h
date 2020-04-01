@@ -19,7 +19,7 @@
 
 #include "WebAppManager.h"
 
-#include "webos/webview_base.h"
+// #include "webos/webview_base.h"
 
 namespace Json {
 class Value;
@@ -101,7 +101,7 @@ protected:
     void requestKillWebProcess(uint32_t pid);
     bool shouldLaunchContainerAppOnDemand();
     void updateNetworkStatus(const Json::Value& object);
-    void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level);
+//    void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level);
     void setAccessibilityEnabled(bool enable);
     uint32_t getWebProcessId(const std::string& appId);
 

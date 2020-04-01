@@ -102,84 +102,85 @@ WebPageBlink::~WebPageBlink()
 
 void WebPageBlink::init()
 {
-    d->pageView = createPageView();
-    d->pageView->setDelegate(this);
-    d->pageView->Initialize(m_appDesc->id(),
-                            m_appDesc->folderPath(),
-                            m_appDesc->trustLevel(),
-                            m_appDesc->v8SnapshotPath(),
-                            m_appDesc->v8ExtraFlags(),
-                            m_appDesc->useNativeScroll());
-    setViewportSize();
+//    d->pageView = createPageView();
+//    d->pageView->setDelegate(this);
+//    d->pageView->Initialize(m_appDesc->id(),
+//                            m_appDesc->folderPath(),
+//                            m_appDesc->trustLevel(),
+//                            m_appDesc->v8SnapshotPath(),
+//                            m_appDesc->v8ExtraFlags(),
+//                            m_appDesc->useNativeScroll());
+//    setViewportSize();
 
-    d->pageView->SetVisible(false);
-    d->pageView->SetUserAgent(d->pageView->DefaultUserAgent() + " " + getWebAppManagerConfig()->getName());
+//    d->pageView->SetVisible(false);
+//    d->pageView->SetUserAgent(d->pageView->DefaultUserAgent() + " " + getWebAppManagerConfig()->getName());
 
-    if(WebAppManagerUtils::getEnv("ENABLE_INSPECTOR") == "1")
-        d->pageView->SetInspectable(true);
+//    if(WebAppManagerUtils::getEnv("ENABLE_INSPECTOR") == "1")
+//        d->pageView->SetInspectable(true);
 
-    std::string pluginPath = WebAppManagerUtils::getEnv("PRIVILEGED_PLUGIN_PATH");
-    if (!pluginPath.empty()) {
-        d->pageView->AddAvailablePluginDir(pluginPath);
-    }
+//    std::string pluginPath = WebAppManagerUtils::getEnv("PRIVILEGED_PLUGIN_PATH");
+//    if (!pluginPath.empty()) {
+//        d->pageView->AddAvailablePluginDir(pluginPath);
+//    }
 
-    d->pageView->SetAllowFakeBoldText(false);
+//    d->pageView->SetAllowFakeBoldText(false);
 
-    // FIXME: It should be permitted for backward compatibility for a limited list of legacy applications only.
-    d->pageView->SetAllowRunningInsecureContent(true);
-    d->pageView->SetAllowScriptsToCloseWindows(true);
-    d->pageView->SetAllowUniversalAccessFromFileUrls(true);
-    d->pageView->SetSuppressesIncrementalRendering(true);
-    d->pageView->SetDisallowScrollbarsInMainFrame(true);
-    d->pageView->SetDisallowScrollingInMainFrame(true);
-    d->pageView->SetDoNotTrack(m_appDesc->doNotTrack());
-    d->pageView->SetJavascriptCanOpenWindows(true);
-    d->pageView->SetSupportsMultipleWindows(false);
-    d->pageView->SetCSSNavigationEnabled(true);
-    d->pageView->SetV8DateUseSystemLocaloffset(false);
-    d->pageView->SetLocalStorageEnabled(true);
-    d->pageView->SetShouldSuppressDialogs(true);
-    d->pageView->SetNotifyFMPDirectly(m_appDesc->usePrerendering());
-    setDisallowScrolling(m_appDesc->disallowScrollingInMainFrame());
+//    // FIXME: It should be permitted for backward compatibility for a limited list of legacy applications only.
+//    d->pageView->SetAllowRunningInsecureContent(true);
+//    d->pageView->SetAllowScriptsToCloseWindows(true);
+//    d->pageView->SetAllowUniversalAccessFromFileUrls(true);
+//    d->pageView->SetSuppressesIncrementalRendering(true);
+//    d->pageView->SetDisallowScrollbarsInMainFrame(true);
+//    d->pageView->SetDisallowScrollingInMainFrame(true);
+//    d->pageView->SetDoNotTrack(m_appDesc->doNotTrack());
+//    d->pageView->SetJavascriptCanOpenWindows(true);
+//    d->pageView->SetSupportsMultipleWindows(false);
+//    d->pageView->SetCSSNavigationEnabled(true);
+//    d->pageView->SetV8DateUseSystemLocaloffset(false);
+//    d->pageView->SetLocalStorageEnabled(true);
+//    d->pageView->SetShouldSuppressDialogs(true);
+//    d->pageView->SetNotifyFMPDirectly(m_appDesc->usePrerendering());
+//    setDisallowScrolling(m_appDesc->disallowScrollingInMainFrame());
 
-    if (!std::isnan(m_appDesc->networkStableTimeout()) && (m_appDesc->networkStableTimeout() >= 0.0))
-        d->pageView->SetNetworkStableTimeout(m_appDesc->networkStableTimeout());
+//    if (!std::isnan(m_appDesc->networkStableTimeout()) && (m_appDesc->networkStableTimeout() >= 0.0))
+//        d->pageView->SetNetworkStableTimeout(m_appDesc->networkStableTimeout());
 
-    if (m_appDesc->trustLevel() == "trusted") {
-        LOG_DEBUG("[%s] trustLevel : trusted; allow load local Resources", appId().c_str());
-        d->pageView->SetAllowLocalResourceLoad(true);
-    }
-    d->pageView->AddUserStyleSheet("body { -webkit-user-select: none; } :focus { outline: none }");
-    d->pageView->SetBackgroundColor(29, 29, 29, 0xFF);
+//    if (m_appDesc->trustLevel() == "trusted") {
+//        LOG_DEBUG("[%s] trustLevel : trusted; allow load local Resources", appId().c_str());
+//        d->pageView->SetAllowLocalResourceLoad(true);
+//    }
+//    d->pageView->AddUserStyleSheet("body { -webkit-user-select: none; } :focus { outline: none }");
+//    d->pageView->SetBackgroundColor(29, 29, 29, 0xFF);
 
-    setDefaultFont(defaultFont());
+//    setDefaultFont(defaultFont());
 
-    d->pageView->SetFontHinting(webos::WebViewBase::FontRenderParams::HINTING_SLIGHT);
+//    d->pageView->SetFontHinting(webos::WebViewBase::FontRenderParams::HINTING_SLIGHT);
 
-    std::string language;
-    getSystemLanguage(language);
-    setPreferredLanguages(language);
-    d->pageView->SetAppId(appId());
-    d->pageView->SetSecurityOrigin(appId());
-    updateHardwareResolution();
-    updateBoardType();
-    updateDatabaseIdentifier();
-    updateMediaCodecCapability();
-    setupStaticUserScripts();
-    setCustomPluginIfNeeded();
-    setSupportDolbyHDRContents();
-    setCustomUserScript();
-    d->pageView->SetAudioGuidanceOn(isAccessibilityEnabled());
-    updateBackHistoryAPIDisabled();
+//    std::string language;
+//    getSystemLanguage(language);
+//    setPreferredLanguages(language);
+//    d->pageView->SetAppId(appId());
+//    d->pageView->SetSecurityOrigin(appId());
+//    updateHardwareResolution();
+//    updateBoardType();
+//    updateDatabaseIdentifier();
+//    updateMediaCodecCapability();
+//    setupStaticUserScripts();
+//    setCustomPluginIfNeeded();
+//    setSupportDolbyHDRContents();
+//    setCustomUserScript();
+//    d->pageView->SetAudioGuidanceOn(isAccessibilityEnabled());
+//    updateBackHistoryAPIDisabled();
 
-    d->pageView->UpdatePreferences();
+//    d->pageView->UpdatePreferences();
 
-    loadExtension();
+//    loadExtension();
 }
 
 void* WebPageBlink::getWebContents()
 {
-    return (void*)d->pageView->GetWebContents();
+//    return (void*)d->pageView->GetWebContents();
+  return nullptr;
 }
 
 void WebPageBlink::handleBrowserControlCommand(const std::string& command, const std::vector<std::string>& arguments)
@@ -203,27 +204,30 @@ std::string WebPageBlink::handleBrowserControlMessage(const std::string& message
 
 bool WebPageBlink::canGoBack()
 {
-    return d->pageView->CanGoBack();
+//    return d->pageView->CanGoBack();
+  return false;
 }
 
 std::string WebPageBlink::title()
 {
-    return d->pageView->DocumentTitle();
+//    return d->pageView->DocumentTitle();
+  return {};
 }
 
 void WebPageBlink::setFocus(bool focus)
 {
-    d->pageView->SetFocus(focus);
+//    d->pageView->SetFocus(focus);
 }
 
 void WebPageBlink::loadDefaultUrl()
 {
-    d->pageView->LoadUrl(defaultUrl().toString());
+//    d->pageView->LoadUrl(defaultUrl().toString());
 }
 
 int WebPageBlink::progress() const
 {
-    return d->pageView->progress();
+//    return d->pageView->progress();
+  return 0;
 }
 
 bool WebPageBlink::hasBeenShown() const
@@ -233,12 +237,13 @@ bool WebPageBlink::hasBeenShown() const
 
 void WebPageBlink::replaceBaseUrl(const Url& newUrl)
 {
-    d->pageView->ReplaceBaseURL(newUrl.toString(), url().toString());
+//    d->pageView->ReplaceBaseURL(newUrl.toString(), url().toString());
 }
 
 Url WebPageBlink::url() const
 {
-    return Url(d->pageView->GetUrl());
+//    return Url(d->pageView->GetUrl());
+  return {};
 }
 
 uint32_t WebPageBlink::getWebProcessProxyID()
@@ -254,19 +259,19 @@ void WebPageBlink::setPreferredLanguages(const std::string& language)
 #ifndef TARGET_DESKTOP
     // just set system language for accept-language for http header, navigator.language, navigator.languages
     // even window.languagechange event too
-    d->pageView->SetAcceptLanguages(language);
-    d->pageView->UpdatePreferences();
+//    d->pageView->SetAcceptLanguages(language);
+//    d->pageView->UpdatePreferences();
 #endif
 }
 
 void WebPageBlink::setDefaultFont(const std::string& font)
 {
-    d->pageView->SetStandardFontFamily(font);
-    d->pageView->SetFixedFontFamily(font);
-    d->pageView->SetSerifFontFamily(font);
-    d->pageView->SetSansSerifFontFamily(font);
-    d->pageView->SetCursiveFontFamily(font);
-    d->pageView->SetFantasyFontFamily(font);
+//    d->pageView->SetStandardFontFamily(font);
+//    d->pageView->SetFixedFontFamily(font);
+//    d->pageView->SetSerifFontFamily(font);
+//    d->pageView->SetSansSerifFontFamily(font);
+//    d->pageView->SetCursiveFontFamily(font);
+//    d->pageView->SetFantasyFontFamily(font);
 }
 
 void WebPageBlink::reloadDefaultPage()
@@ -342,7 +347,7 @@ void WebPageBlink::loadErrorPage(int errorCode)
             errorUrl.setQuery(query);
             LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()),
                      "LoadErrorPage : %s", errorUrl.toString().c_str());
-            d->pageView->LoadUrl(errorUrl.toString());
+//            d->pageView->LoadUrl(errorUrl.toString());
         } else {
             LOG_ERROR(MSGID_ERROR_ERROR, 1, PMLOGKS("PATH", errorpage.c_str()), "Error loading error page");
         }
@@ -351,12 +356,12 @@ void WebPageBlink::loadErrorPage(int errorCode)
 
 void WebPageBlink::reload()
 {
-    d->pageView->Reload();
+//    d->pageView->Reload();
 }
 
 void WebPageBlink::loadUrl(const std::string& url)
 {
-    d->pageView->LoadUrl(url);
+//    d->pageView->LoadUrl(url);
 }
 
 void WebPageBlink::setLaunchParams(const std::string& params)
@@ -367,41 +372,41 @@ void WebPageBlink::setLaunchParams(const std::string& params)
 }
 
 void WebPageBlink::setUseLaunchOptimization(bool enabled, int delayMs) {
-    if (getWebAppManagerConfig()->isLaunchOptimizationEnabled())
-        d->pageView->SetUseLaunchOptimization(enabled, delayMs);
+//    if (getWebAppManagerConfig()->isLaunchOptimizationEnabled())
+//        d->pageView->SetUseLaunchOptimization(enabled, delayMs);
 }
 
 void WebPageBlink::setUseSystemAppOptimization(bool enabled) {
-    d->pageView->SetUseEnyoOptimization(enabled);
+//    d->pageView->SetUseEnyoOptimization(enabled);
 }
 
 void WebPageBlink::setUseAccessibility(bool enabled)
 {
-    d->pageView->SetUseAccessibility(enabled);
+//    d->pageView->SetUseAccessibility(enabled);
 }
 
 void WebPageBlink::setAppPreloadHint(bool is_preload)
 {
-    d->pageView->SetAppPreloadHint(is_preload);
+//    d->pageView->SetAppPreloadHint(is_preload);
 }
 
 void WebPageBlink::setForceActivateVtg(bool enabled)
 {
-    d->pageView->SetForceVideoTexture(enabled);
-    d->pageView->UpdatePreferences();
+//    d->pageView->SetForceVideoTexture(enabled);
+//    d->pageView->UpdatePreferences();
 }
 
 void WebPageBlink::suspendWebPageAll()
 {
     LOG_INFO(MSGID_SUSPEND_WEBPAGE, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "%s", __func__);
 
-    d->pageView->SetVisible(false);
+//    d->pageView->SetVisible(false);
     if (m_isSuspended || m_enableBackgroundRun)
         return;
 
     if (!(WebAppManagerUtils::getEnv("WAM_KEEP_RTC_CONNECTIONS_ON_SUSPEND") == "1")) {
         // On sending applications to background, disconnect RTC
-        d->pageView->DropAllPeerConnections(webos::DROP_PEER_CONNECTION_REASON_PAGE_HIDDEN);
+//        d->pageView->DropAllPeerConnections(webos::DROP_PEER_CONNECTION_REASON_PAGE_HIDDEN);
     }
 
     suspendWebPageMedia();
@@ -413,7 +418,7 @@ void WebPageBlink::suspendWebPageAll()
     /* actually suspendWebPagePaintingAndJSExecution will do this again,
       * but this visibilitychange event and paint suspend should be done ASAP
       */
-    d->pageView->SuspendPaintingAndSetVisibilityHidden();
+//    d->pageView->SuspendPaintingAndSetVisibilityHidden();
 
 
     if (isClosing()) {
@@ -443,7 +448,7 @@ void WebPageBlink::resumeWebPageAll()
         resumeWebPagePaintingAndJSExecution();
     }
     resumeWebPageMedia();
-    d->pageView->SetVisible(true);
+//    d->pageView->SetVisible(true);
 }
 
 void WebPageBlink::suspendWebPageMedia()
@@ -453,7 +458,7 @@ void WebPageBlink::suspendWebPageMedia()
         return;
     }
 
-    d->pageView->SuspendWebPageMedia();
+//    d->pageView->SuspendWebPageMedia();
     m_isPaused = true;
 
     LOG_INFO(MSGID_SUSPEND_MEDIA, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "");
@@ -472,7 +477,7 @@ void WebPageBlink::resumeWebPageMedia()
     //This function call ensure that case.
     setUseLaunchOptimization(false);
 
-    d->pageView->ResumeWebPageMedia();
+//    d->pageView->ResumeWebPageMedia();
     m_isPaused = false;
 
     LOG_INFO(MSGID_RESUME_MEDIA, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "");
@@ -498,8 +503,8 @@ void WebPageBlink::suspendWebPagePaintingAndJSExecution()
         LOG_INFO(MSGID_SUSPEND_WEBPAGE, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()),  PMLOGKS("URL", qPrintable(url().toString())), "Currently loading, Do not suspend, return");
         m_suspendAtLoad = true;
     } else {
-        d->pageView->SuspendPaintingAndSetVisibilityHidden();
-        d->pageView->SuspendWebPageDOM();
+//        d->pageView->SuspendPaintingAndSetVisibilityHidden();
+//        d->pageView->SuspendWebPageDOM();
         LOG_INFO(MSGID_SUSPEND_WEBPAGE, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "DONE");
     }
 }
@@ -512,10 +517,10 @@ void WebPageBlink::resumeWebPagePaintingAndJSExecution()
         if (m_domSuspendTimer.isRunning()) {
             LOG_INFO(MSGID_SUSPEND_WEBPAGE, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "DomSuspendTimer canceled by Resume");
             m_domSuspendTimer.stop();
-            d->pageView->ResumePaintingAndSetVisibilityVisible();
+//            d->pageView->ResumePaintingAndSetVisibilityVisible();
         } else {
-            d->pageView->ResumeWebPageDOM();
-            d->pageView->ResumePaintingAndSetVisibilityVisible();
+//            d->pageView->ResumeWebPageDOM();
+//            d->pageView->ResumePaintingAndSetVisibilityVisible();
             LOG_INFO(MSGID_RESUME_WEBPAGE, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "DONE");
         }
         m_isSuspended = false;
@@ -575,20 +580,20 @@ void WebPageBlink::updatePageSettings()
 
     if(m_appDesc->trustLevel() == "trusted") {
         LOG_DEBUG("[%s] trustLevel : trusted; allow load local Resources", appId().c_str());
-        d->pageView->SetAllowLocalResourceLoad(true);
+//        d->pageView->SetAllowLocalResourceLoad(true);
     }
 
     LOG_DEBUG("[%s] WebPageBlink::updatePageSettings(); update appId to chromium", appId().c_str());
-    d->pageView->SetAppId(appId());
-    d->pageView->SetTrustLevel(m_appDesc->trustLevel());
-    d->pageView->SetAppPath(m_appDesc->folderPath());
+//    d->pageView->SetAppId(appId());
+//    d->pageView->SetTrustLevel(m_appDesc->trustLevel());
+//    d->pageView->SetAppPath(m_appDesc->folderPath());
 
-    if (!std::isnan(m_appDesc->networkStableTimeout()) && (m_appDesc->networkStableTimeout() >= 0.0))
-        d->pageView->SetNetworkStableTimeout(m_appDesc->networkStableTimeout());
+//    if (!std::isnan(m_appDesc->networkStableTimeout()) && (m_appDesc->networkStableTimeout() >= 0.0))
+//        d->pageView->SetNetworkStableTimeout(m_appDesc->networkStableTimeout());
 
     setCustomPluginIfNeeded();
     updateBackHistoryAPIDisabled();
-    d->pageView->UpdatePreferences();
+//    d->pageView->UpdatePreferences();
 }
 
 void WebPageBlink::handleDeviceInfoChanged(const std::string& deviceInfo)
@@ -602,20 +607,20 @@ void WebPageBlink::handleDeviceInfoChanged(const std::string& deviceInfo)
 
 void WebPageBlink::evaluateJavaScript(const std::string& jsCode)
 {
-    d->pageView->RunJavaScript(jsCode);
+//    d->pageView->RunJavaScript(jsCode);
 }
 
 void WebPageBlink::evaluateJavaScriptInAllFrames(const std::string& script, const char *method)
 {
-    d->pageView->RunJavaScriptInAllFrames(script);
+//    d->pageView->RunJavaScriptInAllFrames(script);
 }
 
 void WebPageBlink::cleanResources()
 {
     WebPageBase::cleanResources();
     LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "StopLoading and load about:blank");
-    d->pageView->StopLoading();
-    d->pageView->LoadUrl(std::string("about:blank"));
+//    d->pageView->StopLoading();
+//    d->pageView->LoadUrl(std::string("about:blank"));
 }
 
 void WebPageBlink::close()
@@ -719,13 +724,13 @@ void WebPageBlink::navigationHistoryChanged()
 
 void WebPageBlink::forwardEvent(void* event)
 {
-    d->pageView->ForwardWebOSEvent((WebOSEvent*)event);
+//    d->pageView->ForwardWebOSEvent((WebOSEvent*)event);
 }
 
 void WebPageBlink::recreateWebView()
 {
     LOG_INFO(MSGID_WEBPROC_CRASH, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "recreateWebView; initialize WebPage");
-    delete d->pageView;
+//    delete d->pageView;
     if(!m_customPluginPath.empty()) {
         // check setCustomPluginIfNeeded logic
         // not to set duplicated plugin path, it compares m_customPluginPath and new one
@@ -739,9 +744,9 @@ void WebPageBlink::recreateWebView()
         // Remove white screen while reloading contents due to the renderer crash
         // 1. Reset state to mark next paint for notification when FMP done.
         //    It will be used to make webview visible later.
-        d->pageView->ResetStateToMarkNextPaintForContainer();
+//        d->pageView->ResetStateToMarkNextPaintForContainer();
         // 2. While rendering ready, set webview hidden.
-        d->pageView->SetVisible(false);
+//        d->pageView->SetVisible(false);
         // 3. Set VisibilityState as Launching
         //    It will be used later, WebViewImpl set RenderWidgetCompositor visible,
         //    and make it keep to render the contents.
@@ -754,20 +759,20 @@ void WebPageBlink::recreateWebView()
 
 void WebPageBlink::setVisible(bool visible)
 {
-    d->pageView->SetVisible(visible);
+//    d->pageView->SetVisible(visible);
 }
 
 void WebPageBlink::setViewportSize()
 {
-    if (m_appDesc->widthOverride() && m_appDesc->heightOverride()) {
-        d->pageView->SetViewportSize(m_appDesc->widthOverride(), m_appDesc->heightOverride());
-    }
+//    if (m_appDesc->widthOverride() && m_appDesc->heightOverride()) {
+//        d->pageView->SetViewportSize(m_appDesc->widthOverride(), m_appDesc->heightOverride());
+//    }
 }
 
-void WebPageBlink::notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level)
-{
-    d->pageView->NotifyMemoryPressure(level);
-}
+//void WebPageBlink::notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level)
+//{
+//    d->pageView->NotifyMemoryPressure(level);
+//}
 
 void WebPageBlink::renderProcessCrashed()
 {
@@ -795,7 +800,8 @@ BlinkWebView * WebPageBlink::createPageView()
 
 BlinkWebView* WebPageBlink::pageView() const
 {
-    return d->pageView;
+//    return d->pageView;
+  return nullptr;
 }
 
 bool WebPageBlink::inspectable()
@@ -826,7 +832,7 @@ bool WebPageBlink::inspectable()
 // IF any further userscripts are desired in the future, they should be added here.
 void WebPageBlink::addUserScript(const std::string& script)
 {
-    d->pageView->addUserScript(script);
+//    d->pageView->addUserScript(script);
 }
 
 void WebPageBlink::addUserScriptUrl(const Url& url)
@@ -851,12 +857,12 @@ void WebPageBlink::addUserScriptUrl(const Url& url)
         return;
     }
 
-    d->pageView->addUserScript(script);
+//    d->pageView->addUserScript(script);
 }
 
 void WebPageBlink::setupStaticUserScripts()
 {
-    d->pageView->clearUserScripts();
+//    d->pageView->clearUserScripts();
 
     // Load Tellurium test framework if available, as a UserScript
     std::string telluriumNubPath_ = telluriumNubPath();
@@ -872,26 +878,27 @@ void WebPageBlink::closeVkb()
 
 bool WebPageBlink::isInputMethodActive() const
 {
-    return d->pageView->IsInputMethodActive();
+//    return d->pageView->IsInputMethodActive();
+  return false;
 }
 
 void WebPageBlink::setPageProperties()
 {
-    if (m_appDesc->isTransparent()) {
-        d->pageView->SetTransparentBackground(true);
-    }
+//    if (m_appDesc->isTransparent()) {
+//        d->pageView->SetTransparentBackground(true);
+//    }
 
-#if defined(OS_WEBOS) || defined(AGL_DEVEL)
-    // Set inspectable. For AGL this feature is only available if the
-    // 'agl-devel' distro feature is on.
-    if (m_appDesc->isInspectable() || inspectable()) {
-        LOG_DEBUG("[%s] inspectable : true or 'debug_system_apps' mode; setInspectablePage(true)", appId().c_str());
-        d->pageView->EnableInspectablePage();
-    }
-#endif
+//#if defined(OS_WEBOS) || defined(AGL_DEVEL)
+//    // Set inspectable. For AGL this feature is only available if the
+//    // 'agl-devel' distro feature is on.
+//    if (m_appDesc->isInspectable() || inspectable()) {
+//        LOG_DEBUG("[%s] inspectable : true or 'debug_system_apps' mode; setInspectablePage(true)", appId().c_str());
+//        d->pageView->EnableInspectablePage();
+//    }
+//#endif
 
     setTrustLevel(defaultTrustLevel());
-    d->pageView->UpdatePreferences();
+//    d->pageView->UpdatePreferences();
 }
 
 void WebPageBlink::createPalmSystem(WebAppBase* app)
@@ -908,13 +915,13 @@ std::string WebPageBlink::defaultTrustLevel() const
 void WebPageBlink::loadExtension()
 {
     LOG_DEBUG("WebPageBlink::loadExtension(); Extension : webossystem");
-    d->pageView->LoadExtension("webossystem");
+//    d->pageView->LoadExtension("webossystem");
 }
 
 void WebPageBlink::clearExtensions()
 {
-    if (d && d->pageView)
-        d->pageView->ClearExtensions();
+//    if (d && d->pageView)
+//        d->pageView->ClearExtensions();
 }
 
 void WebPageBlink::setCustomPluginIfNeeded()
@@ -935,19 +942,20 @@ void WebPageBlink::setCustomPluginIfNeeded()
              PMLOGKS("CUSTOM_PLUGIN_PATH", m_customPluginPath.c_str()),
              "%s", __func__);
 
-    d->pageView->AddCustomPluginDir(m_customPluginPath);
-    d->pageView->AddAvailablePluginDir(m_customPluginPath);
+//    d->pageView->AddCustomPluginDir(m_customPluginPath);
+//    d->pageView->AddAvailablePluginDir(m_customPluginPath);
 }
 
 void WebPageBlink::setDisallowScrolling(bool disallow)
 {
-    d->pageView->SetDisallowScrollbarsInMainFrame(disallow);
-    d->pageView->SetDisallowScrollingInMainFrame(disallow);
+//    d->pageView->SetDisallowScrollbarsInMainFrame(disallow);
+//    d->pageView->SetDisallowScrollingInMainFrame(disallow);
 }
 
 int WebPageBlink::renderProcessPid() const
 {
-    return d->pageView->RenderProcessPid();
+//    return d->pageView->RenderProcessPid();
+  return 0;
 }
 
 void WebPageBlink::didRunCloseCallback()
@@ -986,12 +994,12 @@ void WebPageBlink::timeoutCloseCallback()
 void WebPageBlink::setFileAccessBlocked(bool blocked)
 {
     //TO_DO: Need to verify when shnapshot is ready.
-    webos::WebViewBase::SetFileAccessBlocked(blocked);
+//    webos::WebViewBase::SetFileAccessBlocked(blocked);
 }
 
 void WebPageBlink::setAdditionalContentsScale(float scaleX, float scaleY)
 {
-    d->pageView->SetAdditionalContentsScale(scaleX, scaleY);
+//    d->pageView->SetAdditionalContentsScale(scaleX, scaleY);
 }
 
 void WebPageBlink::updateHardwareResolution()
@@ -1001,14 +1009,14 @@ void WebPageBlink::updateHardwareResolution()
     getDeviceInfo("HardwareScreenHeight", hardwareHeight);
     int w = stringTo<int>(hardwareWidth);
     int h = stringTo<int>(hardwareHeight);
-    d->pageView->SetHardwareResolution(w, h);
+//    d->pageView->SetHardwareResolution(w, h);
 }
 
 void WebPageBlink::updateBoardType()
 {
     std::string boardType;
     getDeviceInfo("boardType", boardType);
-    d->pageView->SetBoardType(boardType);
+//    d->pageView->SetBoardType(boardType);
 }
 
 void WebPageBlink::updateMediaCodecCapability()
@@ -1026,7 +1034,7 @@ void WebPageBlink::updateMediaCodecCapability()
         return;
     }
 
-    d->pageView->SetMediaCodecCapability(capability);
+//    d->pageView->SetMediaCodecCapability(capability);
 }
 
 double WebPageBlink::devicePixelRatio()
@@ -1071,31 +1079,31 @@ void WebPageBlink::setSupportDolbyHDRContents()
     getDeviceInfo("supportDolbyHDRContents", supportDolbyHDRContents);
     LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()),
              "supportDolbyHDRContents:%s", supportDolbyHDRContents.c_str());
-    d->pageView->SetSupportDolbyHDRContents(supportDolbyHDRContents == "true");
+//    d->pageView->SetSupportDolbyHDRContents(supportDolbyHDRContents == "true");
 }
 
 void WebPageBlink::updateDatabaseIdentifier()
 {
-    d->pageView->SetDatabaseIdentifier(m_appId);
+//    d->pageView->SetDatabaseIdentifier(m_appId);
 }
 
 void WebPageBlink::deleteWebStorages(const std::string& identifier)
 {
-    d->pageView->DeleteWebStorages(identifier);
+//    d->pageView->DeleteWebStorages(identifier);
 }
 
 void WebPageBlink::setInspectorEnable()
 {
-#if defined(OS_WEBOS) || defined(AGL_DEVEL)
-    LOG_DEBUG("[%s] Inspector enable", appId().c_str());
-    d->pageView->EnableInspectablePage();
-#endif
+//#if defined(OS_WEBOS) || defined(AGL_DEVEL)
+//    LOG_DEBUG("[%s] Inspector enable", appId().c_str());
+//    d->pageView->EnableInspectablePage();
+//#endif
 }
 
 void WebPageBlink::setKeepAliveWebApp(bool keepAlive) {
     LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "setKeepAliveWebApp(%s)", keepAlive?"true":"false");
-    d->pageView->SetKeepAliveWebApp(keepAlive);
-    d->pageView->UpdatePreferences();
+//    d->pageView->SetKeepAliveWebApp(keepAlive);
+//    d->pageView->UpdatePreferences();
 }
 
 void WebPageBlink::setLoadErrorPolicy(const std::string& policy)
@@ -1166,23 +1174,23 @@ void WebPageBlink::updateIsLoadErrorPageFinish()
 
 void WebPageBlink::setAudioGuidanceOn(bool on)
 {
-    d->pageView->SetAudioGuidanceOn(on);
-    d->pageView->UpdatePreferences();
+//    d->pageView->SetAudioGuidanceOn(on);
+//    d->pageView->UpdatePreferences();
 }
 
 void WebPageBlink::resetStateToMarkNextPaintForContainer()
 {
-    d->pageView->ResetStateToMarkNextPaintForContainer();
+//    d->pageView->ResetStateToMarkNextPaintForContainer();
 }
 
 void WebPageBlink::updateBackHistoryAPIDisabled()
 {
-    d->pageView->SetBackHistoryAPIDisabled(m_appDesc->backHistoryAPIDisabled());
+//    d->pageView->SetBackHistoryAPIDisabled(m_appDesc->backHistoryAPIDisabled());
 }
 
 void WebPageBlink::setVisibilityState(WebPageVisibilityState visibilityState)
 {
-    d->pageView->SetVisibilityState(static_cast<webos::WebViewBase::WebPageVisibilityState>(visibilityState));
+//    d->pageView->SetVisibilityState(static_cast<webos::WebViewBase::WebPageVisibilityState>(visibilityState));
 }
 
 bool WebPageBlink::allowMouseOnOffEvent() const {

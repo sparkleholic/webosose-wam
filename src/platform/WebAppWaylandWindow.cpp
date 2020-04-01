@@ -65,7 +65,7 @@ WebAppWaylandWindow* WebAppWaylandWindow::createWindow() {
         LOG_CRITICAL(MSGID_PREPARE_FAIL, 0, "Failed to prepare WindowedWebAppWindow");
         return 0;
     }
-    window->Resize(1,1);
+//    window->Resize(1,1);
     return window;
 }
 
@@ -73,7 +73,7 @@ WebAppWaylandWindow::WebAppWaylandWindow()
     : m_webApp(0)
     , m_cursorVisible(false)
     , m_xinputActivated(false)
-    , m_lastMouseEvent(WebOSMouseEvent(WebOSEvent::None, -1., -1.))
+//    , m_lastMouseEvent(WebOSMouseEvent(WebOSEvent::None, -1., -1.))
     , m_hasPageFrameBeenSwapped(false)
     , m_pendingShow(false)
 {
@@ -84,7 +84,7 @@ void WebAppWaylandWindow::hide()
 {
     LOG_INFO(MSGID_WAM_DEBUG, 1, PMLOGKS("APP_ID", m_webApp->appId().c_str()), "WebAppWaylandWindow::hide(); call onStageDeactivated");
     onStageDeactivated();
-    WebAppWindowBase::Hide();
+//    WebAppWindowBase::Hide();
 
     m_hasPageFrameBeenSwapped = false;
 }
@@ -96,7 +96,7 @@ void WebAppWaylandWindow::show()
     } else {
         LOG_INFO(MSGID_WAM_DEBUG, 1, PMLOGKS("APP_ID", m_webApp->appId().c_str()), "WebAppWaylandWindow::show(); call onStageActivated");
         onStageActivated();
-        WebAppWindowBase::Show();
+//        WebAppWindowBase::Show();
         m_pendingShow = false;
     }
 }
@@ -108,30 +108,30 @@ void WebAppWaylandWindow::platformBack()
 
 void WebAppWaylandWindow::setCursor(const std::string& cursorArg, int hotspot_x, int hotspot_y)
 {
-    webos::CustomCursorType type = webos::CUSTOM_CURSOR_NOT_USE;
-    if (cursorArg.empty() || cursorArg == "default")
-        LOG_DEBUG("[%s] %s; arg: %s; Restore Cursor to webos::CUSTOM_CURSOR_NOT_USE", m_webApp->appId().c_str(), __PRETTY_FUNCTION__, cursorArg.c_str());
-    else if (cursorArg == "blank") {
-        LOG_DEBUG("[%s] %s; arg: %s; Set Cursor to webos::CUSTOM_CURSOR_BLANK", m_webApp->appId().c_str(), __PRETTY_FUNCTION__, cursorArg.c_str());
-        type = webos::CUSTOM_CURSOR_BLANK;
-    } else {
-        LOG_DEBUG("[%s] %s; Custom Cursor file path : %s, hotspot_x : %d, hotspot_y : %d", __PRETTY_FUNCTION__, m_webApp->appId().c_str(), cursorArg.c_str(), hotspot_x, hotspot_y);
-        type = webos::CUSTOM_CURSOR_PATH;
-    }
+//    webos::CustomCursorType type = webos::CUSTOM_CURSOR_NOT_USE;
+//    if (cursorArg.empty() || cursorArg == "default")
+//        LOG_DEBUG("[%s] %s; arg: %s; Restore Cursor to webos::CUSTOM_CURSOR_NOT_USE", m_webApp->appId().c_str(), __PRETTY_FUNCTION__, cursorArg.c_str());
+//    else if (cursorArg == "blank") {
+//        LOG_DEBUG("[%s] %s; arg: %s; Set Cursor to webos::CUSTOM_CURSOR_BLANK", m_webApp->appId().c_str(), __PRETTY_FUNCTION__, cursorArg.c_str());
+//        type = webos::CUSTOM_CURSOR_BLANK;
+//    } else {
+//        LOG_DEBUG("[%s] %s; Custom Cursor file path : %s, hotspot_x : %d, hotspot_y : %d", __PRETTY_FUNCTION__, m_webApp->appId().c_str(), cursorArg.c_str(), hotspot_x, hotspot_y);
+//        type = webos::CUSTOM_CURSOR_PATH;
+//    }
 
-#if defined(OS_WEBOS)
-    SetCustomCursor(type, cursorArg.c_str(), hotspot_x, hotspot_y);
-#endif
+//#if defined(OS_WEBOS)
+//    SetCustomCursor(type, cursorArg.c_str(), hotspot_x, hotspot_y);
+//#endif
 
-    if (type == webos::CUSTOM_CURSOR_BLANK)
-        m_cursorEnabled = false;
-    else
-        m_cursorEnabled = true; // all mouse event will be filtered
+//    if (type == webos::CUSTOM_CURSOR_BLANK)
+//        m_cursorEnabled = false;
+//    else
+//        m_cursorEnabled = true; // all mouse event will be filtered
 }
 
 void WebAppWaylandWindow::attachWebContents(void* webContents)
 {
-    WebAppWindowBase::AttachWebContents(webContents);
+//    WebAppWindowBase::AttachWebContents(webContents);
 }
 
 void WebAppWaylandWindow::didSwapPageCompositorFrame()
@@ -143,7 +143,7 @@ void WebAppWaylandWindow::didSwapPageCompositorFrame()
         }
     }
 }
-
+/*
 bool WebAppWaylandWindow::event(WebOSEvent* event)
 {
     if (!m_webApp)
@@ -238,7 +238,7 @@ bool WebAppWaylandWindow::event(WebOSEvent* event)
 
     return WebAppWindowDelegate::event(event);
 }
-
+*/
 void WebAppWaylandWindow::onStageActivated()
 {
     if (!m_webApp)
@@ -262,27 +262,27 @@ void WebAppWaylandWindow::onWindowStateChangeEvent()
         return;
     }
 
-    webos::NativeWindowState state = GetWindowHostState();
-    switch (state)
-    {
-        case webos::NATIVE_WINDOW_DEFAULT:
-        case webos::NATIVE_WINDOW_MAXIMIZED:
-        case webos::NATIVE_WINDOW_FULLSCREEN:
-            LOG_INFO(MSGID_WINDOW_STATE_CHANGED, 1, PMLOGKS("APP_ID", m_webApp->appId().c_str()), "To FullScreen; call onStageActivated");
-            m_webApp->applyInputRegion();
-            onStageActivated();
-            break;
-        case webos::NATIVE_WINDOW_MINIMIZED:
-            LOG_INFO(MSGID_WINDOW_STATE_CHANGED, 1, PMLOGKS("APP_ID", m_webApp->appId().c_str()), "To Minimized; call onStageDeactivated");
-            onStageDeactivated();
-            break;
-        default:
-            LOG_INFO(MSGID_WINDOW_STATE_CHANGED, 2, PMLOGKS("APP_ID", m_webApp->appId().c_str()), PMLOGKFV("HOST_STATE", "%d", state), "Unknown state. Do not calling nothing anymore.");
-            break;
-    }
+//    webos::NativeWindowState state = GetWindowHostState();
+//    switch (state)
+//    {
+//        case webos::NATIVE_WINDOW_DEFAULT:
+//        case webos::NATIVE_WINDOW_MAXIMIZED:
+//        case webos::NATIVE_WINDOW_FULLSCREEN:
+//            LOG_INFO(MSGID_WINDOW_STATE_CHANGED, 1, PMLOGKS("APP_ID", m_webApp->appId().c_str()), "To FullScreen; call onStageActivated");
+//            m_webApp->applyInputRegion();
+//            onStageActivated();
+//            break;
+//        case webos::NATIVE_WINDOW_MINIMIZED:
+//            LOG_INFO(MSGID_WINDOW_STATE_CHANGED, 1, PMLOGKS("APP_ID", m_webApp->appId().c_str()), "To Minimized; call onStageDeactivated");
+//            onStageDeactivated();
+//            break;
+//        default:
+//            LOG_INFO(MSGID_WINDOW_STATE_CHANGED, 2, PMLOGKS("APP_ID", m_webApp->appId().c_str()), PMLOGKFV("HOST_STATE", "%d", state), "Unknown state. Do not calling nothing anymore.");
+//            break;
+//    }
 }
 
-bool WebAppWaylandWindow::onCursorVisibileChangeEvent(WebOSEvent* e)
+/*bool WebAppWaylandWindow::onCursorVisibileChangeEvent(WebOSEvent* e)
 {
     if (!m_cursorEnabled) {
         if (cursorVisible())
@@ -361,7 +361,7 @@ void WebAppWaylandWindow::logEventDebugging(WebOSEvent* event)
         }
     }
 }
-
+*/
 void WebAppWaylandWindow::sendKeyCode(int keyCode)
 {
 #if defined(OS_WEBOS)

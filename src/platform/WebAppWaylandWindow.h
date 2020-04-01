@@ -17,11 +17,13 @@
 #ifndef WEBAPPWAYLANDWINDOW_H
 #define WEBAPPWAYLANDWINDOW_H
 
-#include "webos/webapp_window_base.h"
+#include <string>
+
+// #include "webos/webapp_window_base.h"
 
 class WebAppWayland;
 
-class WebAppWaylandWindow : public webos::WebAppWindowBase {
+class WebAppWaylandWindow /*: public webos::WebAppWindowBase*/ {
 public:
     WebAppWaylandWindow();
     virtual ~WebAppWaylandWindow() {}
@@ -45,10 +47,10 @@ public:
     void didSwapPageCompositorFrame();
 
     // webos::WebAppWindowBase
-    bool event(WebOSEvent* event) override;
-    unsigned int CheckKeyFilterTable(unsigned keycode, unsigned* modifier) override;
+//    bool event(WebOSEvent* event) override;
+//    unsigned int CheckKeyFilterTable(unsigned keycode, unsigned* modifier) override;
 
-    void resetPageFrameSwapped() { m_hasPageFrameBeenSwapped = false; }
+//    void resetPageFrameSwapped() { m_hasPageFrameBeenSwapped = false; }
 
 protected:
     bool cursorVisible() { return m_cursorVisible; }
@@ -61,9 +63,9 @@ protected:
 
 private:
     void onWindowStateChangeEvent();
-    bool onCursorVisibileChangeEvent(WebOSEvent* e);
+//    bool onCursorVisibileChangeEvent(WebOSEvent* e);
     static WebAppWaylandWindow* createWindow();
-    void logEventDebugging(WebOSEvent* event);
+//    void logEventDebugging(WebOSEvent* event);
 
 private:
     static WebAppWaylandWindow* s_instance;
@@ -74,7 +76,7 @@ private:
     bool m_cursorVisible;
     bool m_xinputActivated;
 
-    WebOSMouseEvent m_lastMouseEvent;
+//    WebOSMouseEvent m_lastMouseEvent;
     bool m_hasPageFrameBeenSwapped;
     bool m_pendingShow;
 };

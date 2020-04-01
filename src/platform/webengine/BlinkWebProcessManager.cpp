@@ -99,7 +99,7 @@ void BlinkWebProcessManager::deleteStorageData(const std::string& identifier)
 
     BlinkWebView* webview = new BlinkWebView();
     if (webview) {
-        webview->DeleteWebStorages(identifier);
+//        webview->DeleteWebStorages(identifier);
         delete webview;
     }
 }
@@ -111,7 +111,7 @@ uint32_t BlinkWebProcessManager::getInitialWebViewProxyID() const
 
 void BlinkWebProcessManager::clearBrowsingData(const int removeBrowsingDataMask)
 {
-    BlinkWebViewProfileHelper::clearBrowsingData(removeBrowsingDataMask);
+//    BlinkWebViewProfileHelper::clearBrowsingData(removeBrowsingDataMask);
 }
 
 int BlinkWebProcessManager::maskForBrowsingDataType(const char* type)

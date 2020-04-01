@@ -22,7 +22,7 @@
 #include "WebPageBase.h"
 #include "WebPageBlinkDelegate.h"
 
-#include "webos/webview_base.h"
+// #include "webos/webview_base.h"
 
 class WebAppBase;
 class BlinkWebView;
@@ -47,7 +47,7 @@ public:
     void init() override;
     void* getWebContents() override;
     void setLaunchParams(const std::string& params) override;
-    void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level) override;
+    //void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level) override;
     Url url() const override;
     void replaceBaseUrl(const Url& newUrl) override;
     void loadUrl(const std::string& url) override;

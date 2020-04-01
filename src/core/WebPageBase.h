@@ -23,7 +23,7 @@
 #include "ObserverList.h"
 #include "Url.h"
 
-#include "webos/webview_base.h"
+// #include "webos/webview_base.h"
 
 class ApplicationDescription;
 class WebAppBase;
@@ -56,7 +56,7 @@ public:
     virtual void init() = 0;
     virtual void* getWebContents() = 0;
     virtual void setLaunchParams(const std::string& params);
-    virtual void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level) {}
+    //virtual void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level) {}
 
     virtual std::string getIdentifier() const;
     virtual Url url() const = 0; /* return current url */

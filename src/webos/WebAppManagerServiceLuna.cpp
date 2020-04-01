@@ -20,8 +20,8 @@
 #include "LogManager.h"
 #include <QJsonArray>
 #include <QStringList>
-#include "webos/public/runtime.h"
-#include "webos/webview_base.h"
+// #include "webos/public/runtime.h"
+// #include "webos/webview_base.h"
 #include <string>
 
 // just to save some typing, the template filled out with the name of this class

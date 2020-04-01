@@ -17,13 +17,13 @@
 #ifndef BLINKWEBVIEW_H
 #define BLINKWEBVIEW_H
 
-#include "webos/webview_base.h"
+// #include "webos/webview_base.h"
 #include <string>
 #include <vector>
 
 class WebPageBlinkDelegate;
 
-class BlinkWebView : public webos::WebViewBase {
+class BlinkWebView /*: public webos::WebViewBase*/ {
 public:
     // TODO need to refactor both constructors (here & pluggables)
     BlinkWebView(bool doInitialize = true);
@@ -39,31 +39,31 @@ public:
     WebPageBlinkDelegate* delegate() { return m_delegate; }
     int progress() { return m_progress; }
 
-    // webos::WebViewBase(indirectly from webos::WebViewDelegate)
-    void OnLoadProgressChanged(double progress) override;
-    void DidFirstFrameFocused() override;
-    void TitleChanged(const std::string& title);
-    void NavigationHistoryChanged();
-    void Close() override;
-    bool DecidePolicyForResponse(bool isMainFrame, int statusCode,
-        const std::string& url, const std::string& statusText) override;
-    bool AcceptsVideoCapture() override;
-    bool AcceptsAudioCapture() override;
-    void LoadStarted() override;
-    void LoadFinished(const std::string& url) override;
-    void LoadFailed(const std::string& url, int errCode, const std::string& errDesc) override;
-    void LoadStopped(const std::string& url) override;
-    void DocumentLoadFinished() override;
-    void RenderProcessCreated(int pid) override;
-    void RenderProcessGone() override;
-    void DidHistoryBackOnTopPage() {}
-    void DidClearWindowObject() {}
-    virtual void DidDropAllPeerConnections(webos::DropPeerConnectionReason reason);
-    void DidSwapCompositorFrame();
-    virtual bool AllowMouseOnOffEvent() const;
-    void HandleBrowserControlCommand(const std::string& command, const std::vector<std::string>& arguments) override;
-    void HandleBrowserControlFunction(const std::string& command, const std::vector<std::string>& arguments, std::string* result) override;
-    void LoadVisuallyCommitted() override;
+//    // webos::WebViewBase(indirectly from webos::WebViewDelegate)
+//    void OnLoadProgressChanged(double progress) override;
+//    void DidFirstFrameFocused() override;
+//    void TitleChanged(const std::string& title);
+//    void NavigationHistoryChanged();
+//    void Close() override;
+//    bool DecidePolicyForResponse(bool isMainFrame, int statusCode,
+//        const std::string& url, const std::string& statusText) override;
+//    bool AcceptsVideoCapture() override;
+//    bool AcceptsAudioCapture() override;
+//    void LoadStarted() override;
+//    void LoadFinished(const std::string& url) override;
+//    void LoadFailed(const std::string& url, int errCode, const std::string& errDesc) override;
+//    void LoadStopped(const std::string& url) override;
+//    void DocumentLoadFinished() override;
+//    void RenderProcessCreated(int pid) override;
+//    void RenderProcessGone() override;
+//    void DidHistoryBackOnTopPage() {}
+//    void DidClearWindowObject() {}
+//    virtual void DidDropAllPeerConnections(webos::DropPeerConnectionReason reason);
+//    void DidSwapCompositorFrame();
+//    virtual bool AllowMouseOnOffEvent() const;
+//    void HandleBrowserControlCommand(const std::string& command, const std::vector<std::string>& arguments) override;
+//    void HandleBrowserControlFunction(const std::string& command, const std::vector<std::string>& arguments, std::string* result) override;
+//    void LoadVisuallyCommitted() override;
 
 private:
     WebPageBlinkDelegate* m_delegate;

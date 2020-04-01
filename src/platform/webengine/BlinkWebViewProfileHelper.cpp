@@ -17,53 +17,53 @@
 
 #include "BlinkWebViewProfileHelper.h"
 
-#include "webos/webview_profile.h"
+// #include "webos/webview_profile.h"
 
 #include <cassert>
 #include <cstring>
 
-void BlinkWebViewProfileHelper::clearBrowsingData(const int removeBrowsingDataMask,
-        webos::WebViewProfile *profile)
-{
-    if (profile)
-        profile->RemoveBrowsingData(removeBrowsingDataMask);
-    else
-        BlinkWebViewProfileHelper::clearDefaultBrowsingData(removeBrowsingDataMask);
-}
+//void BlinkWebViewProfileHelper::clearBrowsingData(const int removeBrowsingDataMask,
+//        webos::WebViewProfile *profile)
+//{
+//    if (profile)
+//        profile->RemoveBrowsingData(removeBrowsingDataMask);
+//    else
+//        BlinkWebViewProfileHelper::clearDefaultBrowsingData(removeBrowsingDataMask);
+//}
 
 void BlinkWebViewProfileHelper::clearDefaultBrowsingData(const int removeBrowsingDataMask)
 {
-    webos::WebViewProfile::GetDefaultProfile()->RemoveBrowsingData(removeBrowsingDataMask);
+//    webos::WebViewProfile::GetDefaultProfile()->RemoveBrowsingData(removeBrowsingDataMask);
 }
 
 int BlinkWebViewProfileHelper::maskForBrowsingDataType(const char* type) {
 
-    if (strcmp(type, browsing_data_types::kAll) == 0)
-        return webos::WebViewProfile::REMOVE_ALL;
-    if (strcmp(type, browsing_data_types::kAppCache) == 0)
-        return webos::WebViewProfile::REMOVE_APPCACHE;
-    if (strcmp(type, browsing_data_types::kCache) == 0)
-        return webos::WebViewProfile::REMOVE_CACHE;
-    if (strcmp(type, browsing_data_types::kCodeCache) == 0)
-        return webos::WebViewProfile::REMOVE_CODE_CACHE;
-    if (strcmp(type, browsing_data_types::kCookies) == 0) {
-        return webos::WebViewProfile::REMOVE_COOKIES |
-            webos::WebViewProfile::REMOVE_WEBRTC_IDENTITY;
-    }
-    if (strcmp(type, browsing_data_types::kFileSystems) == 0)
-        return webos::WebViewProfile::REMOVE_FILE_SYSTEMS;
-    if (strcmp(type, browsing_data_types::kIndexedDB) == 0)
-        return webos::WebViewProfile::REMOVE_INDEXEDDB;
-    if (strcmp(type, browsing_data_types::kLocalStorage) == 0)
-        return webos::WebViewProfile::REMOVE_LOCAL_STORAGE;
-    if (strcmp(type, browsing_data_types::kChannelIDs) == 0)
-        return webos::WebViewProfile::REMOVE_CHANNEL_IDS;
-    if (strcmp(type, browsing_data_types::kServiceWorkers) == 0)
-        return webos::WebViewProfile::REMOVE_SERVICE_WORKERS;
-    if (strcmp(type, browsing_data_types::kCacheStorage) == 0)
-        return webos::WebViewProfile::REMOVE_CACHE_STORAGE;
-    if (strcmp(type, browsing_data_types::kWebSQL) == 0)
-        return webos::WebViewProfile::REMOVE_WEBSQL;
+//    if (strcmp(type, browsing_data_types::kAll) == 0)
+//        return webos::WebViewProfile::REMOVE_ALL;
+//    if (strcmp(type, browsing_data_types::kAppCache) == 0)
+//        return webos::WebViewProfile::REMOVE_APPCACHE;
+//    if (strcmp(type, browsing_data_types::kCache) == 0)
+//        return webos::WebViewProfile::REMOVE_CACHE;
+//    if (strcmp(type, browsing_data_types::kCodeCache) == 0)
+//        return webos::WebViewProfile::REMOVE_CODE_CACHE;
+//    if (strcmp(type, browsing_data_types::kCookies) == 0) {
+//        return webos::WebViewProfile::REMOVE_COOKIES |
+//            webos::WebViewProfile::REMOVE_WEBRTC_IDENTITY;
+//    }
+//    if (strcmp(type, browsing_data_types::kFileSystems) == 0)
+//        return webos::WebViewProfile::REMOVE_FILE_SYSTEMS;
+//    if (strcmp(type, browsing_data_types::kIndexedDB) == 0)
+//        return webos::WebViewProfile::REMOVE_INDEXEDDB;
+//    if (strcmp(type, browsing_data_types::kLocalStorage) == 0)
+//        return webos::WebViewProfile::REMOVE_LOCAL_STORAGE;
+//    if (strcmp(type, browsing_data_types::kChannelIDs) == 0)
+//        return webos::WebViewProfile::REMOVE_CHANNEL_IDS;
+//    if (strcmp(type, browsing_data_types::kServiceWorkers) == 0)
+//        return webos::WebViewProfile::REMOVE_SERVICE_WORKERS;
+//    if (strcmp(type, browsing_data_types::kCacheStorage) == 0)
+//        return webos::WebViewProfile::REMOVE_CACHE_STORAGE;
+//    if (strcmp(type, browsing_data_types::kWebSQL) == 0)
+//        return webos::WebViewProfile::REMOVE_WEBSQL;
 
     return 0;
 }

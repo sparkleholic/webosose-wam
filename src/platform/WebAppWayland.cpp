@@ -30,8 +30,8 @@
 
 #include "WebPageBlink.h"
 
-#include "webos/common/webos_constants.h"
-#include "webos/window_group_configuration.h"
+// #include "webos/common/webos_constants.h"
+// #include "webos/window_group_configuration.h"
 
 static int kLaunchFinishAssureTimeoutMs = 5000;
 
@@ -80,17 +80,18 @@ void WebAppWayland::init(int width, int height, int surface_id)
 {
     if (!m_appWindow)
         m_appWindow = WebAppWaylandWindow::take(surface_id);
-    m_appWindow->SetWindowSurfaceId(surface_id);
-    if (!(width && height)) {
-        setUiSize(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
-        m_appWindow->InitWindow(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
-    }
-    else {
-        setUiSize(width, height);
-        m_appWindow->InitWindow(width, height);
-    }
+    LOG_ERROR("NEED TO SET SURFACE ID");
+    // m_appWindow->SetWindowSurfaceId(surface_id);
+//    if (!(width && height)) {
+//        setUiSize(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
+//        m_appWindow->InitWindow(m_appWindow->DisplayWidth(), m_appWindow->DisplayHeight());
+//    }
+//    else {
+//        setUiSize(width, height);
+//        m_appWindow->InitWindow(width, height);
+//    }
 
-    m_appWindow->setWebApp(this);
+//    m_appWindow->setWebApp(this);
 
     // set compositor window type
     setWindowProperty("_WEBOS_WINDOW_TYPE", m_windowType);
@@ -101,10 +102,10 @@ void WebAppWayland::init(int width, int height, int surface_id)
         kLaunchFinishAssureTimeoutMs = stringTo<int>(launchTimeoutStr);
     } catch(...) {}
 
-    if (!webos::WebOSPlatform::GetInstance()->GetInputPointer()) {
-        // Create InputManager instance.
-        InputManager::instance();
-    }
+//    if (!webos::WebOSPlatform::GetInstance()->GetInputPointer()) {
+//        // Create InputManager instance.
+//        InputManager::instance();
+//    }
 }
 
 void WebAppWayland::startLaunchTimer()
@@ -136,10 +137,10 @@ void WebAppWayland::onLaunchTimeout()
     }
 }
 
-void WebAppWayland::forwardWebOSEvent(WebOSEvent* event) const
-{
-    page()->forwardEvent(event);
-}
+//void WebAppWayland::forwardWebOSEvent(WebOSEvent* event) const
+//{
+//    page()->forwardEvent(event);
+//}
 
 void WebAppWayland::attach(WebPageBase *page)
 {
@@ -154,15 +155,15 @@ void WebAppWayland::attach(WebPageBase *page)
     setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_BACK", getAppDescription()->backHistoryAPIDisabled() ? "true" : "false");
     setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_EXIT", getAppDescription()->handleExitKey() ? "true" : "false");
 
-    setKeyMask(webos::WebOSKeyMask::KEY_MASK_BACK, getAppDescription()->backHistoryAPIDisabled());
-    setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT, getAppDescription()->handleExitKey());
+//    setKeyMask(webos::WebOSKeyMask::KEY_MASK_BACK, getAppDescription()->backHistoryAPIDisabled());
+//    setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT, getAppDescription()->handleExitKey());
 
-    if (getAppDescription()->widthOverride() && getAppDescription()->heightOverride()) {
-        float scaleX = static_cast<float>(m_appWindow->DisplayWidth()) / getAppDescription()->widthOverride();
-        float scaleY = static_cast<float>(m_appWindow->DisplayHeight()) / getAppDescription()->heightOverride();
-        m_scaleFactor = (scaleX < scaleY) ? scaleX : scaleY;
-        static_cast<WebPageBlink*>(page)->setAdditionalContentsScale(scaleX, scaleY);
-    }
+//    if (getAppDescription()->widthOverride() && getAppDescription()->heightOverride()) {
+//        float scaleX = static_cast<float>(m_appWindow->DisplayWidth()) / getAppDescription()->widthOverride();
+//        float scaleY = static_cast<float>(m_appWindow->DisplayHeight()) / getAppDescription()->heightOverride();
+//        m_scaleFactor = (scaleX < scaleY) ? scaleX : scaleY;
+//        static_cast<WebPageBlink*>(page)->setAdditionalContentsScale(scaleX, scaleY);
+//    }
 
     doAttach();
 
@@ -192,24 +193,27 @@ bool WebAppWayland::isFocused() const
 
 void WebAppWayland::resize(int width, int height)
 {
-    m_appWindow->Resize(width, height);
+//    m_appWindow->Resize(width, height);
 }
 
 bool WebAppWayland::isActivated() const
 {
-    return m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_FULLSCREEN
-        || m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_MAXIMIZED
-        || m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_DEFAULT;
+  return false;
+//    return m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_FULLSCREEN
+//        || m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_MAXIMIZED
+//        || m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_DEFAULT;
 }
 
 bool WebAppWayland::isMinimized()
 {
-    return m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_MINIMIZED;
+  return false;
+//    return m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_MINIMIZED;
 }
 
 bool WebAppWayland::isNormal()
 {
-    return m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_DEFAULT;
+  return false;
+//    return m_appWindow->GetWindowHostState() == webos::NATIVE_WINDOW_DEFAULT;
 }
 
 void WebAppWayland::onStageActivated()
@@ -268,8 +272,8 @@ void WebAppWayland::configureWindow(const std::string& type)
     setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_BACK", getAppDescription()->backHistoryAPIDisabled() ? "true" : "false");
     setWindowProperty("_WEBOS_ACCESS_POLICY_KEYS_EXIT", getAppDescription()->handleExitKey() ? "true" : "false");
 
-    setKeyMask(webos::WebOSKeyMask::KEY_MASK_BACK, getAppDescription()->backHistoryAPIDisabled());
-    setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT, getAppDescription()->handleExitKey());
+//    setKeyMask(webos::WebOSKeyMask::KEY_MASK_BACK, getAppDescription()->backHistoryAPIDisabled());
+//    setKeyMask(webos::WebOSKeyMask::KEY_MASK_EXIT, getAppDescription()->handleExitKey());
 
     ApplicationDescription* appDesc = getAppDescription();
     if (!appDesc->groupWindowDesc().empty())
@@ -288,29 +292,30 @@ void WebAppWayland::setupWindowGroup(ApplicationDescription* desc)
 
     if (groupInfo.isOwner) {
         ApplicationDescription::WindowOwnerInfo ownerInfo = desc->getWindowOwnerInfo();
-        webos::WindowGroupConfiguration config(groupInfo.name);
-        config.SetIsAnonymous(ownerInfo.allowAnonymous);
+//        webos::WindowGroupConfiguration config(groupInfo.name);
+//        config.SetIsAnonymous(ownerInfo.allowAnonymous);
         for (const auto &l : ownerInfo.layers) {
-          config.AddLayer(webos::WindowGroupLayerConfiguration(l.first, l.second));
+//          config.AddLayer(webos::WindowGroupLayerConfiguration(l.first, l.second));
         }
-        m_appWindow->CreateWindowGroup(config);
+//        m_appWindow->CreateWindowGroup(config);
         LOG_INFO(MSGID_CREATE_SURFACEGROUP, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
     } else {
-        ApplicationDescription::WindowClientInfo clientInfo = desc->getWindowClientInfo();
-        m_appWindow->AttachToWindowGroup(groupInfo.name, clientInfo.layer);
+//        ApplicationDescription::WindowClientInfo clientInfo = desc->getWindowClientInfo();
+//        m_appWindow->AttachToWindowGroup(groupInfo.name, clientInfo.layer);
         LOG_INFO(MSGID_ATTACH_SURFACEGROUP, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("OWNER_ID", groupInfo.name.c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
     }
 }
 
 bool WebAppWayland::isKeyboardVisible()
 {
-    return m_appWindow->IsKeyboardVisible();
+//    return m_appWindow->IsKeyboardVisible();
+  return false;
 }
 
-void WebAppWayland::setKeyMask(webos::WebOSKeyMask keyMask, bool value)
-{
-    m_appWindow->SetKeyMask(keyMask, value);
-}
+//void WebAppWayland::setKeyMask(webos::WebOSKeyMask keyMask, bool value)
+//{
+//    m_appWindow->SetKeyMask(keyMask, value);
+//}
 
 void WebAppWayland::applyInputRegion()
 {
@@ -324,17 +329,17 @@ void WebAppWayland::applyInputRegion()
 
 void WebAppWayland::setInputRegion(const Json::Value& jsonDoc)
 {
-    m_inputRegion.clear();
+//    m_inputRegion.clear();
 
-    if (jsonDoc.isArray()) {
-        for (const Json::Value& map : jsonDoc) {
-            m_inputRegion.push_back(gfx::Rect(
-                                map["x"].asInt() * m_scaleFactor,
-                                map["y"].asInt() * m_scaleFactor,
-                                map["width"].asInt() * m_scaleFactor,
-                                map["height"].asInt() * m_scaleFactor));
-        }
-    }
+//    if (jsonDoc.isArray()) {
+//        for (const Json::Value& map : jsonDoc) {
+//            m_inputRegion.push_back(gfx::Rect(
+//                                map["x"].asInt() * m_scaleFactor,
+//                                map["y"].asInt() * m_scaleFactor,
+//                                map["width"].asInt() * m_scaleFactor,
+//                                map["height"].asInt() * m_scaleFactor));
+//        }
+//    }
 
 #if defined(OS_WEBOS)
     m_appWindow->SetInputRegion(m_inputRegion);
@@ -344,18 +349,18 @@ void WebAppWayland::setInputRegion(const Json::Value& jsonDoc)
 
 void WebAppWayland::setWindowProperty(const std::string& name, const std::string& value)
 {
-    webos::WebOSKeyMask mask = static_cast<webos::WebOSKeyMask>(0);
-    if (name == "_WEBOS_ACCESS_POLICY_KEYS_BACK")
-        mask = webos::WebOSKeyMask::KEY_MASK_BACK;
-    else if (name == "_WEBOS_ACCESS_POLICY_KEYS_EXIT")
-        mask = webos::WebOSKeyMask::KEY_MASK_EXIT;
-    // if mask is not set, not need to call setKeyMask
-    if (mask != static_cast<webos::WebOSKeyMask>(0)) {
-        bool boolValue; // TODO: Maybe migrate to boost::lexical_cast<bool>()
-        std::istringstream(value) >> std::boolalpha >> boolValue;
-        setKeyMask(mask, boolValue);
-    }
-    m_appWindow->SetWindowProperty(name, value);
+//    webos::WebOSKeyMask mask = static_cast<webos::WebOSKeyMask>(0);
+//    if (name == "_WEBOS_ACCESS_POLICY_KEYS_BACK")
+//        mask = webos::WebOSKeyMask::KEY_MASK_BACK;
+//    else if (name == "_WEBOS_ACCESS_POLICY_KEYS_EXIT")
+//        mask = webos::WebOSKeyMask::KEY_MASK_EXIT;
+//    // if mask is not set, not need to call setKeyMask
+//    if (mask != static_cast<webos::WebOSKeyMask>(0)) {
+//        bool boolValue; // TODO: Maybe migrate to boost::lexical_cast<bool>()
+//        std::istringstream(value) >> std::boolalpha >> boolValue;
+//        setKeyMask(mask, boolValue);
+//    }
+//    m_appWindow->SetWindowProperty(name, value);
 }
 
 void WebAppWayland::platformBack()
@@ -368,62 +373,62 @@ void WebAppWayland::setCursor(const std::string& cursorArg, int hotspot_x, int h
     m_appWindow->setCursor(cursorArg, hotspot_x, hotspot_y);
 }
 
-static std::unordered_map<std::string, webos::WebOSKeyMask>& getKeyMaskTable()
-{
-    static std::unordered_map<std::string, webos::WebOSKeyMask> mapTable {
-        { "KeyMaskNone", static_cast<webos::WebOSKeyMask>(0) },
-        { "KeyMaskHome", webos::WebOSKeyMask::KEY_MASK_HOME },
-        { "KeyMaskBack", webos::WebOSKeyMask::KEY_MASK_BACK },
-        { "KeyMaskExit", webos::WebOSKeyMask::KEY_MASK_EXIT },
-        { "KeyMaskLeft", webos::WebOSKeyMask::KEY_MASK_LEFT },
-        { "KeyMaskRight", webos::WebOSKeyMask::KEY_MASK_RIGHT },
-        { "KeyMaskUp", webos::WebOSKeyMask::KEY_MASK_UP },
-        { "KeyMaskDown", webos::WebOSKeyMask::KEY_MASK_DOWN },
-        { "KeyMaskOk", webos::WebOSKeyMask::KEY_MASK_OK },
-        { "KeyMaskNumeric", webos::WebOSKeyMask::KEY_MASK_NUMERIC },
-        { "KeyMaskRed", webos::WebOSKeyMask::KEY_MASK_REMOTECOLORRED },
-        { "KeyMaskGreen", webos::WebOSKeyMask::KEY_MASK_REMOTECOLORGREEN },
-        { "KeyMaskYellow", webos::WebOSKeyMask::KEY_MASK_REMOTECOLORYELLOW },
-        { "KeyMaskBlue", webos::WebOSKeyMask::KEY_MASK_REMOTECOLORBLUE },
-        { "KeyMaskProgramme", webos::WebOSKeyMask::KEY_MASK_REMOTEPROGRAMMEGROUP },
-        { "KeyMaskPlayback", webos::WebOSKeyMask::KEY_MASK_REMOTEPLAYBACKGROUP },
-        { "KeyMaskTeletext", webos::WebOSKeyMask::KEY_MASK_REMOTETELETEXTGROUP },
-        { "KeyMaskDefault", webos::WebOSKeyMask::KEY_MASK_DEFAULT }
-    };
-    return mapTable;
-}
+//static std::unordered_map<std::string, webos::WebOSKeyMask>& getKeyMaskTable()
+//{
+//    static std::unordered_map<std::string, webos::WebOSKeyMask> mapTable {
+//        { "KeyMaskNone", static_cast<webos::WebOSKeyMask>(0) },
+//        { "KeyMaskHome", webos::WebOSKeyMask::KEY_MASK_HOME },
+//        { "KeyMaskBack", webos::WebOSKeyMask::KEY_MASK_BACK },
+//        { "KeyMaskExit", webos::WebOSKeyMask::KEY_MASK_EXIT },
+//        { "KeyMaskLeft", webos::WebOSKeyMask::KEY_MASK_LEFT },
+//        { "KeyMaskRight", webos::WebOSKeyMask::KEY_MASK_RIGHT },
+//        { "KeyMaskUp", webos::WebOSKeyMask::KEY_MASK_UP },
+//        { "KeyMaskDown", webos::WebOSKeyMask::KEY_MASK_DOWN },
+//        { "KeyMaskOk", webos::WebOSKeyMask::KEY_MASK_OK },
+//        { "KeyMaskNumeric", webos::WebOSKeyMask::KEY_MASK_NUMERIC },
+//        { "KeyMaskRed", webos::WebOSKeyMask::KEY_MASK_REMOTECOLORRED },
+//        { "KeyMaskGreen", webos::WebOSKeyMask::KEY_MASK_REMOTECOLORGREEN },
+//        { "KeyMaskYellow", webos::WebOSKeyMask::KEY_MASK_REMOTECOLORYELLOW },
+//        { "KeyMaskBlue", webos::WebOSKeyMask::KEY_MASK_REMOTECOLORBLUE },
+//        { "KeyMaskProgramme", webos::WebOSKeyMask::KEY_MASK_REMOTEPROGRAMMEGROUP },
+//        { "KeyMaskPlayback", webos::WebOSKeyMask::KEY_MASK_REMOTEPLAYBACKGROUP },
+//        { "KeyMaskTeletext", webos::WebOSKeyMask::KEY_MASK_REMOTETELETEXTGROUP },
+//        { "KeyMaskDefault", webos::WebOSKeyMask::KEY_MASK_DEFAULT }
+//    };
+//    return mapTable;
+//}
 
 void WebAppWayland::setKeyMask(const Json::Value& jsonDoc)
 {
-    static std::unordered_map<std::string, webos::WebOSKeyMask>& mapTable = getKeyMaskTable();
-    unsigned int keyMask = 0;
+//    static std::unordered_map<std::string, webos::WebOSKeyMask>& mapTable = getKeyMaskTable();
+//    unsigned int keyMask = 0;
 
-    if (jsonDoc.isArray()) {
-        for (const Json::Value& child : jsonDoc)
-            keyMask |= mapTable[child.asString()];
-    }
+//    if (jsonDoc.isArray()) {
+//        for (const Json::Value& child : jsonDoc)
+//            keyMask |= mapTable[child.asString()];
+//    }
 
-#if defined(OS_WEBOS)
-    m_appWindow->SetKeyMask(static_cast<webos::WebOSKeyMask>(keyMask));
-#endif
-}
+//#if defined(OS_WEBOS)
+//    m_appWindow->SetKeyMask(static_cast<webos::WebOSKeyMask>(keyMask));
+//#endif
+//}
 
-void WebAppWayland::setKeyMask(webos::WebOSKeyMask keyMask)
-{
-#if defined(OS_WEBOS)
-    m_appWindow->SetKeyMask(keyMask);
-#endif
+//void WebAppWayland::setKeyMask(webos::WebOSKeyMask keyMask)
+//{
+//#if defined(OS_WEBOS)
+//    m_appWindow->SetKeyMask(keyMask);
+//#endif
 }
 
 void WebAppWayland::focusOwner()
 {
-    m_appWindow->FocusWindowGroupOwner();
+//    m_appWindow->FocusWindowGroupOwner();
     LOG_DEBUG("FocusOwner [%s]", appId().c_str());
 }
 
 void WebAppWayland::focusLayer()
 {
-    m_appWindow->FocusWindowGroupLayer();
+//    m_appWindow->FocusWindowGroupLayer();
     ApplicationDescription * desc = getAppDescription();
     if (desc) {
         ApplicationDescription::WindowClientInfo clientInfo = desc->getWindowClientInfo();
@@ -433,7 +438,7 @@ void WebAppWayland::focusLayer()
 
 void WebAppWayland::setOpacity(float opacity)
 {
-    m_appWindow->SetOpacity(opacity);
+//    m_appWindow->SetOpacity(opacity);
 }
 
 void WebAppWayland::hide(bool forcedHide)
@@ -490,7 +495,7 @@ void WebAppWayland::raise()
         onStageActivated();
     } else {
         LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "WebAppWayland::raise(); call setWindowState(webos::NATIVE_WINDOW_FULLSCREEN)");
-        m_appWindow->SetWindowHostState(webos::NATIVE_WINDOW_FULLSCREEN);
+//        m_appWindow->SetWindowHostState(webos::NATIVE_WINDOW_FULLSCREEN);
     }
 
     if (wasMinimizedState)
@@ -504,7 +509,7 @@ void WebAppWayland::goBackground()
         doClose();
     } else {
         LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "WebAppWayland::goBackground(); call setWindowState(webos::NATIVE_WINDOW_MINIMIZED)");
-        m_appWindow->SetWindowHostState(webos::NATIVE_WINDOW_MINIMIZED);
+//        m_appWindow->SetWindowHostState(webos::NATIVE_WINDOW_MINIMIZED);
     }
 }
 
@@ -558,14 +563,14 @@ void WebAppWayland::doClose()
     closeAppInternal();
 }
 
-void WebAppWayland::stateAboutToChange(webos::NativeWindowState willBe)
-{
-    if (willBe == webos::NATIVE_WINDOW_MINIMIZED) {
-        LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "WebAppWayland::stateAboutToChange; will be Minimized; suspend media and fire visibilitychange event");
-        page()->suspendWebPageMedia();
-        page()->setVisibilityState(WebPageBase::WebPageVisibilityState::WebPageVisibilityStateHidden);
-    }
-}
+//void WebAppWayland::stateAboutToChange(webos::NativeWindowState willBe)
+//{
+//    if (willBe == webos::NATIVE_WINDOW_MINIMIZED) {
+//        LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "WebAppWayland::stateAboutToChange; will be Minimized; suspend media and fire visibilitychange event");
+//        page()->suspendWebPageMedia();
+//        page()->setVisibilityState(WebPageBase::WebPageVisibilityState::WebPageVisibilityStateHidden);
+//    }
+//}
 
 void WebAppWayland::showWindow()
 {
@@ -596,16 +601,16 @@ void WebAppWayland::firstFrameVisuallyCommitted()
     // and therefore we have to do an explicit show
     if (!getHiddenWindow() && m_preloadState == NONE_PRELOAD) {
         LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "Not hidden window, preload, call showWindow");
-        if (getAppDescription()->usePrerendering())
-          m_appWindow->resetPageFrameSwapped();
+//        if (getAppDescription()->usePrerendering())
+//          m_appWindow->resetPageFrameSwapped();
         showWindow();
     }
 }
 
-void WebAppWayland::postEvent(WebOSEvent* ev)
-{
-    m_appWindow->event(ev);
-}
+//void WebAppWayland::postEvent(WebOSEvent* ev)
+//{
+//    m_appWindow->event(ev);
+//}
 
 void WebAppWayland::navigationHistoryChanged()
 {
@@ -621,7 +626,7 @@ void WebAppWayland::navigationHistoryChanged()
 void WebAppWayland::webViewRecreated()
 {
     m_appWindow->attachWebContents(page()->getWebContents());
-    m_appWindow->RecreatedWebContents();
+//    m_appWindow->RecreatedWebContents();
     page()->setPageProperties();
     focus();
 }
@@ -643,42 +648,42 @@ void WebAppWayland::setForceActivateVtgIfRequired()
     }
 }
 
-void InputManager::OnCursorVisibilityChanged(bool visible)
-{
-    if (IsVisible() == visible) return;
+//void InputManager::OnCursorVisibilityChanged(bool visible)
+//{
+//    if (IsVisible() == visible) return;
 
-    LOG_DEBUG("InputManager::onCursorVisibilityChanged; Global Cursor visibility Changed to %s; send cursorStateChange event to all app, all frames", visible? "true" : " false");
-    SetVisible(visible);
-    // send event about  cursorStateChange
-    std::stringstream jss;
-    std::string v = visible ? "true" : "false";
-    jss << "    var cursorEvent=new CustomEvent('cursorStateChange', { detail: { 'visibility' : " << v << " } });"
-        << "    cursorEvent.visibility = " << v << ";"
-        << "    if(document) document.dispatchEvent(cursorEvent);";
+//    LOG_DEBUG("InputManager::onCursorVisibilityChanged; Global Cursor visibility Changed to %s; send cursorStateChange event to all app, all frames", visible? "true" : " false");
+//    SetVisible(visible);
+//    // send event about  cursorStateChange
+//    std::stringstream jss;
+//    std::string v = visible ? "true" : "false";
+//    jss << "    var cursorEvent=new CustomEvent('cursorStateChange', { detail: { 'visibility' : " << v << " } });"
+//        << "    cursorEvent.visibility = " << v << ";"
+//        << "    if(document) document.dispatchEvent(cursorEvent);";
 
-    // send javascript event : cursorStateChange with param to All app
-    // if javascript has setTimeout() like webOSlaunch or webOSRelaunch, then app can not get this event when app is in background
-    // because javascript is freezed and timer is too, since app is in background, timer is never fired
-    WebAppBase::onCursorVisibilityChanged(jss.str());
-}
+//    // send javascript event : cursorStateChange with param to All app
+//    // if javascript has setTimeout() like webOSlaunch or webOSRelaunch, then app can not get this event when app is in background
+//    // because javascript is freezed and timer is too, since app is in background, timer is never fired
+//    WebAppBase::onCursorVisibilityChanged(jss.str());
+//}
 
-void WebAppWayland::sendWebOSMouseEvent(const std::string& eventName)
-{
-    if (eventName == "Enter" || eventName == "Leave") {
-        // send webOSMouse event to app
-        std::stringstream javascript;
-        javascript
-            << "console.log('[WAM] fires webOSMouse event : " << eventName << "');"
-            << "var mouseEvent =new CustomEvent('webOSMouse', { detail: { type : '" << eventName << "' }});"
-            << "document.dispatchEvent(mouseEvent);";
-        LOG_DEBUG("[%s] WebAppWayland::sendWebOSMouseEvent; dispatch webOSMouse; %s", appId().c_str(), eventName.c_str());
-        page()->evaluateJavaScript(javascript.str());
-    }
-}
+//void WebAppWayland::sendWebOSMouseEvent(const std::string& eventName)
+//{
+//    if (eventName == "Enter" || eventName == "Leave") {
+//        // send webOSMouse event to app
+//        std::stringstream javascript;
+//        javascript
+//            << "console.log('[WAM] fires webOSMouse event : " << eventName << "');"
+//            << "var mouseEvent =new CustomEvent('webOSMouse', { detail: { type : '" << eventName << "' }});"
+//            << "document.dispatchEvent(mouseEvent);";
+//        LOG_DEBUG("[%s] WebAppWayland::sendWebOSMouseEvent; dispatch webOSMouse; %s", appId().c_str(), eventName.c_str());
+//        page()->evaluateJavaScript(javascript.str());
+//    }
+//}
 
 void WebAppWayland::deleteSurfaceGroup()
 {
-    m_appWindow->DetachWindowGroup();
+//    m_appWindow->DetachWindowGroup();
 }
 
 void WebAppWayland::setKeepAlive(bool keepAlive)
@@ -698,17 +703,17 @@ void WebAppWayland::moveInputRegion(int height)
     else
         m_vkbHeight = -m_vkbHeight;
 
-    std::vector<gfx::Rect> newRegion;
-    for (std::vector<gfx::Rect>::iterator it = m_inputRegion.begin(); it != m_inputRegion.end(); ++it) {
-        gfx::Rect rect = static_cast<gfx::Rect>(*it);
-        rect.SetRect(rect.x(),
-                     rect.y() - m_vkbHeight,
-                     rect.width(),
-                     rect.height());
-        newRegion.push_back(rect);
-    }
-    m_inputRegion.clear();
-    m_inputRegion = newRegion;
+//    std::vector<gfx::Rect> newRegion;
+//    for (std::vector<gfx::Rect>::iterator it = m_inputRegion.begin(); it != m_inputRegion.end(); ++it) {
+//        gfx::Rect rect = static_cast<gfx::Rect>(*it);
+//        rect.SetRect(rect.x(),
+//                     rect.y() - m_vkbHeight,
+//                     rect.width(),
+//                     rect.height());
+//        newRegion.push_back(rect);
+//    }
+//    m_inputRegion.clear();
+//    m_inputRegion = newRegion;
 #if defined(OS_WEBOS)
     m_appWindow->SetInputRegion(m_inputRegion);
 #endif

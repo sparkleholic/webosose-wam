@@ -39,7 +39,7 @@
 #include "WebProcessManager.h"
 #include "WindowTypes.h"
 
-#include "webos/public/runtime.h"
+// #include "webos/public/runtime.h"
 
 static const int kContinuousReloadingLimit = 3;
 
@@ -62,25 +62,25 @@ WebAppManager::~WebAppManager()
 {
 }
 
-void WebAppManager::notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level)
-{
-    std::list<const WebAppBase*> appList = runningApps();
-    for (auto it = appList.begin(); it != appList.end(); ++it) {
-        const WebAppBase* app = *it;
-        // Skip memory pressure handling on preloaded apps if chromium pressure is critical
-        // (when system is on low or critical) because they will be killed anyway
-        if (app->isActivated() &&
-            (!app->page()->isPreload() ||
-             level != webos::WebViewBase::MEMORY_PRESSURE_CRITICAL))
-          app->page()->notifyMemoryPressure(level);
-        else {
-          LOG_DEBUG("Skipping memory pressure handler for"
-                    " appId(%s) isActivated(%d) isPreload(%d) Level(%d)",
-                    app->appId().c_str(), app->isActivated(),
-                    app->page()->isPreload(), level);
-        }
-    }
-}
+//void WebAppManager::notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level)
+//{
+//    std::list<const WebAppBase*> appList = runningApps();
+//    for (auto it = appList.begin(); it != appList.end(); ++it) {
+//        const WebAppBase* app = *it;
+//        // Skip memory pressure handling on preloaded apps if chromium pressure is critical
+//        // (when system is on low or critical) because they will be killed anyway
+//        if (app->isActivated() &&
+//            (!app->page()->isPreload() ||
+//             level != webos::WebViewBase::MEMORY_PRESSURE_CRITICAL))
+//          app->page()->notifyMemoryPressure(level);
+//        else {
+//          LOG_DEBUG("Skipping memory pressure handler for"
+//                    " appId(%s) isActivated(%d) isPreload(%d) Level(%d)",
+//                    app->appId().c_str(), app->isActivated(),
+//                    app->page()->isPreload(), level);
+//        }
+//    }
+//}
 
 void WebAppManager::setPlatformModules(std::unique_ptr<PlatformModuleFactory> factory)
 {
@@ -1064,7 +1064,7 @@ void WebAppManager::updateNetworkStatus(const Json::Value& object)
     NetworkStatus status;
     status.fromJsonObject(object);
 
-    webos::Runtime::GetInstance()->SetNetworkConnected(status.isInternetConnectionAvailable());
+//    webos::Runtime::GetInstance()->SetNetworkConnected(status.isInternetConnectionAvailable());
     m_networkStatusManager->updateNetworkStatus(status);
 }
 

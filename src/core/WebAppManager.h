@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-#include "webos/webview_base.h"
+// #include "webos/webview_base.h"
 
 class ApplicationDescription;
 class ContainerAppManager;
@@ -153,7 +153,7 @@ public:
     void sendEventToAllAppsAndAllFrames(const std::string& jsscript);
     void serviceCall(const std::string& url, const std::string& payload, const std::string& appId);
     void updateNetworkStatus(const Json::Value& object);
-    void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level);
+    //void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level);
 
     bool isEnyoApp(const std::string& appId);
 

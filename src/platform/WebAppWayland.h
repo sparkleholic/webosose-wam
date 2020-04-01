@@ -22,9 +22,9 @@
 
 #include "WebPageBlinkObserver.h"
 
-#include "webos/common/webos_constants.h"
-#include "webos/common/webos_event.h"
-#include "webos/webos_platform.h"
+// #include "webos/common/webos_constants.h"
+// #include "webos/common/webos_event.h"
+// #include "webos/webos_platform.h"
 
 namespace Json {
 class Value;
@@ -33,20 +33,21 @@ class Value;
 class ApplicationDescription;
 class WebAppWaylandWindow;
 
-class InputManager : public webos::InputPointer {
+class InputManager /*: public webos::InputPointer*/ {
 public:
     static InputManager* instance()
     {
-        // InputManager should be globally one.
-        if (!webos::WebOSPlatform::GetInstance()->GetInputPointer())
-            webos::WebOSPlatform::GetInstance()->SetInputPointer(new InputManager());
-        return static_cast<InputManager*>(webos::WebOSPlatform::GetInstance()->GetInputPointer());
+//        // InputManager should be globally one.
+//        if (!webos::WebOSPlatform::GetInstance()->GetInputPointer())
+//            webos::WebOSPlatform::GetInstance()->SetInputPointer(new InputManager());
+//        return static_cast<InputManager*>(webos::WebOSPlatform::GetInstance()->GetInputPointer());
+      return nullptr;
     }
 
-    bool globalCursorVisibility() { return IsVisible(); }
+    bool globalCursorVisibility() { return true;/*IsVisible();*/ }
 
     // Overridden from weboswayland::InputPointer:
-    void OnCursorVisibilityChanged(bool visible) override;
+    //void OnCursorVisibilityChanged(bool visible) override;
 };
 
 class WebAppWayland : public WebAppBase, WebPageBlinkObserver {
@@ -89,8 +90,8 @@ public:
 
     // WebAppWayland
     virtual bool isKeyboardVisible() override;
-    virtual void setKeyMask(webos::WebOSKeyMask keyMask, bool value);
-    virtual void setKeyMask(webos::WebOSKeyMask keyMask);
+//    virtual void setKeyMask(webos::WebOSKeyMask keyMask, bool value);
+//    virtual void setKeyMask(webos::WebOSKeyMask keyMask);
     virtual void focusOwner();
     virtual void focusLayer();
     virtual void titleChanged();
@@ -100,15 +101,15 @@ public:
     std::string getWindowType() const { return m_windowType; }
     bool cursorVisibility() { return InputManager::instance()->globalCursorVisibility(); }
     void startLaunchTimer();
-    void sendWebOSMouseEvent(const std::string& eventName);
+//    void sendWebOSMouseEvent(const std::string& eventName);
 
-    void postEvent(WebOSEvent* ev);
+//    void postEvent(WebOSEvent* ev);
     void onDelegateWindowFrameSwapped();
     void onLaunchTimeout();
 
     void applyInputRegion();
-    void forwardWebOSEvent(WebOSEvent* event) const;
-    void stateAboutToChange(webos::NativeWindowState willBe);
+//    void forwardWebOSEvent(WebOSEvent* event) const;
+//    void stateAboutToChange(webos::NativeWindowState willBe);
 
     // from WebPageBlinkObserver
     void didSwapPageCompositorFrame();
@@ -134,7 +135,7 @@ private:
     std::string m_windowType;
     int m_lastSwappedTime;
 
-    std::vector<gfx::Rect> m_inputRegion;
+//    std::vector<gfx::Rect> m_inputRegion;
     bool m_enableInputRegion;
 
     bool m_isFocused;

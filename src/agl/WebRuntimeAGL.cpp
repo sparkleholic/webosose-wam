@@ -10,7 +10,7 @@
 #include <libhomescreen.hpp>
 #include <libwindowmanager.h>
 
-#include <webos/app/webos_main.h>
+//#include <webos/app/webos_main.h>
 
 #include "LogManager.h"
 #include "PlatformModuleFactoryImpl.h"
@@ -72,20 +72,20 @@ static bool isWaitForHostService(const std::vector<std::string>& args) {
   }
 }
 
-class AGLMainDelegateWAM : public webos::WebOSMainDelegate {
-public:
-    void AboutToCreateContentBrowserClient() override {
-      WebAppManagerServiceAGL::instance()->startService();
-      WebAppManager::instance()->setPlatformModules(std::unique_ptr<PlatformModuleFactoryImpl>(new PlatformModuleFactoryImpl()));
-    }
-};
+//class AGLMainDelegateWAM : public webos::WebOSMainDelegate {
+//public:
+//    void AboutToCreateContentBrowserClient() override {
+//      WebAppManagerServiceAGL::instance()->startService();
+//      WebAppManager::instance()->setPlatformModules(std::unique_ptr<PlatformModuleFactoryImpl>(new PlatformModuleFactoryImpl()));
+//    }
+//};
 
-class AGLRendererDelegateWAM : public webos::WebOSMainDelegate {
-public:
-    void AboutToCreateContentBrowserClient() override {
-      // do nothing
-    }
-};
+//class AGLRendererDelegateWAM : public webos::WebOSMainDelegate {
+//public:
+//    void AboutToCreateContentBrowserClient() override {
+//      // do nothing
+//    }
+//};
 
 void Launcher::register_surfpid(pid_t app_pid, pid_t surf_pid)
 {
@@ -124,9 +124,11 @@ int SingleBrowserProcessWebAppLauncher::launch(const std::string& id, const std:
 }
 
 int SingleBrowserProcessWebAppLauncher::loop(int argc, const char** argv, volatile sig_atomic_t& e_flag) {
-  AGLMainDelegateWAM delegate;
-  webos::WebOSMain webOSMain(&delegate);
-  return webOSMain.Run(argc, argv);
+  LOG_DEBUG("NOT IMPLEMENTED");
+  return -1;
+//  AGLMainDelegateWAM delegate;
+//  webos::WebOSMain webOSMain(&delegate);
+//  return webOSMain.Run(argc, argv);
 }
 
 int SharedBrowserProcessWebAppLauncher::launch(const std::string& id, const std::string& uri) {
@@ -484,9 +486,11 @@ void WebAppLauncherRuntime::notify_ivi_control_cb_static (ilmObjectType object, 
 
 int SharedBrowserProcessRuntime::run(int argc, const char** argv) {
   if (WebAppManagerServiceAGL::instance()->initializeAsHostService()) {
-    AGLMainDelegateWAM delegate;
-    webos::WebOSMain webOSMain(&delegate);
-    return webOSMain.Run(argc, argv);
+//    AGLMainDelegateWAM delegate;
+//    webos::WebOSMain webOSMain(&delegate);
+//    return webOSMain.Run(argc, argv);
+    LOG_DEBUG("NOT IMPLEMENTED");
+    return -1;
   } else {
     LOG_DEBUG("Trying to start shared browser process but process is already running");
     return -1;
@@ -494,9 +498,11 @@ int SharedBrowserProcessRuntime::run(int argc, const char** argv) {
 }
 
 int RenderProcessRuntime::run(int argc, const char** argv) {
-  AGLMainDelegateWAM delegate;
-  webos::WebOSMain webOSMain(&delegate);
-  return webOSMain.Run(argc, argv);
+  LOG_DEBUG("NOT IMPLEMENTED");
+  return -1;
+//  AGLMainDelegateWAM delegate;
+//  webos::WebOSMain webOSMain(&delegate);
+//  return webOSMain.Run(argc, argv);
 }
 
 int WebRuntimeAGL::run(int argc, const char** argv) {

@@ -212,10 +212,10 @@ void WebAppManagerService::updateNetworkStatus(const Json::Value& object)
     WebAppManager::instance()->updateNetworkStatus(object);
 }
 
-void WebAppManagerService::notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level)
-{
-    WebAppManager::instance()->notifyMemoryPressure(level);
-}
+//void WebAppManagerService::notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level)
+//{
+//    WebAppManager::instance()->notifyMemoryPressure(level);
+//}
 
 bool WebAppManagerService::isEnyoApp(const std::string& appId)
 {

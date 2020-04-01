@@ -19,9 +19,9 @@
 
 #include <string>
 
-namespace webos {
-class WebViewProfile;
-}
+//namespace webos {
+//class WebViewProfile;
+//}
 
 namespace browsing_data_types {
 const char kAll[] = "all";
@@ -43,8 +43,8 @@ public:
     BlinkWebViewProfileHelper() {}
     virtual ~BlinkWebViewProfileHelper() {}
 
-    static void clearBrowsingData(const int removeBrowsingDataMask,
-        webos::WebViewProfile* profile = nullptr);
+//    static void clearBrowsingData(const int removeBrowsingDataMask,
+//        webos::WebViewProfile* profile = nullptr);
     static void clearDefaultBrowsingData(const int removeBrowsingDataMask);
     static int maskForBrowsingDataType(const char* key);
 };
