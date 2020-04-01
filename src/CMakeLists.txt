@@ -27,11 +27,10 @@ else()
     message(FATAL_ERROR "Unsupported platform: ${PLATFORM}")
 endif()
 
-if(EXISTS ${CHROMIUM_SRC_DIR})
-    set(CHROMIUM_INCLUDE_DIRS ${CHROMIUM_SRC_DIR})
-    set(CHROMIUM_LDFLAGS -lcbe)
+if(EXISTS ${CEF_SRC_DIR})
+    set(CEF_INCLUDE_DIRS ${CEF_SRC_DIR})
 else()
-    message(FATAL_ERROR "Invalid Chromium source dir: ${CHROMIUM_SRC_DIR}")
+    message(FATAL_ERROR "Invalid CEF source dir: ${CEF_SRC_DIR}")
 endif()
 
 # Disable compiler-specific extensions
@@ -44,7 +43,7 @@ set(WAM_COMMON_DEFINES PRELOADMANAGER_ENABLED _REENTRANT)
 
 message(STATUS "** Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "** Build platform: ${PLATFORM}")
-message(STATUS "** Chromium src dir: ${CHROMIUM_SRC_DIR}")
+message(STATUS "** CEF src dir: ${CEF_SRC_DIR}")
 message(STATUS "** Destination dir: ${WAM_DEST_DIR}")
 
 find_package(Boost COMPONENTS filesystem REQUIRED)
@@ -145,14 +144,13 @@ set(WAM_CORE_HEADERS
 set(WAM_CORE_INCLUDE_DIRS
     ${WAM_SOURCE_DIR}/core
     ${WAM_SOURCE_DIR}/util
-    ${CHROMIUM_INCLUDE_DIRS}
+    ${CEF_INCLUDE_DIRS}
     ${GLIB_INCLUDE_DIRS}
 )
 
 set(WAM_CORE_LIBRARIES
     Boost::filesystem
     ${GLIB_LDFLAGS}
-    ${CHROMIUM_LDFLAGS}
 )
 
 if(IS_WEBOS)
@@ -232,7 +230,6 @@ set(WAM_LIB_INCLUDE_DIRS
 
 set(WAM_LIB_LIBRARIES
     ${GLIB_LDFLAGS}
-    ${CHROMIUM_LDFLAGS}
     ${LIBWM_LDFLAGS}
     ${LIBHS_LDFLAGS}
     ${ILMCTRL_LDFLAGS}
@@ -304,7 +301,6 @@ set(WAM_EXE_INCLUDE_DIRS
   ${WAM_SOURCE_DIR}/util
 )
 set(WAM_EXE_LIBRARIES
-    ${CHROMIUM_LDFLAGS}
     ${ILMCOMMON_LDFLAGS}
     Boost::filesystem
     wamcorelib

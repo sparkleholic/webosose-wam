@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 3.0.0)
 project(WebAppMgr VERSION 1.0.0 LANGUAGES CXX)
 
 set(PLATFORM_NAME "WebOS" CACHE STRING "Target platform name")
-set(CHROMIUM_SRC_DIR "" CACHE PATH "Chromium source directory path")
+set(CEF_SRC_DIR "" CACHE PATH "CEF source directory path")
 
 option(USE_PMLOG "Use PmLog library (WebOS)")
 option(USE_LUNA_SERVICE "Use Luna service (WebOS)")
