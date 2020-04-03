@@ -11,9 +11,11 @@
 #include <libwindowmanager.h>
 
 //#include <webos/app/webos_main.h>
+#include <libcef/include/cef_app.h>
 
 #include "LogManager.h"
 #include "PlatformModuleFactoryImpl.h"
+#include "SimpleApp.h"
 #include "StringUtils.h"
 #include "WebAppManager.h"
 #include "WebAppManagerServiceAGL.h"
@@ -489,8 +491,27 @@ int SharedBrowserProcessRuntime::run(int argc, const char** argv) {
 //    AGLMainDelegateWAM delegate;
 //    webos::WebOSMain webOSMain(&delegate);
 //    return webOSMain.Run(argc, argv);
-    LOG_DEBUG("NOT IMPLEMENTED");
-    return -1;
+    LOG_DEBUG("STARTING");
+    char** argv_nonconst = const_cast<char**>(argv);
+    CefMainArgs main_args(argc, argv_nonconst);
+    int exit_code = CefExecuteProcess(main_args, nullptr, nullptr);
+    LOG_DEBUG("CefExecuteProcess returned %d", exit_code);
+    if (exit_code >= 0) {
+      // The sub-process has completed so return here.
+      return exit_code;
+    }
+
+    CefSettings settings;
+    settings.no_sandbox = true;
+
+    CefRefPtr<SimpleApp> app(new SimpleApp);
+    LOG_DEBUG("Initialising CEF");
+    CefInitialize(main_args, settings, app.get(), nullptr);
+    LOG_DEBUG("Running the main message loop");
+    CefRunMessageLoop();
+    LOG_DEBUG("Shutting down");
+    CefShutdown();
+    return 0;
   } else {
     LOG_DEBUG("Trying to start shared browser process but process is already running");
     return -1;

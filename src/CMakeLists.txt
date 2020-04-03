@@ -237,6 +237,8 @@ set(WAM_LIB_LIBRARIES
     ${LIBXML_LDFLAGS}
     Boost::filesystem
     wamcorelib
+    cef
+    cef_dll_wrapper
 )
 
 # TODO: Remove this after replacing pub/prv luna bus API with unified one
@@ -266,12 +268,16 @@ elseif(IS_AGL)
         agl/WebAppManagerServiceAGL.cpp
         agl/WebAppWaylandAGL.cpp
         agl/WebRuntimeAGL.cpp
+        agl/SimpleApp.cpp
+        agl/SimpleHandler.cpp
     )
     list(APPEND WAM_LIB_HEADERS
         agl/WebAppFactoryAGL.h
         agl/WebAppManagerServiceAGL.h
         agl/WebAppWaylandAGL.h
         agl/WebRuntimeAGL.h
+        agl/SimpleApp.h
+        agl/SimpleHandler.h
     )
 endif()
 
