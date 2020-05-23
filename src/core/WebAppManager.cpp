@@ -442,9 +442,12 @@ void WebAppManager::webPageRemoved(WebPageBase* page)
     auto appId = page->appId();
     if (m_appPageMap.count(appId) > 0) {
         auto range = m_appPageMap.equal_range(appId);
-        for (auto i = range.first; i != range.second; ++i) {
-            if (i->second == page) {
-                m_appPageMap.erase(i);
+        auto it = range.first;
+        while (it != range.second) {
+            if (it->second == page) {
+                it = m_appPageMap.erase(it);
+            } else {
+                it++;
             }
         }
     }
@@ -663,6 +666,7 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
     std::string instanceId = jsonObject.value("instanceId").toString().toStdString();
 
     LOG_DEBUG("windowType=[%s] Done", winType.c_str());
+    LOG_DEBUG("trying to launch app: %s, surface: %d", desc->id().c_str(), desc->surfaceId());
 
     // Check if app is already running
     if (isRunningApp(instanceId)) {
