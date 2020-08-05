@@ -73,8 +73,8 @@ private:
   std::string m_width;
   std::string m_height;
 
-  enum agl_shell_surface_type surface_type;
-  enum agl_shell_panel_type panel_type;	/* only of surface_type is panel */
+  enum agl_shell_surface_type m_surface_type;
+  enum agl_shell_panel_type m_panel_type;	/* only of surface_type is panel */
 
   int m_port;
   std::string m_token;
