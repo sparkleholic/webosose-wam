@@ -393,9 +393,9 @@ bool WebAppLauncherRuntime::init() {
     else if (m_id.rfind("webapps-homescreen", 0) == 0)
       m_role = "homescreen";
 
-    LOG_DEBUG("id=[%s], name=[%s], role=[%s], url=[%s], host=[%s], port=%d, token=[%s]",
+    LOG_DEBUG("id=[%s], name=[%s], role=[%s], url=[%s], host=[%s], port=%d, token=[%s], width=[%s], height[%s]",
             m_id.c_str(), m_name.c_str(), m_role.c_str(), m_url.c_str(),
-            m_host.c_str(), m_port, m_token.c_str());
+            m_host.c_str(), m_port, m_token.c_str(), m_width.c_str(), m_height.c_str());
 
     return true;
   } else {
@@ -447,6 +447,8 @@ int WebAppLauncherRuntime::parse_config (const char *path_to_config)
   LOG_DEBUG("description: %s", description);
   LOG_DEBUG("author: %s", author);
   LOG_DEBUG("icon: %s", icon);
+  LOG_DEBUG("width: %s", width);
+  LOG_DEBUG("height %s", height);
 
   m_name = std::string((const char*)name);
   if (width)
@@ -466,6 +468,8 @@ int WebAppLauncherRuntime::parse_config (const char *path_to_config)
   xmlFree(description);
   xmlFree(author);
   xmlFree(icon);
+  xmlFree(width);
+  xmlFree(height);
   xmlFreeDoc(doc);
 
   return 0;
