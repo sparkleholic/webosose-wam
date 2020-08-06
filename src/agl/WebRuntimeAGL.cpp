@@ -293,17 +293,8 @@ int WebAppLauncherRuntime::run(int argc, const char** argv) {
 	LOG_DEBUG("Got surface_type background\n");
   }
 
-  // Hardcode the background surface for the moment.
-  if (m_id.rfind("webapps-html5-homescreen", 0) == 0)
-    surface_type = AGL_SHELL_TYPE_BACKGROUND ;
-  else if (m_id.rfind("webapps-homescreen", 0) == 0)
-    surface_type = AGL_SHELL_TYPE_BACKGROUND ;
-
   std::string surface_role_str = std::to_string(surface_type);
   std::string panel_type_str = std::to_string(panel_type);
-
-  LOG_DEBUG("WebAppLauncherRuntime::run - [%s] surface: %s, panel: %s",
-    m_id.c_str(), surface_role_str.c_str(), panel_type_str.c_str());
 
   setup_signals();
 
