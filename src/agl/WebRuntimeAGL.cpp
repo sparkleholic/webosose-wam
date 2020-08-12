@@ -7,6 +7,8 @@
 #include <glib.h>
 #include <libxml/parser.h>
 
+#include <libhomescreen.hpp>
+
 #include <webos/app/webos_main.h>
 
 #include "LogManager.h"
@@ -378,12 +380,35 @@ bool WebAppLauncherRuntime::init() {
             m_id.c_str(), m_name.c_str(), m_role.c_str(), m_url.c_str(),
             m_host.c_str(), m_port, m_token.c_str(), m_width.c_str(), m_height.c_str(), m_surface_type, m_panel_type);
 
+    // Setup HomeScreen API
+    if (!init_hs()) {
+      LOG_DEBUG("cannot setup hs API");
+      return false;
+    }
+
     return true;
   } else {
     LOG_DEBUG("Malformed url.");
     return false;
   }
 }
+
+bool WebAppLauncherRuntime::init_hs() {
+  m_hs = new LibHomeScreen();
+  if (m_hs->init(m_host.c_str(), m_port, m_token.c_str())) {
+    LOG_DEBUG("cannot initialize homescreen");
+    return false;
+  }
+
+  std::function< void(json_object*) > handler = [this] (json_object* object) {
+    LOG_DEBUG("Activate app %s ", this->m_id.c_str());
+    agl_shell_activate_app(this->m_id);
+  };
+  m_hs->set_event_handler(LibHomeScreen::Event_ShowWindow, handler);
+
+  return true;
+}
+
 
 int WebAppLauncherRuntime::parse_config (const char *path_to_config)
 {
