@@ -158,7 +158,6 @@ protected:
     void setupWindowGroup(ApplicationDescription* desc);
 
     void moveInputRegion(int height);
-    void setForceActivateVtgIfRequired();
 
 	// WebPageObserver
     virtual void webPageLoadFailed(int errorCode);

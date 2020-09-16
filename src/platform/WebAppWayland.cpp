@@ -532,8 +532,6 @@ void WebAppWayland::doAttach()
 
     if (keepAlive())
         page()->setKeepAliveWebApp(keepAlive());
-
-    setForceActivateVtgIfRequired();
 }
 
 void WebAppWayland::raise()
@@ -612,8 +610,6 @@ void WebAppWayland::stateAboutToChange(webos::NativeWindowState willBe)
 
 void WebAppWayland::showWindow()
 {
-    setForceActivateVtgIfRequired();
-
     if (m_preloadState != NONE_PRELOAD) {
         LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "WebAppWayland::showWindow(); But Preloaded app; return");
         return;
@@ -693,17 +689,6 @@ void WebAppWayland::didSwapPageCompositorFrame()
 void WebAppWayland::didResumeDOM()
 {
     focus();
-}
-
-void WebAppWayland::setForceActivateVtgIfRequired()
-{
-    std::string screenRotation;
-    if (WebAppManager::instance() && page()) {
-        if (WebAppManager::instance()->getDeviceInfo("ScreenRotation", screenRotation) && screenRotation != "off")
-            page()->setForceActivateVtg(true);
-        else
-            page()->setForceActivateVtg(false);
-    }
 }
 
 void InputManager::OnCursorVisibilityChanged(bool visible)

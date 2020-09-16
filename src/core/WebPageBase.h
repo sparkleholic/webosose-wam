@@ -82,7 +82,6 @@ public:
     virtual bool relaunch(const std::string& args, const std::string& launchingAppId);
     virtual void evaluateJavaScript(const std::string& jsCode) = 0;
     virtual void evaluateJavaScriptInAllFrames(const std::string& jsCode, const char* method = "") = 0;
-    virtual void setForceActivateVtg(bool enabled) = 0;
     virtual uint32_t getWebProcessProxyID() = 0;
     virtual uint32_t getWebProcessPID() const = 0;
     virtual void createPalmSystem(WebAppBase* app) = 0;

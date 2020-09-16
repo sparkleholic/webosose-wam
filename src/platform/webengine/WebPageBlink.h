@@ -60,7 +60,6 @@ public:
     void handleDeviceInfoChanged(const std::string& deviceInfo) override;
     void evaluateJavaScript(const std::string& jsCode) override;
     void evaluateJavaScriptInAllFrames(const std::string& jsCode, const char* method = "") override;
-    void setForceActivateVtg(bool enabled) override;
     uint32_t getWebProcessProxyID() override;
     uint32_t getWebProcessPID() const override { return renderProcessPid(); }
     void createPalmSystem(WebAppBase* app) override;

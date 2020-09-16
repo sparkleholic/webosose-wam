@@ -386,12 +386,6 @@ void WebPageBlink::setAppPreloadHint(bool is_preload)
     d->pageView->SetAppPreloadHint(is_preload);
 }
 
-void WebPageBlink::setForceActivateVtg(bool enabled)
-{
-    d->pageView->SetForceVideoTexture(enabled);
-    d->pageView->UpdatePreferences();
-}
-
 void WebPageBlink::suspendWebPageAll()
 {
     LOG_INFO(MSGID_SUSPEND_WEBPAGE, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "%s", __func__);
