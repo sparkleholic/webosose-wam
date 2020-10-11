@@ -54,9 +54,9 @@ WebAppBase* WebProcessManager::findAppById(const std::string& appId)
     return WebAppManager::instance()->findAppById(appId);
 }
 
-WebAppBase* WebProcessManager::findAppByInstanceId(const QString& appId)
+WebAppBase* WebProcessManager::findAppByInstanceId(const std::string& instanceId)
 {
-    return WebAppManager::instance()->findAppByInstanceId(appId);
+    return WebAppManager::instance()->findAppByInstanceId(instanceId);
 }
 
 bool WebProcessManager::webProcessInfoMapReady()

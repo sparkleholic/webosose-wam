@@ -79,7 +79,7 @@ void WebAppManager::notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel
         else {
           LOG_DEBUG("Skipping memory pressure handler for"
                     " instanceId(%s) appId(%s) isActivated(%d) isPreload(%d) Level(%d)",
-                    qPrintable(app->instanceId()), app->appId().c_str()), app->isActivated(),
+                    app->instanceId().c_str(), app->appId().c_str(), app->isActivated(),
                     app->page()->isPreload(), level);
         }
     }
@@ -154,14 +154,14 @@ bool WebAppManager::getDeviceInfo(QString name, QString &value)
 
 void WebAppManager::onRelaunchApp(const std::string& instanceId, const std::string& appId, const std::string& args, const std::string& launchingAppId)
 {
-    WebAppBase* app = findAppByInstanceId(QString::fromStdString(instanceId));
+    WebAppBase* app = findAppByInstanceId(instanceId);
 
     if (!app) {
         LOG_WARNING(MSGID_APP_RELAUNCH, 0, "Failed to relaunch due to no running app");
         return;
     }
 
-    if (app->appId().toStdString() != appId) {
+    if (app->appId() != appId) {
         LOG_WARNING(MSGID_APP_RELAUNCH, 0, "Failed to relaunch due to no running app named %s", appId.c_str());
     }
 
@@ -180,7 +180,7 @@ void WebAppManager::onRelaunchApp(const std::string& instanceId, const std::stri
         && !obj["launchedHidden"].asBool()) {
         app->relaunch(args.c_str(), launchingAppId.c_str());
     } else {
-        LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", qPrintable(QString::fromStdString(instanceId))), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "Relaunch with preload option, ignore");
+        LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId.c_str()), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "Relaunch with preload option, ignore");
     }
 }
 
@@ -227,8 +227,8 @@ void WebAppManager::onShutdownEvent()
 
 bool WebAppManager::onKillApp(const std::string& appId, const std::string& instanceId, bool force)
 {
-    WebAppBase* app = findAppByInstanceId(QString::fromStdString(instanceId));
-    if (app == nullptr || (app->appId().toStdString() != appId)) {
+    WebAppBase* app = findAppByInstanceId(instanceId);
+    if (app == nullptr || (app->appId() != appId)) {
         LOG_INFO(MSGID_KILL_APP, 2, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", instanceId.c_str()), "App doesn't exist; return");
         return false;
     }
@@ -242,8 +242,7 @@ bool WebAppManager::onKillApp(const std::string& appId, const std::string& insta
 
 bool WebAppManager::onPauseApp(const std::string& instanceId)
 {
-    QString id{QString::fromStdString(instanceId)};
-    if (WebAppBase* app = findAppByInstanceId(id)) {
+    if (WebAppBase* app = findAppByInstanceId(instanceId)) {
         // although, name of the handler-function as well as the code it
         // contains are not consistent, according to the "pauseApp" Luna API
         // design, a "paused" application shall be just hidden by WAM
@@ -251,7 +250,7 @@ bool WebAppManager::onPauseApp(const std::string& instanceId)
         return true;
     }
 
-    LOG_INFO(MSGID_PAUSE_APP, 1, PMLOGKS("INSTANCE_ID", qPrintable(id)), "Application not found.");
+    LOG_INFO(MSGID_PAUSE_APP, 1, PMLOGKS("INSTANCE_ID", instanceId.c_str()), "Application not found.");
     return false;
 }
 
@@ -332,7 +331,7 @@ WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, const std::string
       m_appVersion[appDesc->id()] = appDesc->version();
     }
 
-    LOG_INFO(MSGID_START_LAUNCHURL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", qPrintable(app->instanceId())), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "");
+    LOG_INFO(MSGID_START_LAUNCHURL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", app->instanceId().c_str()), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "");
 
     return app;
 }
@@ -343,7 +342,7 @@ void WebAppManager::forceCloseAppInternal(WebAppBase* app)
     closeAppInternal(app);
 }
 
-void WebAppManager::removeClosingAppList(const QString& instanceId)
+void WebAppManager::removeClosingAppList(const std::string& instanceId)
 {
 
     const auto &it = m_closingAppList.find(instanceId);
@@ -358,10 +357,10 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
     WebPageBase* page = app->page();
     assert(page);
     if (page->isClosing()) {
-        LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", qPrintable(app->instanceId())), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "In Closing; return");
+        LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", app->instanceId().c_str()), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "In Closing; return");
     }
 
-    LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", qPrintable(app->instanceId())), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "");
+    LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", app->instanceId().c_str()), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "");
     if (app->keepAlive() && app->hideWindow())
         return;
 
@@ -387,11 +386,11 @@ void WebAppManager::closeAppInternal(WebAppBase* app, bool ignoreCleanResource)
         m_closingAppList.emplace(std::make_pair(app->instanceId(), app));
 
         if (page->isRegisteredCloseCallback()) {
-            LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", qPrintable(app->instanceId())), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "CloseCallback; execute");
+            LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", app->instanceId().c_str()), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "CloseCallback; execute");
             app->executeCloseCallback();
         }
         else {
-            LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", qPrintable(app->instanceId())), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "NO CloseCallback; load about:blank");
+            LOG_INFO(MSGID_CLOSE_APP_INTERNAL, 3, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKS("INSTANCE_ID", app->instanceId().c_str()), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "NO CloseCallback; load about:blank");
             app->dispatchUnload();
         }
     }
@@ -476,7 +475,7 @@ WebAppBase* WebAppManager::findAppById(const std::string& appId)
     return 0;
 }
 
-std::list<WebAppBase*> WebAppManager::findAppsById(const QString& appId)
+std::list<WebAppBase*> WebAppManager::findAppsById(const std::string& appId)
 {
     std::list<WebAppBase*> apps;
     for (AppList::iterator it = m_appList.begin(); it != m_appList.end(); ++it) {
@@ -489,7 +488,7 @@ std::list<WebAppBase*> WebAppManager::findAppsById(const QString& appId)
     return apps;
 }
 
-WebAppBase* WebAppManager::findAppByInstanceId(const QString& instanceId)
+WebAppBase* WebAppManager::findAppByInstanceId(const std::string& instanceId)
 {
     for (const auto &app : m_appList) {
         if (app->page() && app->instanceId() == instanceId)
@@ -562,7 +561,7 @@ void WebAppManager::broadcastWebAppMessage(WebAppMessageType type, const std::st
     }
 }
 
-bool WebAppManager::processCrashed(QString appId, QString instanceId) {
+bool WebAppManager::processCrashed(std::string appId, std::string instanceId) {
     WebAppBase* app = findAppByInstanceId(instanceId);
     if (!app)
         return false;
@@ -576,16 +575,16 @@ bool WebAppManager::processCrashed(QString appId, QString instanceId) {
             int reloadingLimit = app->isNormal() ? kContinuousReloadingLimit-1 : kContinuousReloadingLimit;
 
             if (m_lastCrashedAppIds[app->appId()] >= reloadingLimit) {
-                LOG_INFO(MSGID_WEBPROC_CRASH, 4, PMLOGKS("APP_ID", qPrintable(appId)), PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), PMLOGKS("InForeground", "true"), PMLOGKS("Reloading limit", "Close app"),  "");
+                LOG_INFO(MSGID_WEBPROC_CRASH, 4, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", instanceId.c_str()), PMLOGKS("InForeground", "true"), PMLOGKS("Reloading limit", "Close app"),  "");
                 closeAppInternal(app, true);
             }
             else {
-                LOG_INFO(MSGID_WEBPROC_CRASH, 4, PMLOGKS("APP_ID", qPrintable(appId)), PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), PMLOGKS("InForeground", "true"), PMLOGKS("Reloading limit", "OK; Reload default page"),  "");
+                LOG_INFO(MSGID_WEBPROC_CRASH, 4, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", instanceId.c_str()), PMLOGKS("InForeground", "true"), PMLOGKS("Reloading limit", "OK; Reload default page"),  "");
                 app->page()->reloadDefaultPage();
             }
         }
         else if (app->isMinimized()) {
-            LOG_INFO(MSGID_WEBPROC_CRASH, 3, PMLOGKS("APP_ID", qPrintable(appId)), PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), PMLOGKS("InBackground", "Will be Reloaded in Relaunch"),  "");
+            LOG_INFO(MSGID_WEBPROC_CRASH, 3, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", instanceId.c_str()), PMLOGKS("InBackground", "Will be Reloaded in Relaunch"),  "");
             app->setCrashState(true);
         }
     }
@@ -607,7 +606,7 @@ const std::string WebAppManager::windowTypeFromString(const std::string& str)
     return WT_CARD;
 }
 
-void WebAppManager::setForceCloseApp(const QString& appId, const QString& instanceId)
+void WebAppManager::setForceCloseApp(const std::string& appId, const std::string& instanceId)
 {
     WebAppBase *app = findAppByInstanceId(instanceId);
     if (!app)
@@ -616,7 +615,7 @@ void WebAppManager::setForceCloseApp(const QString& appId, const QString& instan
     if (app->isWindowed()) {
         if (app->keepAlive() && app->getHiddenWindow()) {
             forceCloseAppInternal(app);
-            LOG_INFO(MSGID_FORCE_CLOSE_KEEP_ALIVE_APP, 2, PMLOGKS("APP_ID", qPrintable(appId)), PMLOGKS("INSTANCE_ID", qPrintable(instanceId)), "");
+            LOG_INFO(MSGID_FORCE_CLOSE_KEEP_ALIVE_APP, 2, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", instanceId.c_str()), "");
             return;
         }
     }
@@ -664,13 +663,15 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
     std::string winType = windowTypeFromString(desc->defaultWindowType());
     errMsg.erase();
 
-    // Set displayAffinity (multi display support)
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(QByteArray(params.c_str()));
-    QJsonObject jsonObject = jsonDoc.object();
-    if (!jsonObject.value("displayAffinity").isUndefined())
-      desc->setDisplayAffinity(jsonObject.value("displayAffinity").toInt());
+    Json::Value json;
+    readJsonFromString(params, json);
 
-    std::string instanceId = jsonObject.value("instanceId").toString().toStdString();
+    // Set displayAffinity (multi display support)
+    auto displayAffinity = json["displayAffinity"];
+    if (!displayAffinity.isNull())
+      desc->setDisplayAffinity(displayAffinity.asInt());
+
+    std::string instanceId = json["instanceId"].asString();
 
     LOG_DEBUG("windowType=[%s] Done", winType.c_str());
     LOG_DEBUG("trying to launch app: %s, surface: %d", desc->id().c_str(), desc->surfaceId());
@@ -693,9 +694,8 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
 bool WebAppManager::isRunningApp(const std::string& id) {
     std::list<const WebAppBase*> running = runningApps();
 
-    QString idToFind = QString::fromStdString(id);
     for (auto it = running.begin(); it != running.end(); ++it)
-        if ((*it)->instanceId() == idToFind)
+        if ((*it)->instanceId() == id)
             return true;
     return false;
 }
@@ -735,7 +735,7 @@ void WebAppManager::postRunningAppList()
     m_serviceSender->postlistRunningApps(apps);
 }
 
-void WebAppManager::postWebProcessCreated(const QString& appId, const QString& instanceId, uint32_t pid)
+void WebAppManager::postWebProcessCreated(const std::string& appId, const std::string& instanceId, uint32_t pid)
 {
     if (!m_serviceSender)
         return;
@@ -746,7 +746,7 @@ void WebAppManager::postWebProcessCreated(const QString& appId, const QString& i
         m_serviceSender->postWebProcessCreated(appId, instanceId, pid);
 }
 
-uint32_t WebAppManager::getWebProcessId(const QString& appId, const QString& instanceId)
+uint32_t WebAppManager::getWebProcessId(const std::string& appId, const std::string& instanceId)
 {
     uint32_t pid = 0;
     WebAppBase* app = findAppByInstanceId(instanceId);

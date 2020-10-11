@@ -63,8 +63,8 @@ Json::Value BlinkWebProcessManager::getWebProcessProfiling()
         auto processes = runningAppsMap.equal_range(pid);
         for (auto p = processes.first; p != processes.second; ++p) {
             Json::Value appObject(Json::objectValue);
-            appObject["id"] = p->second->appId().toStdString();
-	    appObject["instanceId"] = p->second->instanceId().toStdString();
+            appObject["id"] = p->second->appId();
+	    appObject["instanceId"] = p->second->instanceId();
             appArray.append(appObject);
         }
         processObject["runningApps"] = appArray;

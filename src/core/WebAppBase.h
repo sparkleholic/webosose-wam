@@ -147,7 +147,7 @@ protected:
     virtual void showWindow();
 
     void setUiSize(int width, int height);
-    void setActiveInstanceId(QString id);
+    void setActiveInstanceId(std::string id);
     void forceCloseAppInternal();
     void closeAppInternal();
 

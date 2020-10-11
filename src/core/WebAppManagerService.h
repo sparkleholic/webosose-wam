@@ -92,14 +92,14 @@ protected:
     void setUiSize(int width, int height);
     void setSystemLanguage(const std::string& language);
     std::string getSystemLanguage();
-    void setForceCloseApp(const QString& appId, const QString& instanceId);
+    void setForceCloseApp(const std::string& appId, const std::string& instanceId);
     void deleteStorageData(const std::string& identifier);
     void killCustomPluginProcess(const std::string& appBasePath);
     void requestKillWebProcess(uint32_t pid);
     void updateNetworkStatus(const Json::Value& object);
     void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level);
     void setAccessibilityEnabled(bool enable);
-    uint32_t getWebProcessId(const QString& appId, const QString& instanceId);
+    uint32_t getWebProcessId(const std::string& appId, const std::string& instanceId);
 
     std::list<const WebAppBase*> runningApps();
     std::list<const WebAppBase*> runningApps(uint32_t pid);

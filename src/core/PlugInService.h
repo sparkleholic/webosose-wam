@@ -29,8 +29,8 @@ public:
 
 protected:
     WebAppBase* findAppById(const std::string& appId);
-    WebAppBase* findAppByInstanceId(QString instanceId);
-    QString getActiveInstanceId();
+    WebAppBase* findAppByInstanceId(const std::string& instanceId);
+    const std::string getActiveInstanceId();
 
     std::list<const WebAppBase*> runningApps();
 };

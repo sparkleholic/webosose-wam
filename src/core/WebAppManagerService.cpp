@@ -34,7 +34,7 @@ std::string WebAppManagerService::onLaunch(const std::string& appDescString, con
 
 bool WebAppManagerService::onKillApp(const std::string& appId, const std::string& instanceId, bool force)
 {
-    LOG_INFO(MSGID_LUNA_API, 3, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", qPrintable(m_app->instanceId())), PMLOGKS("API", "killApp"), "");
+    LOG_INFO(MSGID_LUNA_API, 3, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", m_app->instanceId().c_str()), PMLOGKS("API", "killApp"), "");
     return WebAppManager::instance()->onKillApp(appId, instanceId, force);
 }
 
@@ -119,7 +119,7 @@ std::string WebAppManagerService::getSystemLanguage()
     return language;
 }
 
-void WebAppManagerService::setForceCloseApp(const QString& appId, const QString& instanceId)
+void WebAppManagerService::setForceCloseApp(const std::string& appId, const std::string& instanceId)
 {
     WebAppManager::instance()->setForceCloseApp(appId, instanceId);
 }
@@ -159,7 +159,7 @@ void WebAppManagerService::setAccessibilityEnabled(bool enable)
     WebAppManager::instance()->setAccessibilityEnabled(enable);
 }
 
-uint32_t WebAppManagerService::getWebProcessId(const QString& appId, const QString& instanceId)
+uint32_t WebAppManagerService::getWebProcessId(const std::string& appId, const std::string& instanceId)
 {
     return WebAppManager::instance()->getWebProcessId(appId, instanceId);
 }

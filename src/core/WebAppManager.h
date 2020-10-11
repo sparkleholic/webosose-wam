@@ -78,7 +78,7 @@ public:
     std::list<const WebAppBase*> runningApps(uint32_t pid);
 
     WebAppBase* findAppById(const std::string& appId);
-    std::list<WebAppBase*> findAppsById(const QString& appId);
+    std::list<WebAppBase*> findAppsById(const std::string& appId);
     WebAppBase* findAppByInstanceId(const std::string& instanceId);
 
     std::string launch(const std::string& appDescString,
@@ -95,8 +95,8 @@ public:
     int currentUiHeight();
     void setUiSize(int width, int height);
 
-    void setActiveInstanceId(QString id) { m_activeInstanceId = id; }
-    const QString getActiveInstanceId() { return m_activeInstanceId; }
+    void setActiveInstanceId(std::string id) { m_activeInstanceId = id; }
+    const std::string getActiveInstanceId() { return m_activeInstanceId; }
 
     void onGlobalProperties(int key);
     bool purgeSurfacePool(uint32_t pid);
@@ -114,7 +114,7 @@ public:
     const QString windowTypeFromString(const std::string& str);
 
     bool closeAllApps(uint32_t pid = 0);
-    void setForceCloseApp(const QString& appId, const QString& instanceId);
+    void setForceCloseApp(const std::string& appId, const std::string& instanceId);
 
     void requestKillWebProcess(uint32_t pid);
 
@@ -135,12 +135,12 @@ public:
     void postRunningAppList();
     std::string generateInstanceId();
 
-    void removeClosingAppList(const QString& instanceId);
+    void removeClosingAppList(const std::string& instanceId);
 
     bool isAccessibilityEnabled() { return m_isAccessibilityEnabled; }
     void setAccessibilityEnabled(bool enabled);
-    void postWebProcessCreated(const QString& appId, const QString& instanceId, uint32_t pid);
-    uint32_t getWebProcessId(const QString& appId, const QString& instanceId);
+    void postWebProcessCreated(const std::string& appId, const std::string& instanceId, uint32_t pid);
+    uint32_t getWebProcessId(const std::string& appId, const std::string& instanceId);
     void sendEventToAllAppsAndAllFrames(const QString& jsscript);
     void serviceCall(const std::string& url, const std::string& payload, const std::string& appId);
     void updateNetworkStatus(const Json::Value& object);
@@ -186,8 +186,8 @@ private:
     PageList m_pagesToDeleteList;
     bool m_deletingPages;
 
-    QString m_activeAppId;
-    QString m_activeInstanceId;
+    std::string m_activeAppId;
+    std::string m_activeInstanceId;
 
     std::unique_ptr<ServiceSender> m_serviceSender;
     std::unique_ptr<WebProcessManager> m_webProcessManager;

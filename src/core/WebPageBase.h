@@ -123,8 +123,8 @@ public:
     void sendRelaunchEvent();
     void setAppId(const std::string& appId) { m_appId = appId; }
     const std::string& appId() const { return m_appId; }
-    void setInstanceId(const QString& instanceId) { m_instanceId = instanceId; }
-    const QString& instanceId() const { return m_instanceId; }
+    void setInstanceId(const std::string& instanceId) { m_instanceId = instanceId; }
+    const std::string& instanceId() const { return m_instanceId; }
     ApplicationDescription* getAppDescription() { return m_appDesc.get(); }
 
     void setClosing(bool status) { m_isClosing = status; }
@@ -178,7 +178,7 @@ protected:
 
     std::shared_ptr<ApplicationDescription> m_appDesc;
     std::string m_appId;
-    QString m_instanceId;
+    std::string m_instanceId;
     bool m_suspendAtLoad;
     bool m_isClosing;
     bool m_isLoadErrorPageFinish;
