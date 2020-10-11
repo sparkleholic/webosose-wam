@@ -111,7 +111,7 @@ public:
     void setDeviceInfo(const std::string& name, const std::string& value);
     WebAppManagerConfig* config() { return m_webAppManagerConfig.get(); }
 
-    const QString windowTypeFromString(const std::string& str);
+    const std::string windowTypeFromString(const std::string& str);
 
     bool closeAllApps(uint32_t pid = 0);
     void setForceCloseApp(const std::string& appId, const std::string& instanceId);
@@ -141,7 +141,7 @@ public:
     void setAccessibilityEnabled(bool enabled);
     void postWebProcessCreated(const std::string& appId, const std::string& instanceId, uint32_t pid);
     uint32_t getWebProcessId(const std::string& appId, const std::string& instanceId);
-    void sendEventToAllAppsAndAllFrames(const QString& jsscript);
+    void sendEventToAllAppsAndAllFrames(const std::string& jsscript);
     void serviceCall(const std::string& url, const std::string& payload, const std::string& appId);
     void updateNetworkStatus(const Json::Value& object);
     void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level);
@@ -156,7 +156,7 @@ public:
     void appInstalled(const std::string& app_id);
     void appRemoved(const std::string& app_id);
 
-    QString identifierForSecurityOrigin(const QString& identifier);
+    std::string identifierForSecurityOrigin(const std::string& identifier);
 
 protected:
 private:

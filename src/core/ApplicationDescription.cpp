@@ -231,8 +231,9 @@ std::unique_ptr<ApplicationDescription> ApplicationDescription::fromJsonString(c
         }
     }
 
-    if (!jsonObj.value("locationHint").isUndefined())
-        appDesc->m_locationHint = jsonObj["locationHint"].toString().toStdString();
+    auto locationHint =  jsonObj["locationHint"];
+    if (locationHint.isString())
+        appDesc->m_locationHint = locationHint.asString();
 
     // Handle keyFilterTable
     //Key code is changed only for facebooklogin WebApp
@@ -302,10 +303,14 @@ std::unique_ptr<ApplicationDescription> ApplicationDescription::fromJsonString(c
         appDesc->m_delayMsForLanchOptimization = (delayMs >= 0) ? delayMs : 0;
     }
 
-    appDesc->m_useUnlimitedMediaPolicy = jsonObj.contains("useUnlimitedMediaPolicy") && jsonObj["useUnlimitedMediaPolicy"].toBool();
+    auto useUnlimitedMediaPolicy = jsonObj["useUnlimitedMediaPolicy"];
+    if (useUnlimitedMediaPolicy.isBool()) {
+        appDesc->m_useUnlimitedMediaPolicy = useUnlimitedMediaPolicy.asBool();
+    }
 
-    if (!jsonObj.value("suspendDOMTime").isUndefined())
-        appDesc->m_customSuspendDOMTime= jsonObj["suspendDOMTime"].toInt();
+    auto suspendDOMTime = jsonObj["suspendDOMTime"];
+    if (suspendDOMTime.isInt())
+        appDesc->m_customSuspendDOMTime= suspendDOMTime.asInt();
 
     return appDesc;
 }

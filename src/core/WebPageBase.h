@@ -136,8 +136,8 @@ public:
     void addObserver(WebPageObserver* observer);
     void removeObserver(WebPageObserver* observer);
 
-    static QString truncateURL(const QString& url);
-    virtual QString getIdentifierForSecurityOrigin() const;
+    static std::string truncateURL(const std::string& url);
+    virtual std::string getIdentifierForSecurityOrigin() const;
 
     virtual void activateRendererCompositor() { }
     virtual void deactivateRendererCompositor() { }

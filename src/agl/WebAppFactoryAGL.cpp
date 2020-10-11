@@ -40,7 +40,7 @@ WebAppBase* WebAppFactoryAGL::createWebApp(const std::string& winType, std::shar
         app = new WebAppWayland(winType, desc->surfaceId());
     } else {
         LOG_WARNING(MSGID_BAD_WINDOW_TYPE, 1,
-                    PMLOGKS("WINDOW_TYPE", qPrintable(winType)), "");
+                    PMLOGKS("WINDOW_TYPE", winType.c_str()), "");
     }
     return app;
 }

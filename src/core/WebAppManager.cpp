@@ -139,14 +139,14 @@ int WebAppManager::currentUiHeight()
 }
 
 //FIXME: WebAppManager: qstr2stdstr
-bool WebAppManager::getSystemLanguage(QString &value)
+bool WebAppManager::getSystemLanguage(std::string &value)
 {
     if (!m_deviceInfo) return false;
     return m_deviceInfo->getSystemLanguage(value);
 }
 
 //FIXME: WebAppManager: qstr2stdstr
-bool WebAppManager::getDeviceInfo(QString name, QString &value)
+bool WebAppManager::getDeviceInfo(std::string name, std::string &value)
 {
     if (!m_deviceInfo) return false;
     return m_deviceInfo->getDeviceInfo(name, value);
@@ -668,7 +668,7 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
 
     // Set displayAffinity (multi display support)
     auto displayAffinity = json["displayAffinity"];
-    if (!displayAffinity.isNull())
+    if (!displayAffinity.isInt())
       desc->setDisplayAffinity(displayAffinity.asInt());
 
     std::string instanceId = json["instanceId"].asString();
@@ -840,13 +840,15 @@ void WebAppManager::appRemoved(const std::string& app_id) {
     p->OnAppRemoved(app_id);
 }
 
-QString WebAppManager::identifierForSecurityOrigin(const QString& identifier)
+std::string WebAppManager::identifierForSecurityOrigin(const std::string& identifier)
 {
-    QString lowcase_identifier = identifier.toLower();
-    if (lowcase_identifier != identifier) {
+  std::string lowcase_identifier;
+  std::transform(identifier.begin(), identifier.end(), lowcase_identifier.begin(), tolower);
+
+  if (lowcase_identifier != identifier) {
         LOG_WARNING(MSGID_APPID_HAS_UPPERCASE, 0, "Application id should not contain capital letters");
-    }
-    return QString("%1%2").arg(lowcase_identifier).arg(webos::WebViewBase::kSecurityOriginPostfix.c_str());
+  }
+  return (lowcase_identifier + webos::WebViewBase::kSecurityOriginPostfix);
 }
 
 

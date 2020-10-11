@@ -108,7 +108,7 @@ std::string WebPageBase::getIdentifier() const
 
 void WebPageBase::load()
 {
-    LOG_INFO(MSGID_WEBPAGE_LOAD, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "m_launchParams:%s", qPrintable(m_launchParams));
+    LOG_INFO(MSGID_WEBPAGE_LOAD, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "m_launchParams:%s", m_launchParams.c_str());
     /* this function is main load of WebPage : load default url */
     setupLaunchEvent();
     if (!doDeeplinking(m_launchParams)) {
@@ -493,7 +493,7 @@ void WebPageBase::setCustomUserScript()
         return;
     }
 
-    LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "User Scripts exists : %s", qPrintable(userScriptFilePath));
+    LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "User Scripts exists : %s", userScriptFilePath);
     addUserScriptUrl(Url::fromLocalFile(userScriptFilePath.string()));
 }
 
@@ -512,7 +512,7 @@ bool WebPageBase::isAccessibilityEnabled() const
      return WebAppManager::instance()->isAccessibilityEnabled();
 }
 
-QString WebPageBase::getIdentifierForSecurityOrigin() const
+std::string WebPageBase::getIdentifierForSecurityOrigin() const
 {
     return WebAppManager::instance()->identifierForSecurityOrigin(getIdentifier());
 }

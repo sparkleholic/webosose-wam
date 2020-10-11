@@ -366,7 +366,7 @@ void WebAppWayland::setupWindowGroup(ApplicationDescription* desc)
     } else {
         ApplicationDescription::WindowClientInfo clientInfo = desc->getWindowClientInfo();
         m_appWindow->AttachToWindowGroup(groupInfo.name, clientInfo.layer);
-        LOG_INFO(MSGID_ATTACH_SURFACEGROUP, 4, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("OWNER_ID", qPrintable(groupInfo.name.c_str())), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
+        LOG_INFO(MSGID_ATTACH_SURFACEGROUP, 4, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("OWNER_ID", groupInfo.name.c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", page()->getWebProcessPID()), "");
     }
 }
 

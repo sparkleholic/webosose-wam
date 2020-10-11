@@ -166,7 +166,7 @@ void WebPageBlink::init()
     getSystemLanguage(language);
     setPreferredLanguages(language);
     d->pageView->SetAppId(appId() + std::to_string(m_appDesc->getDisplayAffinity()));
-    d->pageView->SetSecurityOrigin(getIdentifierForSecurityOrigin().toStdString());
+    d->pageView->SetSecurityOrigin(getIdentifierForSecurityOrigin());
     updateHardwareResolution();
     updateBoardType();
     updateDatabaseIdentifier();
@@ -503,7 +503,7 @@ void WebPageBlink::suspendWebPagePaintingAndJSExecution()
     // if we haven't finished loading the page yet, wait until it is loaded before suspending
     bool isLoading = !hasBeenShown() && progress() < 100;
     if (isLoading) {
-        LOG_INFO(MSGID_SUSPEND_WEBPAGE, 4, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()),  PMLOGKS("URL", qPrintable(url().toString())), "Currently loading, Do not suspend, return");
+        LOG_INFO(MSGID_SUSPEND_WEBPAGE, 4, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()),  PMLOGKS("URL", url().toString().c_str()), "Currently loading, Do not suspend, return");
         m_suspendAtLoad = true;
     } else {
         d->pageView->SuspendPaintingAndSetVisibilityHidden();
@@ -559,7 +559,7 @@ void WebPageBlink::updateExtensionData(const std::string& key, const std::string
             PMLOGKS("APP_ID", appId().c_str()),
             PMLOGKS("INSTANCE_ID", instanceId().c_str()),
             PMLOGKFV("PID", "%d", getWebProcessPID()),
-            "webOSSystem is not initialized. key:%s, value:%s", qPrintable(key), qPrintable(value));
+		    "webOSSystem is not initialized. key:%s, value:%s", key.c_str(), value.c_str());
         return;
     }
 

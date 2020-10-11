@@ -65,7 +65,7 @@ std::string PalmSystemBlink::handleBrowserControlMessage(const std::string& mess
     } else if (message == "getIdentifier" || message == "identifier") {
         return identifier();
     } else if (message == "launchParams") {
-        LOG_INFO(MSGID_PALMSYSTEM, 3, PMLOGKS("APP_ID", m_app->appId().c_str()), PMLOGKS("INSTANCE_ID", m_app->instanceId().c_str()), PMLOGKFV("PID", "%d", m_app->page()->getWebProcessPID()), "webOSSystem.launchParams Updated by app; %s", qPrintable(params[0]));
+       LOG_INFO(MSGID_PALMSYSTEM, 3, PMLOGKS("APP_ID", m_app->appId().c_str()), PMLOGKS("INSTANCE_ID", m_app->instanceId().c_str()), PMLOGKFV("PID", "%d", m_app->page()->getWebProcessPID()), "webOSSystem.launchParams Updated by app; %s", params[0].c_str());
         updateLaunchParams(params[0]);
     } else if (message == "screenOrientation") {
         return screenOrientation();

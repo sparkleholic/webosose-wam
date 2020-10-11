@@ -25,7 +25,7 @@ public:
     virtual ~ServiceSender() {}
     virtual void postlistRunningApps(std::vector<ApplicationInfo>& apps) = 0;
     virtual void postWebProcessCreated(const std::string& appId, const std::string& instanceId, uint32_t pid) = 0;
-    virtual void serviceCall(const QString& url, const QString& payload, const std::string& appId) = 0;
+    virtual void serviceCall(const std::string& url, const std::string& payload, const std::string& appId) = 0;
     virtual void closeApp(const std::string& id) = 0;
 };
 
