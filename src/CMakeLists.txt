@@ -90,7 +90,6 @@ set(WAM_COMMON_CXX_FLAGS
 set(WAM_CORE_LIB_NAME WebAppMgrCore)
 set(WAM_CORE_SOURCES
     core/ApplicationDescription.cpp
-    core/ContainerAppManager.cpp
     core/DeviceInfo.cpp
     core/PalmSystemBase.cpp
     core/PlugInService.cpp
@@ -115,7 +114,6 @@ set(WAM_CORE_SOURCES
 
 set(WAM_CORE_HEADERS
     core/ApplicationDescription.h
-    core/ContainerAppManager.h
     core/DeviceInfo.h
     core/PalmSystemBase.h
     core/PlatformModuleFactory.h
