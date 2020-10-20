@@ -121,7 +121,7 @@ public:
     int getSuspendDelay() { return m_suspendDelay; }
     int getMaxCustomSuspendDelay() const { return m_maxCustomSuspendDelay; }
     void deleteStorageData(const std::string& identifier);
-
+    bool processCrashed(std::string appId, std::string instanceId);
     void killCustomPluginProcess(const std::string& basePath);
 
     void closeAppInternal(WebAppBase* app, bool ignoreCleanResource = false);
