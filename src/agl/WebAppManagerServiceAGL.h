@@ -35,6 +35,7 @@ public:
     bool startService() override;
     Json::Value launchApp(const Json::Value &request) override;
     Json::Value killApp(const Json::Value &request) override;
+    Json::Value pauseApp(const Json::Value &request) override;
     Json::Value logControl(const Json::Value &request) override;
     Json::Value setInspectorEnable(const Json::Value &request) override;
     Json::Value closeAllApps(const Json::Value &request) override;

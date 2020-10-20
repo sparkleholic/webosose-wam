@@ -424,6 +424,11 @@ Json::Value WebAppManagerServiceAGL::killApp(const Json::Value &request)
     return Json::Value(Json::objectValue);
 }
 
+Json::Value WebAppManagerServiceAGL::pauseApp(const Json::Value &request)
+{
+    return Json::Value(Json::objectValue);
+}
+
 Json::Value WebAppManagerServiceAGL::logControl(const Json::Value &request)
 {
     return Json::Value(Json::objectValue);
