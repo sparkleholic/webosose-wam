@@ -129,7 +129,7 @@ std::string PalmSystemBlink::handleBrowserControlMessage(const std::string& mess
         return cursorVisibility() ? "true" : "false";
     } else if (message == "serviceCall") {
         if (m_app->page()->isClosing()) {
-	   LOG_INFO(MSGID_PALMSYSTEM, 3, PMLOGKS("APP_ID", m_app->appId().c_str()), PMLOGKS("INSTANCE_ID", m_app->instanceId().c_str()), PMLOGKFV("PID", "%d", m_app->page()->getWebProcessPID()), "webOSSystem.serviceCall(%s, %s)", params[0].c_str()), params[1].c_str());
+	   LOG_INFO(MSGID_PALMSYSTEM, 3, PMLOGKS("APP_ID", m_app->appId().c_str()), PMLOGKS("INSTANCE_ID", m_app->instanceId().c_str()), PMLOGKFV("PID", "%d", m_app->page()->getWebProcessPID()), "webOSSystem.serviceCall(%s, %s)", params[0].c_str(), params[1].c_str());
           m_app->serviceCall(params[0], params[1], m_app->appId());
         } else {
             LOG_WARNING(MSGID_SERVICE_CALL_FAIL, 3, PMLOGKS("APP_ID", m_app->appId().c_str()),
