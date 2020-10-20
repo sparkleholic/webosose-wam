@@ -35,16 +35,6 @@
 
 static int kLaunchFinishAssureTimeoutMs = 5000;
 
-#define URL_SIZE_LIMIT 512
-static std::string truncateURL(const std::string& url)
-{
-    if(url.size() < URL_SIZE_LIMIT)
-        return url;
-    std::stringstream res;
-    res << url.substr(0, URL_SIZE_LIMIT/2) << " ... ";
-    return res.str();
-}
-
 WebAppWayland::WebAppWayland(const std::string& type,
 			     int surface_id,
                              int width, int height,
