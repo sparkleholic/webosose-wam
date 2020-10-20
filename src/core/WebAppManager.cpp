@@ -138,20 +138,6 @@ int WebAppManager::currentUiHeight()
     return height;
 }
 
-//FIXME: WebAppManager: qstr2stdstr
-bool WebAppManager::getSystemLanguage(std::string &value)
-{
-    if (!m_deviceInfo) return false;
-    return m_deviceInfo->getSystemLanguage(value);
-}
-
-//FIXME: WebAppManager: qstr2stdstr
-bool WebAppManager::getDeviceInfo(std::string name, std::string &value)
-{
-    if (!m_deviceInfo) return false;
-    return m_deviceInfo->getDeviceInfo(name, value);
-}
-
 void WebAppManager::onRelaunchApp(const std::string& instanceId, const std::string& appId, const std::string& args, const std::string& launchingAppId)
 {
     WebAppBase* app = findAppByInstanceId(instanceId);
