@@ -449,11 +449,6 @@ Json::Value WebAppManagerServiceAGL::listRunningApps(const Json::Value &request,
     return Json::Value(Json::objectValue);
 }
 
-Json::Value WebAppManagerServiceAGL::closeByProcessId(const Json::Value &request)
-{
-    return Json::Value(Json::objectValue);
-}
-
 Json::Value WebAppManagerServiceAGL::getWebProcessSize(const Json::Value &request)
 {
     return Json::Value(Json::objectValue);

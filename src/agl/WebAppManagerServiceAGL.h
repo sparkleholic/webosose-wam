@@ -40,7 +40,6 @@ public:
     Json::Value closeAllApps(const Json::Value &request) override;
     Json::Value discardCodeCache(const Json::Value &request) override;
     Json::Value listRunningApps(const Json::Value &request, bool subscribed) override;
-    Json::Value closeByProcessId(const Json::Value &request) override;
     Json::Value getWebProcessSize(const Json::Value &request) override;
     Json::Value clearBrowsingData(const Json::Value &request) override;
     Json::Value webProcessCreated(const Json::Value &request, bool subscribed) override;
