@@ -547,7 +547,7 @@ void WebPageBlink::reloadExtensionData()
        "if (typeof(webOSSystem) != 'undefined') {"
        "  webOSSystem.reloadInjectionData();"
        "};"
-    );
+
     LOG_INFO(MSGID_PALMSYSTEM, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()), "Reload");
     evaluateJavaScript(eventJS);
 }
