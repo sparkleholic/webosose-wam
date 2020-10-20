@@ -6,7 +6,7 @@ if [ -z $WLD ]; then
 fi
 
 export CHROMIUM_CBE=$WLD/image/usr/lib
-export CHROMIUM_SRC=$WLD/image/usr/include/chromium68
+export CHROMIUM_SRC=$WLD/image/usr/include/chromium79
 
 export LD_LIBRARY_PATH=${CHROMIUM_CBE}:$LD_LIBRARY_PATH
 
