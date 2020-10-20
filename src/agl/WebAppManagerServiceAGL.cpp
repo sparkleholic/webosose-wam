@@ -491,6 +491,8 @@ void WebAppManagerServiceAGL::onDeactivateEvent() {
 
 void WebAppManagerServiceAGL::onKillEvent() {
   LOG_DEBUG("Kill app=%s", app_id_event_target_.c_str());
-  WebAppManager::instance()->onKillApp(app_id_event_target_);
+  LOG_WARNING("FIXME! Calling onKillApp with an empty string as instanceId");
+  std::string emptystring;
+  WebAppManager::instance()->onKillApp(app_id_event_target_, emptystring);
   app_id_event_target_.clear();
 }
