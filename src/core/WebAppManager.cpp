@@ -657,7 +657,8 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
     if (!displayAffinity.isInt())
       desc->setDisplayAffinity(displayAffinity.asInt());
 
-    std::string instanceId = json["instanceId"].asString();
+    // While we do not use multi-screen support, set instanceId == appId.
+    std::string instanceId = desc->id();
 
     LOG_DEBUG("windowType=[%s] Done", winType.c_str());
     LOG_DEBUG("trying to launch app: %s, surface: %d", desc->id().c_str(), desc->surfaceId());

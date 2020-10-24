@@ -51,6 +51,7 @@ WebPageBase::WebPageBase()
 WebPageBase::WebPageBase(const Url& url, std::shared_ptr<ApplicationDescription> desc, const std::string& params)
     : m_appDesc(desc)
     , m_appId(desc->id())
+    , m_instanceId(desc->id())
     , m_suspendAtLoad(false)
     , m_isClosing(false)
     , m_isLoadErrorPageFinish(false)
@@ -63,16 +64,6 @@ WebPageBase::WebPageBase(const Url& url, std::shared_ptr<ApplicationDescription>
     , m_cleaningResources(false)
     , m_isPreload(false)
 {
-  if (!m_launchParams.empty()) {
-        Json::Value json;
-        readJsonFromString(m_launchParams, json);
-
-        if (json.isObject()) {
-            auto instanceId = json["instanceId"];
-            if (instanceId.isString())
-                m_instanceId = instanceId.asString();
-	}
-  }
 }
 
 WebPageBase::~WebPageBase()
