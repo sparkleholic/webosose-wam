@@ -505,5 +505,6 @@ bool WebPageBase::isAccessibilityEnabled() const
 
 std::string WebPageBase::getIdentifierForSecurityOrigin() const
 {
-    return WebAppManager::instance()->identifierForSecurityOrigin(getIdentifier());
+    std::string identifier = getIdentifier();
+    return WebAppManager::instance()->identifierForSecurityOrigin(identifier);
 }

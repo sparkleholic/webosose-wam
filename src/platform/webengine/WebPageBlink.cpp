@@ -167,6 +167,7 @@ void WebPageBlink::init()
     setPreferredLanguages(language);
     d->pageView->SetAppId(appId() + std::to_string(m_appDesc->getDisplayAffinity()));
     d->pageView->SetSecurityOrigin(getIdentifierForSecurityOrigin());
+    std::string identifier = getIdentifierForSecurityOrigin();
     updateHardwareResolution();
     updateBoardType();
     updateDatabaseIdentifier();
