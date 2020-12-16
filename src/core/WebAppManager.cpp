@@ -830,7 +830,7 @@ void WebAppManager::appRemoved(const std::string& app_id) {
 std::string WebAppManager::identifierForSecurityOrigin(const std::string& identifier)
 {
   std::string lowcase_identifier;
-  std::transform(identifier.begin(), identifier.end(), lowcase_identifier.begin(), tolower);
+  std::transform(lowcase_identifier.begin(), lowcase_identifier.end(), lowcase_identifier.begin(), tolower);
 
   if (lowcase_identifier != identifier) {
         LOG_WARNING(MSGID_APPID_HAS_UPPERCASE, 0, "Application id should not contain capital letters");
