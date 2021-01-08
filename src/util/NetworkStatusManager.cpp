@@ -59,8 +59,8 @@ void NetworkStatusManager::printLog()
 {
     for (const auto &l : m_logList) {
         LOG_INFO(MSGID_NETWORKSTATUS_INFO, 3, PMLOGKS("CHANGE", l.first.c_str()),
-            PMLOGKS("Previous", l.first.c_str()),
-            PMLOGKS("Current", l.second.c_str()), "");
+                 PMLOGKS("Previous", l.second.first.c_str()),
+                 PMLOGKS("Current", l.second.second.c_str()), "");
     }
     m_logList.clear();
 }

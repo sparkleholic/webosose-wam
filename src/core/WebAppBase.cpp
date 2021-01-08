@@ -517,7 +517,7 @@ void WebAppBase::onCursorVisibilityChanged(const std::string& jsscript)
 
 void WebAppBase::serviceCall(const std::string& url, const std::string& payload, const std::string& appId)
 {
-    LOG_INFO(MSGID_SERVICE_CALL, 3, PMLOGKS("APP_ID", appId.c_str(), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKS("URL", url.c_str())), "");
+    LOG_INFO(MSGID_SERVICE_CALL, 3, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKS("URL", url.c_str()), "");
 
     WebAppManager::instance()->serviceCall(url, payload, appId);
 }

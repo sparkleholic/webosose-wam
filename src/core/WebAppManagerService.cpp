@@ -34,7 +34,7 @@ std::string WebAppManagerService::onLaunch(const std::string& appDescString, con
 
 bool WebAppManagerService::onKillApp(const std::string& appId, const std::string& instanceId, bool force)
 {
-    LOG_INFO(MSGID_LUNA_API, 3, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", m_app->instanceId().c_str()), PMLOGKS("API", "killApp"), "");
+    LOG_INFO(MSGID_LUNA_API, 3, PMLOGKS("APP_ID", appId.c_str()), PMLOGKS("INSTANCE_ID", instanceId.c_str()), PMLOGKS("API", "killApp"), "");
     return WebAppManager::instance()->onKillApp(appId, instanceId, force);
 }
 
