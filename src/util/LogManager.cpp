@@ -16,10 +16,6 @@
 
 #include "LogManager.h"
 
-#if defined(DISABLE_LOGMANAGER) || !defined(HAS_PMLOG)
-#include <stdarg.h>
-#endif
-
 static bool m_debugEventsEnable = false;
 static bool m_debugBundleMessagesEnable = false;
 static bool m_debugMouseMoveEnable = false;
@@ -72,23 +68,3 @@ bool LogManager::getDebugMouseMoveEnabled()
 {
     return m_debugMouseMoveEnable;
 }
-
-#if defined(DISABLE_LOGMANAGER) || !defined(HAS_PMLOG)
-void FakePmLog(FILE* file, ...)
-{
-    va_list ap;
-    va_start(ap, file);
-    int count = va_arg(ap, int);
-    for (int i = 0; i < count; i++) {
-        const char* literal_key = va_arg(ap, const char*);
-        fprintf(file, "%s=", literal_key);
-        const char* fmt = va_arg(ap, const char*);
-        vfprintf(file, fmt, ap);
-        // Consume argument used in vfprintf
-        (void) va_arg(ap, const char*);
-    }
-    const char* trailing_fmt = va_arg(ap, const char*);
-    vfprintf(file, trailing_fmt, ap);
-    va_end(ap);
-}
-#endif

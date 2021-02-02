@@ -22,8 +22,6 @@
 #if defined(DISABLE_LOGMANAGER) || !defined(HAS_PMLOG)
 #include <cstdio>
 
-void FakePmLog(FILE* file, ...);
-
 #define LOG_MSG(level, ...)                \
     do {                                        \
         fprintf(stderr, "## (%s)[%s] ", level, __PRETTY_FUNCTION__); \
@@ -31,25 +29,14 @@ void FakePmLog(FILE* file, ...);
         fputc('\n', stderr);    \
     } while (0)
 
-#define LOG_INFO_APPID(level, __msgid, __appid, ...)     \
+#define LOG_INFO_APPID(...) \
     do {                    \
-        fprintf(stderr, "## (%s)[%s-%s-%s] ", level, __msgid, __appid, __PRETTY_FUNCTION__); \
-        FakePmLog(##__VA_ARGS__);    \
-        fputc('\n', stderr);    \
     } while (0)
-
-#define LOG_MSGID(level, __msgid, ...)     \
-    do {                    \
-        fprintf(stderr, "## (%s)[%s-%s] ", level, __msgid, __PRETTY_FUNCTION__); \
-        FakePmLog(stderr, ##__VA_ARGS__);                                \
-        fputc('\n', stderr);    \
-    } while (0)
-
-#define LOG_INFO(...) LOG_MSGID("INFO", ##__VA_ARGS__)
+#define LOG_INFO(...) //LOG_MSG("INFO", ##__VA_ARGS__)
 #define LOG_DEBUG(...) LOG_MSG("DEBUG", ##__VA_ARGS__)
-#define LOG_WARNING(...) LOG_MSGID("WARN", ##__VA_ARGS__)
-#define LOG_ERROR(...) LOG_MSGID("ERROR", ##__VA_ARGS__)
-#define LOG_CRITICAL(...) LOG_MSGID("CRITICAL", ##__VA_ARGS__)
+#define LOG_WARNING(...) //LOG_MSG("WARN", ##__VA_ARGS__)
+#define LOG_ERROR(...) //LOG_MSG("ERROR", ##__VA_ARGS__)
+#define LOG_CRITICAL(...) //LOG_MSG("CRITICAL", ##__VA_ARGS__)
 
 #define PMLOGKFV(literal_key, literal_fmt, value) \
   literal_key, literal_fmt, value
@@ -57,7 +44,7 @@ void FakePmLog(FILE* file, ...);
 #define PMLOGKS(literal_key, string_value) \
   literal_key, "\"%s\"", string_value
 
-#define LOG_INFO_WITH_CLOCK(__msgid, ...) LOG_INFO(__msgid, ##__VA_ARGS__)
+#define LOG_INFO_WITH_CLOCK(__msgid, ...)
 #else
 
 #include "LogManagerPmLog.h"
