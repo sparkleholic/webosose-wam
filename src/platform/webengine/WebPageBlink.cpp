@@ -1111,12 +1111,7 @@ double WebPageBlink::devicePixelRatio()
 
 void WebPageBlink::setSupportDolbyHDRContents()
 {
-    std::string supportDolbyHDRContents;
-    getDeviceInfo("supportDolbyHDRContents", supportDolbyHDRContents);
-
-    LOG_INFO(MSGID_WAM_DEBUG, 3, PMLOGKS("APP_ID", appId().c_str()), PMLOGKS("INSTANCE_ID", instanceId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()),
-	     "supportDolbyHDRContents:%s", supportDolbyHDRContents.c_str());
-    d->pageView->SetSupportDolbyHDRContents(supportDolbyHDRContents == "true");
+    // NOT IMPLEMENTED
 }
 
 void WebPageBlink::updateDatabaseIdentifier()
