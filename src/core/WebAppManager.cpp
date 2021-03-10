@@ -302,7 +302,7 @@ WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, const std::string
     webPageAdded(page);
 
     /* if the surface role is a background send ready to display them */
-    if (appDesc->surfaceRole() == 0)
+    if (appDesc->surfaceRole() == 2) // TODO(rzanoni) change to the enum value
 	    app->sendAglReady();
 
     m_appList.push_back(app);

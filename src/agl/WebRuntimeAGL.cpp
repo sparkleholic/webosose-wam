@@ -79,7 +79,7 @@ get_surface_type(const char* surface_type)
   if (!strcmp(surface_type, "panel"))
     return AGL_SHELL_TYPE_PANEL;
 
-  return AGL_SHELL_TYPE_NOT_FOUND;
+  return AGL_SHELL_TYPE_NONE;
 }
 
 static enum agl_shell_panel_type
@@ -171,7 +171,7 @@ SingleBrowserProcessWebAppLauncher::launch(const std::string& id,
 {
 	m_rid = (int) getpid();
 
-	WebAppManagerServiceAGL::instance()->setStartupApplication(id, uri, m_rid, AGL_SHELL_TYPE_NOT_FOUND, AGL_SHELL_PANEL_NOT_FOUND, 0, 0);
+	WebAppManagerServiceAGL::instance()->setStartupApplication(id, uri, m_rid, AGL_SHELL_TYPE_NONE, AGL_SHELL_PANEL_NOT_FOUND, 0, 0);
 	return m_rid;
 }
 
@@ -478,7 +478,7 @@ int WebAppLauncherRuntime::parse_config (const char *path_to_config)
   else
 	  m_height = std::string("0");
 
-  m_surface_type = AGL_SHELL_TYPE_NOT_FOUND;
+  m_surface_type = AGL_SHELL_TYPE_NONE;
   m_panel_type = AGL_SHELL_PANEL_NOT_FOUND;
 
   if (surface_type)
