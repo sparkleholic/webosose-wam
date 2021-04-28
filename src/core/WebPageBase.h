@@ -62,7 +62,6 @@ public:
     virtual Url url() const = 0; /* return current url */
     virtual Url defaultUrl() const { return m_defaultUrl; } /* return default url */
     virtual void setDefaultUrl(const Url& url) { m_defaultUrl = url; } /* just set default url */
-    virtual void replaceBaseUrl(const Url& newUrl) = 0;
     virtual void loadUrl(const std::string& url) = 0;
     virtual int progress() const = 0;
     virtual bool hasBeenShown() const = 0;
@@ -84,7 +83,6 @@ public:
     virtual bool relaunch(const std::string& args, const std::string& launchingAppId);
     virtual void evaluateJavaScript(const std::string& jsCode) = 0;
     virtual void evaluateJavaScriptInAllFrames(const std::string& jsCode, const char* method = "") = 0;
-    virtual void setForceActivateVtg(bool enabled) = 0;
     virtual uint32_t getWebProcessProxyID() = 0;
     virtual uint32_t getWebProcessPID() const = 0;
     virtual void createPalmSystem(WebAppBase* app) = 0;
@@ -112,7 +110,6 @@ public:
     virtual void setCustomUserScript();
     virtual void forwardEvent(void* event) = 0;
     virtual void setAudioGuidanceOn(bool on) {}
-    virtual void resetStateToMarkNextPaintForContainer() {}
     virtual bool isInputMethodActive() const { return false; }
 
     std::string launchParams() const;
@@ -175,6 +172,7 @@ protected:
     bool m_isClosing;
     bool m_isLoadErrorPageFinish;
     bool m_isLoadErrorPageStart;
+    bool m_didErrorPageLoadedFromNetErrorHelper;
     bool m_enableBackgroundRun;
     Url m_defaultUrl;
     std::string m_launchParams;

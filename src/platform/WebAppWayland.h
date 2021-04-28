@@ -129,6 +129,7 @@ public:
     void applyInputRegion();
     void forwardWebOSEvent(WebOSEvent* event) const;
     void stateAboutToChange(webos::NativeWindowState willBe);
+    void stateChanged(webos::NativeWindowState newState);
 
     // from WebPageBlinkObserver
     void didSwapPageCompositorFrame();
@@ -142,7 +143,6 @@ protected:
     void setupWindowGroup(ApplicationDescription* desc);
 
     void moveInputRegion(int height);
-    void setForceActivateVtgIfRequired();
 
 	// WebPageObserver
     virtual void webPageLoadFailed(int errorCode);
@@ -154,6 +154,7 @@ private:
     std::string m_windowType;
     int m_lastSwappedTime;
     int m_surface_role;
+    bool m_didActivateStage = false;
 
     std::vector<gfx::Rect> m_inputRegion;
     bool m_enableInputRegion;

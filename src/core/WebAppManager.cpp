@@ -137,126 +137,6 @@ int WebAppManager::currentUiHeight()
     return height;
 }
 
-static void buildAppJsTriggers(std::string &eventJS, std::string &versionJS,
-                               const ApplicationDescription *app,
-                               const std::string &launchDetail)
-{
-    using std::string;
-    using std::stringstream;
-
-    string detail = launchDetail.empty() ? "{}" : launchDetail;
-    string title = app->title();
-    string folderPath = app->folderPath();
-    string containerCSS = app->containerCSS();
-    string containerJS = app->containerJS();
-
-    replaceSubstrings(detail, "'", "\\'");
-    replaceSubstrings(title, "'", "\\'");
-    replaceSubstrings(folderPath, "'", "\\'");
-    replaceSubstrings(containerCSS, "'", "\\'");
-    replaceSubstrings(containerJS, "'", "\\'");
-
-    stringstream ejs;
-    ejs << "setTimeout(function () {"
-        << "    var launchEvent=new CustomEvent('webOSContainer', { detail: " << detail << " });"
-        << "    launchEvent.containerName='" << title << "';"
-        << "    launchEvent.containerDirectory='" << folderPath << "';"
-        << "    launchEvent.containerStyle='" << containerCSS << "';"
-        << "    launchEvent.containerScript='" << containerJS << "';"
-        << "    document.dispatchEvent(launchEvent);"
-        << "}, 1);";
-    eventJS = ejs.str();
-
-
-    string version = app->enyoBundleVersion();
-    if (!version.empty()) {
-        stringstream vjs;
-        vjs << "if (container.setVersion != null) {"
-            << "    container.setVersion('" << version << "');"
-            << "}";
-        versionJS = vjs.str();
-    }
-}
-
-void WebAppManager::onLaunchContainerBasedApp(const std::string& url, const std::string& winType,
-                                              const std::shared_ptr<ApplicationDescription> appDesc,
-                                              const std::string& args, const std::string& launchingAppId)
-{
-    if (!m_containerAppManager)
-        return;
-
-    std::string appId;
-    WebAppBase *app = m_containerAppManager->getContainerApp();
-    WebPageBase *page = app->page();
-
-    LOG_DEBUG("[%s] WebAppManager::onLaunchContainerBasedApp(); ", appDesc->id().c_str());
-
-    app->setHiddenWindow(false);
-    page->resetStateToMarkNextPaintForContainer();
-
-    // set use launching time optimization true while app loading.
-    page->setUseLaunchOptimization(true);
-
-    // set using enyo system app specific optimization if flag is set
-    if (m_webAppManagerConfig->isUseSystemAppOptimization())
-        page->setUseSystemAppOptimization(true);
-
-    page->setAppId(appDesc->id());
-    page->updateDatabaseIdentifier();
-
-    if (winType == WT_FLOATING)
-        page->setEnableBackgroundRun(appDesc->isEnableBackgroundRun());
-    page->replaceBaseUrl(url);
-    page->setDefaultUrl(url);
-
-    app->setAppDescription(appDesc);
-    app->setAppProperties(args);
-    app->setPreloadState(args);
-
-    app->setLaunchingAppId(launchingAppId);
-    if (m_webAppManagerConfig->isCheckLaunchTimeEnabled())
-        app->startLaunchTimer();
-
-    webPageRemoved(page);
-
-    appId = appDesc->id();
-    page->setApplicationDescription(appDesc);
-    page->setLaunchParams(args);
-
-    app->setWasContainerApp(true);
-
-    app->configureWindow(winType);
-    page->updatePageSettings();
-    page->reloadExtensionData();
-
-    //repost web process status to QoSM
-    postWebProcessCreated(appId.c_str(), getWebProcessId(appId));
-
-    std::string eventJS, versionJS;
-    buildAppJsTriggers(eventJS, versionJS, appDesc.get(), args);
-    page->evaluateJavaScript(eventJS);
-    page->evaluateJavaScript(versionJS);
-
-    webPageAdded(page);
-
-    PMTRACE("APP_ATTACHED_TO_CONTAINER");
-    LOG_INFO_WITH_CLOCK(MSGID_APP_ATTACHED_TO_CONTAINER, 4,
-            PMLOGKS("PerfType", "AppLaunch"), PMLOGKS("PerfGroup", page->appId().c_str()),
-            PMLOGKS("APP_ID", page->appId().c_str()), PMLOGKFV("PID", "%d", page->getWebProcessPID()), "");
-
-    m_containerAppManager->resetContainerAppManager();
-
-    if (m_appVersion.find(appId) != m_appVersion.end()) {
-        if (m_appVersion[appId] != appDesc->version()) {
-            app->setNeedReload(true);
-            m_appVersion[appId] = appDesc->version();
-        }
-    }
-    else {
-        m_appVersion[appId] = appDesc->version();
-    }
-}
-
 void WebAppManager::onRelaunchApp(const std::string& instanceId, const std::string& appId, const std::string& args, const std::string& launchingAppId)
 {
     WebAppBase* app = findAppById(appId);
@@ -279,20 +159,6 @@ void WebAppManager::onRelaunchApp(const std::string& instanceId, const std::stri
     } else {
         LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", app->appId().c_str()), PMLOGKFV("PID", "%d", app->page()->getWebProcessPID()), "Relaunch with preload option, ignore");
     }
-}
-
-std::string WebAppManager::onLaunchContainerApp(const std::string& appDesc)
-{
-    int errorCode = 0;
-    std::string instanceId = generateInstanceId();
-
-    WebAppBase* containerApp = m_containerAppManager->launchContainerApp(appDesc, instanceId, errorCode);
-    if (containerApp) {
-        webPageAdded(containerApp->page());
-        return instanceId;
-    }
-
-    return "";
 }
 
 bool WebAppManager::purgeSurfacePool(uint32_t pid)
@@ -404,8 +270,10 @@ WebAppBase* WebAppManager::onLaunchUrl(const std::string& url, const std::string
     webPageAdded(page);
 
     /* if the surface role is a background send ready to display them */
-    if (appDesc->surfaceRole() == 0)
+    if (appDesc->surfaceRole() == 0) {
+        //sleep(10); // (panel issue)
 	    app->sendAglReady();
+    }
 
     m_appList.push_back(app);
 
@@ -804,36 +672,11 @@ std::string WebAppManager::launch(const std::string& appDescString, const std::s
     LOG_DEBUG("windowType=[%s] Done", winType.c_str());
     LOG_DEBUG("trying to launch app: %s, surface: %d", desc->id().c_str(), desc->surfaceId());
 
-    // Check if app is container itself, it shouldn't be relaunched like normal app
-    if (isContainerApp(url)) {
-        LOG_DEBUG("isContainerApp=[%s]", url.c_str());
-        if (!isRunningApp(desc->id(), instanceId))
-            instanceId = onLaunchContainerApp(appDescString);
-        else {
-            LOG_INFO(MSGID_CONTAINER_APP_RELAUNCHED, 2, PMLOGKS("APP_ID", desc->id().c_str()),
-                  PMLOGKS("INSTANCE_ID", instanceId.c_str()), "ContainerApp; Already Running");
-        }
-    }
-    // Check if app is already running
-    else if (isRunningApp(desc->id(), instanceId)) {
+    if (isRunningApp(desc->id(), instanceId)) {
         onRelaunchApp(instanceId, desc->id().c_str(), params.c_str(), launchingAppId.c_str());
     }
-    // Check if app is container-based
-    else if (isContainerBasedApp(desc.get())) {
-        LOG_DEBUG("isContainerBasedApp=[%s]", url.c_str());
-        if (desc->trustLevel() != "default" && desc->trustLevel() != "trusted") {
-            errCode = ERR_CODE_LAUNCHAPP_INVALID_TRUSTLEVEL;
-            errMsg = err_invalidTrustLevel;
-            return std::string();
-        }
-        instanceId = m_containerAppManager->getContainerApp()->instanceId();
-        onLaunchContainerBasedApp(url.c_str(),
-            winType,
-            desc,
-            params.c_str(), launchingAppId.c_str());
-    }
-    // Run as a normal app
     else {
+            // Run as a normal app
         instanceId = generateInstanceId();
         LOG_DEBUG("normal app url=[%s] instanceId=[%s]", url.c_str(), instanceId.c_str());
         if (!onLaunchUrl(url, winType, desc, instanceId, params, launchingAppId, errCode, errMsg)) {

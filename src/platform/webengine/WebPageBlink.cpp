@@ -104,6 +104,16 @@ void WebPageBlink::init()
 {
     d->pageView = createPageView();
     d->pageView->setDelegate(this);
+    const std::string& policy_string = m_appDesc->firstFramePolicy();
+    if (policy_string.empty()) {
+        //for AGL
+        d->pageView->SetFirstFramePolicy(webos::WebViewBase::FirstFramePolicy::kImmediate);
+    } else if (policy_string == "contents") {
+        d->pageView->SetFirstFramePolicy(webos::WebViewBase::FirstFramePolicy::kContents);
+    } else if (policy_string == "immediate") {
+        d->pageView->SetFirstFramePolicy(webos::WebViewBase::FirstFramePolicy::kImmediate);
+    }
+
     d->pageView->Initialize(m_appDesc->id(),
                             m_appDesc->folderPath(),
                             m_appDesc->trustLevel(),
@@ -139,7 +149,6 @@ void WebPageBlink::init()
     d->pageView->SetV8DateUseSystemLocaloffset(false);
     d->pageView->SetLocalStorageEnabled(true);
     d->pageView->SetShouldSuppressDialogs(true);
-    d->pageView->SetNotifyFMPDirectly(m_appDesc->usePrerendering());
     setDisallowScrolling(m_appDesc->disallowScrollingInMainFrame());
 
     if (!std::isnan(m_appDesc->networkStableTimeout()) && (m_appDesc->networkStableTimeout() >= 0.0))
@@ -167,7 +176,6 @@ void WebPageBlink::init()
     updateMediaCodecCapability();
     setupStaticUserScripts();
     setCustomPluginIfNeeded();
-    setSupportDolbyHDRContents();
     setCustomUserScript();
     d->pageView->SetAudioGuidanceOn(isAccessibilityEnabled());
     updateBackHistoryAPIDisabled();
@@ -229,11 +237,6 @@ int WebPageBlink::progress() const
 bool WebPageBlink::hasBeenShown() const
 {
     return m_hasBeenShown;
-}
-
-void WebPageBlink::replaceBaseUrl(const Url& newUrl)
-{
-    d->pageView->ReplaceBaseURL(newUrl.toString(), url().toString());
 }
 
 Url WebPageBlink::url() const
@@ -383,12 +386,6 @@ void WebPageBlink::setUseAccessibility(bool enabled)
 void WebPageBlink::setAppPreloadHint(bool is_preload)
 {
     d->pageView->SetAppPreloadHint(is_preload);
-}
-
-void WebPageBlink::setForceActivateVtg(bool enabled)
-{
-    d->pageView->SetForceVideoTexture(enabled);
-    d->pageView->UpdatePreferences();
 }
 
 void WebPageBlink::suspendWebPageAll()
@@ -695,6 +692,10 @@ void WebPageBlink::loadFailed(const std::string& url, int errCode, const std::st
     handleLoadFailed(errCode);
 }
 
+void WebPageBlink::didErrorPageLoadedFromNetErrorHelper() {
+   m_didErrorPageLoadedFromNetErrorHelper = true;
+}
+
 void WebPageBlink::loadVisuallyCommitted()
 {
     m_hasBeenShown = true;
@@ -739,10 +740,8 @@ void WebPageBlink::recreateWebView()
         // Remove white screen while reloading contents due to the renderer crash
         // 1. Reset state to mark next paint for notification when FMP done.
         //    It will be used to make webview visible later.
-        d->pageView->ResetStateToMarkNextPaintForContainer();
-        // 2. While rendering ready, set webview hidden.
-        d->pageView->SetVisible(false);
-        // 3. Set VisibilityState as Launching
+        d->pageView->ResetStateToMarkNextPaint();
+        // 2. Set VisibilityState as Launching
         //    It will be used later, WebViewImpl set RenderWidgetCompositor visible,
         //    and make it keep to render the contents.
         setVisibilityState(WebPageBase::WebPageVisibilityState::WebPageVisibilityStateLaunching);
@@ -909,6 +908,7 @@ void WebPageBlink::loadExtension()
 {
     LOG_DEBUG("WebPageBlink::loadExtension(); Extension : webossystem");
     d->pageView->LoadExtension("webossystem");
+    d->pageView->LoadExtension("webosservicebridge");
 }
 
 void WebPageBlink::clearExtensions()
@@ -1065,15 +1065,6 @@ double WebPageBlink::devicePixelRatio()
     return devicePixelRatio;
 }
 
-void WebPageBlink::setSupportDolbyHDRContents()
-{
-    std::string supportDolbyHDRContents;
-    getDeviceInfo("supportDolbyHDRContents", supportDolbyHDRContents);
-    LOG_INFO(MSGID_WAM_DEBUG, 2, PMLOGKS("APP_ID", appId().c_str()), PMLOGKFV("PID", "%d", getWebProcessPID()),
-             "supportDolbyHDRContents:%s", supportDolbyHDRContents.c_str());
-    d->pageView->SetSupportDolbyHDRContents(supportDolbyHDRContents == "true");
-}
-
 void WebPageBlink::updateDatabaseIdentifier()
 {
     d->pageView->SetDatabaseIdentifier(m_appId);
@@ -1168,11 +1159,6 @@ void WebPageBlink::setAudioGuidanceOn(bool on)
 {
     d->pageView->SetAudioGuidanceOn(on);
     d->pageView->UpdatePreferences();
-}
-
-void WebPageBlink::resetStateToMarkNextPaintForContainer()
-{
-    d->pageView->ResetStateToMarkNextPaintForContainer();
 }
 
 void WebPageBlink::updateBackHistoryAPIDisabled()

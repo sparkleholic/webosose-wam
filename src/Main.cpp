@@ -16,6 +16,7 @@
 
 #include <cassert>
 
+#include <string.h>
 #include <grp.h>
 #include <pwd.h>
 #include <unistd.h>
@@ -59,7 +60,12 @@ static void changeUserIDGroupID()
 
 int main (int argc, const char** argv)
 {
-  LOG_DEBUG("### Starting %s", argv[0]);
+  int i = 0;
+  char buf[100] = {0,};
+  do {
+    sprintf(buf + strlen(buf), "%s ", argv[i]);
+  } while(++i < argc);
+  LOG_DEBUG("### Starting... %s", buf);
   changeUserIDGroupID();
 
 #if defined(HAS_AGL_SERVICE)

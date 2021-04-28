@@ -281,6 +281,9 @@ std::unique_ptr<ApplicationDescription> ApplicationDescription::fromJsonString(c
     }
     appDesc->m_useNativeScroll = jsonObj["useNativeScroll"].isBool() && jsonObj["useNativeScroll"].asBool();
 
+    auto firstFramePolicy = jsonObj["firstFramePolicy"];
+    if (firstFramePolicy.isString())
+      appDesc->m_firstFramePolicy = firstFramePolicy.asString();
     // Set network stable timeout
     auto networkStableTimeout = jsonObj["networkStableTimeout"];
     if (!networkStableTimeout.isDouble())

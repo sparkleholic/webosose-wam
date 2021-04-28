@@ -49,7 +49,6 @@ public:
     void setLaunchParams(const std::string& params) override;
     void notifyMemoryPressure(webos::WebViewBase::MemoryPressureLevel level) override;
     Url url() const override;
-    void replaceBaseUrl(const Url& newUrl) override;
     void loadUrl(const std::string& url) override;
     int progress() const override;
     bool hasBeenShown() const override;
@@ -69,7 +68,6 @@ public:
     void handleDeviceInfoChanged(const std::string& deviceInfo) override;
     void evaluateJavaScript(const std::string& jsCode) override;
     void evaluateJavaScriptInAllFrames(const std::string& jsCode, const char* method = "") override;
-    void setForceActivateVtg(bool enabled) override;
     uint32_t getWebProcessProxyID() override;
     uint32_t getWebProcessPID() const override { return renderProcessPid(); }
     void createPalmSystem(WebAppBase* app) override;
@@ -116,6 +114,7 @@ public:
     void renderProcessCrashed() override;
     void titleChanged(const std::string& title) override;
     void navigationHistoryChanged() override;
+    void didErrorPageLoadedFromNetErrorHelper() override;
 
     void updateExtensionData(const std::string& key, const std::string& value);
     void setLoadErrorPolicy(const std::string& policy);
@@ -130,7 +129,6 @@ public:
     double devicePixelRatio();
     void setAdditionalContentsScale(float scaleX, float scaleY);
     void setFontHinting(FontRenderParams hinting);
-    void setSupportDolbyHDRContents();
     void updateHardwareResolution();
 
     void forwardEvent(void* event) override;
@@ -141,7 +139,6 @@ public:
     void timeoutCloseCallback();
 
     void setAudioGuidanceOn(bool on) override;
-    void resetStateToMarkNextPaintForContainer() override;
     void updateBackHistoryAPIDisabled();
 
 protected:

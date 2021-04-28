@@ -226,3 +226,9 @@ bool BlinkWebView::AllowMouseOnOffEvent() const
     return m_delegate->allowMouseOnOffEvent();
 }
 
+void BlinkWebView::DidErrorPageLoadedFromNetErrorHelper()
+{
+    if (!m_delegate)
+        return;
+    return m_delegate->didErrorPageLoadedFromNetErrorHelper();
+}

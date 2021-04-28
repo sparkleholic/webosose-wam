@@ -129,6 +129,7 @@ public:
     bool isInspectable() const { return m_inspectable; }
     bool useCustomPlugin() const { return m_customPlugin; }
     bool useNativeScroll() const { return m_useNativeScroll; }
+    const std::string& firstFramePolicy() const { return m_firstFramePolicy; }
     bool usePrerendering() const { return m_usePrerendering; }
 
     bool doNotTrack() const { return m_doNotTrack; }
@@ -228,6 +229,7 @@ private:
     bool m_supportsAudioGuidance;
     bool checkTrustLevel(std::string trustLevel);
     bool m_useNativeScroll;
+    std::string m_firstFramePolicy;
     bool m_usePrerendering;
     double m_networkStableTimeout;
     bool m_disallowScrollingInMainFrame;

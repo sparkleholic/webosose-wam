@@ -38,6 +38,7 @@ WebPageBase::WebPageBase()
     , m_isClosing(false)
     , m_isLoadErrorPageFinish(false)
     , m_isLoadErrorPageStart(false)
+    , m_didErrorPageLoadedFromNetErrorHelper(false)
     , m_enableBackgroundRun(false)
     , m_loadErrorPolicy("default")
     , m_cleaningResources(false)
@@ -52,6 +53,7 @@ WebPageBase::WebPageBase(const Url& url, std::shared_ptr<ApplicationDescription>
     , m_isClosing(false)
     , m_isLoadErrorPageFinish(false)
     , m_isLoadErrorPageStart(false)
+    , m_didErrorPageLoadedFromNetErrorHelper(false)
     , m_enableBackgroundRun(false)
     , m_defaultUrl(url)
     , m_launchParams(params)
@@ -253,6 +255,7 @@ void WebPageBase::sendRelaunchEvent()
 void WebPageBase::handleLoadStarted()
 {
     m_suspendAtLoad = true;
+    m_didErrorPageLoadedFromNetErrorHelper = false;
 }
 
 void WebPageBase::handleLoadFinished()

@@ -170,9 +170,6 @@ private:
         const std::shared_ptr<ApplicationDescription> appDesc, const std::string& instanceId,
         const std::string& args, const std::string& launchingAppId,
         int& errCode, std::string& errMsg);
-    void onLaunchContainerBasedApp(const std::string& url, const std::string& winType,
-        const std::shared_ptr<ApplicationDescription> appDesc, const std::string& args, const std::string& launchingAppId);
-    std::string onLaunchContainerApp(const std::string& appDesc);
     void onRelaunchApp(const std::string& instanceId, const std::string& appId,
         const std::string& args, const std::string& launchingAppId);
 
